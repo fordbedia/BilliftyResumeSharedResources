@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="vendor/autoload.php"
+    testdox="true"
+    colors="true"
+    executionOrder="depends,defects"
+>
+    <php>
+        <!-- make sure Testbench runs in testing -->
+        <env name="APP_ENV" value="testing"/>
+        <env name="DB_CONNECTION" value="testing"/>
+
+        <!-- Your docker postgres creds -->
+        <env name="TEST_DB_HOST" value="postgres"/>
+        <env name="TEST_DB_PORT" value="5432"/>
+        <env name="TEST_DB_DATABASE" value="app_db"/>
+        <env name="TEST_DB_USERNAME" value="app_us3r_26!."/>
+        <env name="TEST_DB_PASSWORD" value="33L!0213LYM26."/>
+    </php>
+
+    <testsuites>
+        <testsuite name="Modular Tests">
+            <directory suffix="Test.php">./src/Modules</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
