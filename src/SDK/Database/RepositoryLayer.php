@@ -2,8 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\SDK\Database;
 
-use BilliftyResumeSDK\SharedResources\Modules\Invoicing\Repository\Contracts\ClientsContract;
-use BilliftyResumeSDK\SharedResources\Modules\User\Models\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
