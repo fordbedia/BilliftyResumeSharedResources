@@ -22,25 +22,26 @@ class ResumeBasicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' 					=> 'required|string',
-			'email' 				=> 'required|email',
-			'label' 				=> 'required|string',
-			'phone' 				=> 'nullable|phone',
-			'location' 				=> ['nullable', 'array'],
-			'location.address' 		=> 'nullable|string',
-			'location.postalCode' 	=> 'nullable|string',
-			'location.city' 		=> 'nullable|string',
-			'location.countryCode' 	=> 'nullable|string',
-			'location.region' 		=> 'nullable|string',
-			'summary' 				=> 'nullable|string',
-			'profiles'				=> 'nullable|array',
+			'basics' 				=> ['required', 'array'],
+            'basics.name' 					=> 'required|string',
+			'basics.email' 				=> 'required|email',
+			'basics.label' 				=> 'required|string',
+			'basics.phone' 				=> 'nullable|phone',
+			'basics.location' 				=> ['nullable', 'array'],
+			'basics.location.address' 		=> 'nullable|string',
+			'basics.location.postalCode' 	=> 'nullable|string',
+			'basics.location.city' 		=> 'nullable|string',
+			'basics.location.countryCode' 	=> 'nullable|string',
+			'basics.location.region' 		=> 'nullable|string',
+			'basics.summary' 				=> 'nullable|string',
+			'basics.profiles'				=> 'nullable|array',
         ];
     }
 
 	public function messages()
 	{
 		return [
-			'label' => 'The Professional Title field is required.',
+			'basics.label' => 'The Professional Title field is required.',
 		];
 	}
 }

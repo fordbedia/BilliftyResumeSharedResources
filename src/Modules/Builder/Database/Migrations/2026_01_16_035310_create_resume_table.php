@@ -56,6 +56,15 @@ return new class extends Migration
             $table->timestamps();
         });
 
+		Schema::create('skills', function (Blueprint $table) {
+            $table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->string('name');
+			$table->string('level')->nullable();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+            $table->timestamps();
+        });
+
 		Schema::create('education', function (Blueprint $table) {
             $table->id();
 			$table->unsignedBigInteger('resume_id');
