@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('resume', function (Blueprint $table) {
             $table->id();
+			$table->unsignedBigInteger('user_id');
             $table->timestamps();
+
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 		Schema::create('basic', function (Blueprint $table) {
             $table->id();
 			$table->unsignedBigInteger('resume_id');
-			$table->string('full_name');
-			$table->string('title');
+			$table->string('name');
+			$table->string('label');
+			$table->string('url')->nullable();
 			$table->string('email')->nullable();
 			$table->string('phone')->nullable();
 			$table->string('website')->nullable();

@@ -27,6 +27,7 @@ class ResumeFinalizeRequest extends FormRequest
             (new ResumeWorkRequest())->rules(),
             (new ResumeSkillsRequest())->rules(),
             (new ResumeReferencesRequest())->rules(),
+			(new ResumeTemplateRequest())->rules(),
         );
     }
 
@@ -38,6 +39,7 @@ class ResumeFinalizeRequest extends FormRequest
 			(new ResumeWorkRequest())->messages(),
 			(new ResumeSkillsRequest())->messages(),
 			(new ResumeReferencesRequest())->messages(),
+			(new ResumeTemplateRequest())->messages(),
 		);
 	}
 
