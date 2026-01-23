@@ -14,6 +14,19 @@ class ResumeFinalizeRequest extends FormRequest
         return true;
     }
 
+	protected function prepareForValidation(): void
+    {
+        // If frontend sends FormData: resume=<json string>
+        if ($this->has('resume') && is_string($this->input('resume'))) {
+            $decoded = json_decode($this->input('resume'), true);
+
+            // If valid JSON object/array, merge it into the request root
+            if (is_array($decoded)) {
+                $this->merge($decoded);
+            }
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,6 +41,9 @@ class ResumeFinalizeRequest extends FormRequest
             (new ResumeSkillsRequest())->rules(),
             (new ResumeReferencesRequest())->rules(),
 			(new ResumeTemplateRequest())->rules(),
+			[
+				'basics_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+			]
         );
     }
 

@@ -2,7 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository;
 
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Application\Eloquent\Repository\BasicRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\BasicRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentBaseRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Basic;
 

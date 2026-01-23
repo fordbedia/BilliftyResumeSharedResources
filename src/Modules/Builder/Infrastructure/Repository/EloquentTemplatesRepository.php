@@ -2,7 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository;
 
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Application\Eloquent\Repository\TemplatesRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentBaseRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Templates;
 

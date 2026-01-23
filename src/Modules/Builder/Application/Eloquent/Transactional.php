@@ -1,6 +1,6 @@
 <?php
 
-namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Application\Eloquent;
+namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent;
 
 interface Transactional
 {

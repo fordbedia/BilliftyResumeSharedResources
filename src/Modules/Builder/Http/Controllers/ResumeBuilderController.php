@@ -3,8 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Application\Eloquent\Repository\TemplatesRepository;
-use Illuminate\Http\Request;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 
 class ResumeBuilderController extends Controller
 {
