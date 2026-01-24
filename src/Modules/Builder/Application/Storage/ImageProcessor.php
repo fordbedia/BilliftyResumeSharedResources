@@ -2,6 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
@@ -35,5 +36,13 @@ class ImageProcessor
 			"{$base}.{$time}.{$hash}.{$ext}",
 			'public' // or whatever disk you want
 		);
+	}
+
+	public function deleteLastFile(string $column, Model $model)
+	{
+		$image = $model->{$column};
+		if ($image) {
+			unlink(storage_path("app/public/{$image}"));
+		}
 	}
 }
