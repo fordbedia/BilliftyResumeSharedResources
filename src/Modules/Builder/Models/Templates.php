@@ -13,4 +13,16 @@ class Templates extends Model
 	protected $casts = [
 		'colors' => 'array',
 	];
+
+	public function resume()
+	{
+		return $this->belongsToMany(
+			Resume::class,
+			'resume_template',
+			'template_id',
+			'resume_id',
+			'id',
+			'id'
+		);
+	}
 }

@@ -23,6 +23,7 @@ class ResumeSkillsRequest extends FormRequest
     {
         return [
 			'skills' => ['required', 'array', 'min:1'],
+			'skills.*.id' => 'nullable|integer',
 			'skills.*.name' => 'required|string',
 			'skills.*.level' => 'nullable|string',
         ];

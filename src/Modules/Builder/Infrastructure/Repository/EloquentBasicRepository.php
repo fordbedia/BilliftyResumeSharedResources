@@ -8,9 +8,16 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Basic;
 
 class EloquentBasicRepository extends EloquentBaseRepository implements BasicRepository
 {
-	public function save(array $search, array $data): \Illuminate\Database\Eloquent\Model|array
+	public function create(array $data): \Illuminate\Database\Eloquent\Model|array
 	{
-		return $this->model->updateOrCreate($search, $data);
+		return Basic::create($data);
+	}
+
+	public function updateById(int $resumeId, int $id, array $data)
+	{
+		$basic = Basic::where('resume_id', $resumeId)->where('id', $id)->firstOrFail();
+		$basic->fill($data)->save();
+		return $basic;
 	}
 
 	public function makeModel(): string

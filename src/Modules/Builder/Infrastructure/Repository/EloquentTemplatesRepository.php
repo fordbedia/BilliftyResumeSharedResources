@@ -5,9 +5,19 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentBaseRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Templates;
+use Illuminate\Database\Eloquent\Model;
 
 class EloquentTemplatesRepository extends EloquentBaseRepository implements TemplatesRepository
 {
+	public function save(Model|int $resume, int $template)
+	{
+		if ($resume instanceof Model) {
+			$resume->template()->sync(['template_id' => $template]);
+		} else {
+			$this->model->resume()->sync(['template_id' => $template]);
+		}
+	}
+
 	public function all()
 	{
 		return $this->model->whereIsActive(1)->get();

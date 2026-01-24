@@ -25,6 +25,7 @@ return new class extends Migration
 			$table->string('label');
 			$table->string('url')->nullable();
 			$table->text('image')->nullable();
+			$table->string('image_disk')->nullable();
 			$table->string('email')->nullable();
 			$table->string('phone')->nullable();
 			$table->string('website')->nullable();

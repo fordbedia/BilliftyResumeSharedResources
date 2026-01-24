@@ -23,6 +23,7 @@ class ResumeBasicRequest extends FormRequest
     {
         return [
 			'basics' 						=> ['required', 'array'],
+			'basics.id' 					=> 'nullable|integer',
             'basics.name' 					=> 'required|string',
 			'basics.email' 					=> 'required|email',
 			'basics.label' 					=> 'required|string',

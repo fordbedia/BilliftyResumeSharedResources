@@ -23,6 +23,7 @@ class ResumeReferencesRequest extends FormRequest
     {
         return [
 			'references' 				=> ['required', 'array', 'min:1'],
+			'references.*.id' 			=> 'nullable|integer',
             'references.*.name'			=> 'required|string',
 			'references.*.reference'	=> 'required|string'
         ];

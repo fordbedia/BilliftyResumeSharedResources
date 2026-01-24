@@ -52,5 +52,8 @@ Route::prefix('v1')->group(function () {
 		Route::post('submit', [SubmitResumeController::class, 'submit']);
 
 		Route::get('templates', [ResumeBuilderController::class, 'templates']);
+
+		Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
+		Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);
 	});
 });

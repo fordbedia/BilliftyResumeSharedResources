@@ -8,8 +8,10 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ReferenceRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ResumeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\SkillsRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\WorkRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Transactional;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume as ResumeModel;
 
 class Resume
 {
@@ -21,7 +23,8 @@ class Resume
 		protected SkillsRepository $skills,
 		protected ProfileRepository $profile,
 		protected ReferenceRepository $reference,
-		protected Transactional $transaction
+		protected Transactional $transaction,
+		protected TemplatesRepository $template
 	)
 	{}
 
@@ -39,16 +42,19 @@ class Resume
 			'education' 	=> $education,
 			'skills' 		=> $skills,
 			'references' 	=> $references,
+			'template'		=> $template
 		] = $payload;
 
-		return $this->transaction->run(function () use ($userId, $resumeId, $basics, $work, $education, $skills, $references) {
+		return $this->transaction->run(function () use ($userId, $resumeId, $basics, $work, $education, $skills, $references, $template) {
 			if ($resumeId){
 				$resume = $this->resume->find($resumeId);
 			} else {
 				$resume = $this->resume->create(['user_id' => $userId]);
 			}
+
 			if ($basics) {
-				$this->basics->save(['resume_id' => $resume->id],[
+				$data = [
+					'resume_id'		=> $resume->id,
 					'name'			=> $basics['name'],
 					'label' 		=> $basics['label'],
 					'email'			=> $basics['email'],
@@ -60,52 +66,118 @@ class Resume
 					'city' 			=> $basics['location']['city'],
 					'region'		=> $basics['location']['region'],
 					'summary'		=> $basics['summary'],
-				]);
+				];
+				if (!empty($basics['id'])) {
+					// Update
+					$basic = $this->basics->updateById($resume->id, (int) $basics['id'], $data);
+				} else {
+					// Create
+					$basic = $this->basics->create($data);
+				}
+				// Profile
+				if (!empty($basics['profiles'])) {
+					foreach ($basics['profiles'] as $profile) {
+						$data = [
+							'basic_id' => $basic->id,
+							'url' => $profile['url'],
+						];
+						if (!empty($profile['id'])) {
+							// Update
+							$this->profile->updateById($basics['id'], (int) $profile['id'], $data);
+						} else {
+							$this->profile->create($data);
+						}
+					}
+				}
 			}
 
 			if (!empty($work)) {
+				$keepIds = [];
+
 				foreach ($work as $item) {
-					$this->work->save(['resume_id' => $resume->id, 'name' => $item['name']],[
-						'position' => $item['position'],
-						'startDate' => $item['startDate'],
-						'endDate' => $item['endDate'],
-						'summary' => $item['summary'],
-					]);
+					$data = [
+						'resume_id'  => $resume->id,
+						'name'       => $item['name'] ?? '',
+						'position'   => $item['position'] ?? null,
+						'startDate'  => $item['startDate'] ?? null,
+						'endDate'    => $item['endDate'] ?? null,
+						'summary'    => $item['summary'] ?? null,
+					];
+
+					if (!empty($item['id'])) {
+						// UPDATE (stable identity)
+						$saved = $this->work->updateById($resume->id, (int) $item['id'], $data);
+					} else {
+						// CREATE (duplicates allowed → never search by name)
+						$saved = $this->work->create($data);
+					}
+
+					$keepIds[] = $saved->id;
 				}
+
+				// delete rows not present anymore
+				$this->work->deleteMissing($resume->id, $keepIds);
 			}
 
 			if (!empty($education)) {
 				foreach ($education as $item) {
-					$this->education->save(
-						['resume_id' => $resume->id, 'institution' => $item['institution']],
-						[
-							'area' => $item['area'],
-							'studyType' => $item['studyType'],
-							'startDate' => $item['startDate'],
-							'endDate' => $item['endDate'],
-						]);
+					$data = [
+						'resume_id' => $resume->id,
+						'institution' => $item['institution'],
+						'area' => $item['area'],
+						'studyType' => $item['studyType'],
+						'startDate' => $item['startDate'],
+						'endDate' => $item['endDate'],
+					];
+					if (!empty($item['id'])) {
+						$savedEducation = $this->education->updateById($resume->id, (int) $item['id'], $data);
+					} else {
+						$savedEducation = $this->education->create($data);
+					}
+					$keepEducationIds[] = $savedEducation->id;
 				}
+				$this->education->deleteMissing($resume->id, $keepEducationIds);
 			}
 
 			if (!empty($skills)) {
 				foreach ($skills as $item) {
-					$this->skills->save(
-						['resume_id' => $resume->id, 'name' => $item['name']],
-						['level' => $item['level']]
-					);
+					$data = [
+						'level' => $item['level'],
+						'resume_id' => $resume->id,
+						'name' => $item['name']
+					];
+					if (!empty($item['id'])) {
+						$savedSkills = $this->skills->updateById($resume->id, (int) $item['id'], $data);
+					} else {
+						$savedSkills = $this->skills->create($data);
+					}
+					$keepSkillsIds[] = $savedSkills->id;
 				}
+				$this->skills->deleteMissing($resume->id, $keepSkillsIds);
 			}
 
 			if (!empty($references)) {
 				foreach ($references as $item) {
-					$this->reference->save(
-						['resume_id' => $resume->id, 'name' => $item['name']],
-						['reference' => $item['reference']]
-					);
+					$data = [
+						'reference' => $item['reference'],
+						'resume_id' => $resume->id,
+						'name' => $item['name']
+					];
+					if (!empty($item['id'])) {
+						$savedReferences = $this->reference->updateById($resume->id, (int) $item['id'], $data);
+					} else {
+						$savedReferences = $this->reference->create($data);
+					}
+					$keepReferencesIds[] = $savedReferences->id;
 				}
+				$this->reference->deleteMissing($resume->id, $keepReferencesIds);
 			}
 
-			return $resume->refresh();
+			if ($template) {
+				$this->template->save($resume, $template);
+			}
+
+			return $resume->load(ResumeModel::relationships())->refresh();
 		});
 	}
 

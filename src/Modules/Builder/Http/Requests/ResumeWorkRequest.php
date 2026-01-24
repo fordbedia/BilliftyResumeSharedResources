@@ -23,6 +23,7 @@ class ResumeWorkRequest extends FormRequest
     {
         return [
 			'work' 					=> ['required', 'array', 'min:1'],
+			'work.*.id' 			=> 'nullable|integer',
             'work.*.name' 			=> 'required|string',
 			'work.*.position' 		=> 'required|string',
 			'work.*.startDate' 		=> 'required|date',

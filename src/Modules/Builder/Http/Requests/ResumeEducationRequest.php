@@ -23,6 +23,7 @@ class ResumeEducationRequest extends FormRequest
     {
         return [
 			'education' 				=> ['required', 'array', 'min:1'],
+			'education.*.id' 			=> 'nullable|integer',
             'education.*.institution' 	=> 'required|string',
 			'education.*.area'			=> 'required|string',
 			'education.*.studyType'		=> 'required|string',

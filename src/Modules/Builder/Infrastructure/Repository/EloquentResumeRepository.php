@@ -8,6 +8,11 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 
 class EloquentResumeRepository extends EloquentBaseRepository implements ResumeRepository
 {
+	public function find(int $id): \Illuminate\Database\Eloquent\Model
+	{
+		return $this->model->find($id);
+	}
+
 	public function create(array $data): \Illuminate\Database\Eloquent\Model|array
 	{
 		return $this->model->create($data);
