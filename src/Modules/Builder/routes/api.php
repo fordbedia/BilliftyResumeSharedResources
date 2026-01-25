@@ -7,6 +7,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\Re
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeTemplateController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeWorkController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeBuilderController;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumePdfController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\SubmitResumeController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,8 @@ Route::get('/resume.pdf', [ResumePdfController::class, 'download']);
 Route::get('/resume.preview', [ResumePdfController::class, 'stream']);
 Route::get('/resume/export', [ResumePdfController::class, 'exportJson']);
 Route::get('/resume/build', [ResumePdfController::class, 'buildFromStrings']);
+
+\Illuminate\Support\Facades\Auth::loginUsingId(1);
 
 Route::prefix('v1')->group(function () {
 	Route::prefix('resume')->group(function () {
@@ -52,8 +55,10 @@ Route::prefix('v1')->group(function () {
 		Route::post('submit', [SubmitResumeController::class, 'submit']);
 
 		Route::get('templates', [ResumeBuilderController::class, 'templates']);
+		Route::get('recent', [ResumeController::class, 'recent']);
 
 		Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
 		Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);
+		Route::apiResource('/', ResumeController::class);
 	});
 });

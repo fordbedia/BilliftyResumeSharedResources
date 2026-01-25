@@ -32,8 +32,8 @@ class ResumeReferencesRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'references.*.name' 		=> 'The Name field is required.',
-			'references.*.reference' 	=> 'The Reference field is required.',
+			'references.*.name' 		=> 'Name is required.',
+			'references.*.reference' 	=> 'Reference is required.',
 		];
 	}
 }

@@ -36,9 +36,9 @@ class ResumeWorkRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'work.*.name' 			=> 'The Company Name field is required.',
-			'work.*.position' 		=> 'The Position field is required.',
-			'work.*.startDate'		=> 'The Start Date field is required.',
+			'work.*.name' 			=> 'Company Name is required.',
+			'work.*.position' 		=> 'Position is required.',
+			'work.*.startDate'		=> 'Start Date is required.',
 		];
 	}
 }

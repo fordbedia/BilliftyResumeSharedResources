@@ -11,6 +11,12 @@ class Basic extends Model
     protected $table = 'basic';
 	protected $guarded = [];
 	protected $appends = ['image_url'];
+	protected $touches = ['resume'];
+
+	public function resume()
+	{
+		return $this->belongsTo(Resume::class);
+	}
 
 	public function profile()
 	{

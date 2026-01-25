@@ -63,6 +63,7 @@ class Resume
 					'url'			=> $basics['url'],
 					'address'		=> $basics['location']['address'],
 					'postalCode' 	=> $basics['location']['postalCode'],
+					'countryCode'	=> $basics['location']['countryCode'],
 					'city' 			=> $basics['location']['city'],
 					'region'		=> $basics['location']['region'],
 					'summary'		=> $basics['summary'],

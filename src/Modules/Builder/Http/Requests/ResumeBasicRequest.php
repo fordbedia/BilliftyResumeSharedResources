@@ -44,9 +44,9 @@ class ResumeBasicRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'basics.label' => 'The Professional Title field is required.',
-			'basics.email' => 'The Email field is required.',
-			'basics.name' => 'The Company Name field is required.',
+			'basics.label' => 'Professional Title is required.',
+			'basics.email' => 'Email is required.',
+			'basics.name' => 'Company Name is required.',
 		];
 	}
 }

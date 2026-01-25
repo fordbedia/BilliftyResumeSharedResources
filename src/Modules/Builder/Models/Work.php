@@ -9,4 +9,10 @@ class Work extends Model
 {
     protected $table = 'work';
 	protected $guarded = [];
+	protected $touches = ['resume'];
+
+	public function resume()
+	{
+		return $this->belongsTo(Resume::class);
+	}
 }

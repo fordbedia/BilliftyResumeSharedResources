@@ -8,6 +8,16 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 
 class EloquentResumeRepository extends EloquentBaseRepository implements ResumeRepository
 {
+	public function all(): \Illuminate\Database\Eloquent\Collection
+	{
+		return $this->model->all()->loadMissing(Resume::relationships());
+	}
+
+	public function allLatest(): \Illuminate\Database\Eloquent\Collection
+	{
+		return $this->model->latest('updated_at', 'desc')->with(Resume::relationships())->get();
+	}
+
 	public function find(int $id): \Illuminate\Database\Eloquent\Model
 	{
 		return $this->model->find($id);

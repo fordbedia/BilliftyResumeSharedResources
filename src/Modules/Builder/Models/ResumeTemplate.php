@@ -9,4 +9,10 @@ class ResumeTemplate extends Model
 {
     protected $table = 'resume_template';
 	protected $guarded = [];
+	protected $touches = ['resume'];
+
+	public function resume()
+	{
+		return $this->belongsTo(Resume::class);
+	}
 }

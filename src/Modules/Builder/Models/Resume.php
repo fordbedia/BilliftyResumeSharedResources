@@ -4,6 +4,8 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Resume extends Model
 {
@@ -51,4 +53,28 @@ class Resume extends Model
 	{
 		return ['basic', 'basic.profile', 'education', 'work', 'skills', 'reference', 'template'];
 	}
+
+	protected static function booted(): void
+    {
+        static::addGlobalScope('owned_by_user', function (Builder $builder) {
+            // Only apply when authenticated; avoid breaking CLI/seeding/jobs
+            $userId = Auth::id();
+            if ($userId) {
+                $builder->where('user_id', $userId);
+            }
+        });
+
+        // Optional: auto-fill user_id on create
+        static::creating(function (self $resume) {
+            if (!$resume->user_id && Auth::id()) {
+                $resume->user_id = Auth::id();
+            }
+        });
+    }
+
+    // Optional escape hatch for admin/internal jobs:
+    public function scopeAllUsers(Builder $query): Builder
+    {
+        return $query->withoutGlobalScope('owned_by_user');
+    }
 }

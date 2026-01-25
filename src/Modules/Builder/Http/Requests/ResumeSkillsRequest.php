@@ -32,7 +32,7 @@ class ResumeSkillsRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'skills.*.name' => 'The Skill Name field is required.',
+			'skills.*.name' => 'Skill Name is required.',
 		];
 	}
 }

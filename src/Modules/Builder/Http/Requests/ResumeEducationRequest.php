@@ -36,9 +36,9 @@ class ResumeEducationRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'education.*.institution' => 'The Institution field is required.',
-			'education.*.area'		=> 'The Field of Study field is required.',
-			'education.*.studyType'	=> 'The Degree Type field is required.',
+			'education.*.institution' => 'Institution is required.',
+			'education.*.area'		=> 'Field of Study is required.',
+			'education.*.studyType'	=> 'Degree Type is required.',
 		];
 	}
 }

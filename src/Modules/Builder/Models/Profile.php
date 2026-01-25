@@ -9,4 +9,10 @@ class Profile extends Model
 {
     protected $table = 'profiles';
 	protected $guarded = [];
+	protected $touches = ['resume'];
+
+	public function resume()
+	{
+		return $this->belongsTo(Resume::class);
+	}
 }

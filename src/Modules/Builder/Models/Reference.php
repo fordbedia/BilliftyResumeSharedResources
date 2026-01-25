@@ -9,4 +9,10 @@ class Reference extends Model
 {
     protected $table = 'reference';
 	protected $guarded = [];
+	protected $touches = ['resume'];
+
+	public function resume()
+	{
+		return $this->belongsTo(Resume::class);
+	}
 }
