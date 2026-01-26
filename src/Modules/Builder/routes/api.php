@@ -17,7 +17,7 @@ Route::get('/resume.preview', [ResumePdfController::class, 'stream']);
 Route::get('/resume/export', [ResumePdfController::class, 'exportJson']);
 Route::get('/resume/build', [ResumePdfController::class, 'buildFromStrings']);
 
-\Illuminate\Support\Facades\Auth::loginUsingId(1);
+//\Illuminate\Support\Facades\Auth::loginUsingId(1);
 
 Route::prefix('v1')->group(function () {
 	Route::prefix('resume')->group(function () {
@@ -56,6 +56,11 @@ Route::prefix('v1')->group(function () {
 
 		Route::get('templates', [ResumeBuilderController::class, 'templates']);
 		Route::get('recent', [ResumeController::class, 'recent']);
+
+		Route::post('{id}/export', [ResumeController::class, 'startExport']);        // queues
+		Route::get('{id}/export-status', [ResumeController::class, 'exportStatus']); // polling
+		Route::get('{id}/export-download', [ResumeController::class, 'exportDownload']); // actual download
+
 
 		Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
 		Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);

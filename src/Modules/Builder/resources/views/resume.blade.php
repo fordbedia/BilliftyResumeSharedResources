@@ -1,6 +1,6 @@
 {{-- builder::resume --}}
 @php
-    $template = $template ?? 'moderno-one';
+    $template = $resume['template']['path'] ?? 'templates.moderno-one';
 
 @endphp
 
@@ -71,7 +71,7 @@
 
 @section('content')
 	<div class="invoice-page">
-		@include("builder::templates.$template")
+		@include("builder::$template")
 	</div>
 @endsection
 
@@ -92,11 +92,11 @@
 			text-align: left;
 		}
 
-		@page {
-			/* A4 portrait with normal margins */
-			size: A4 portrait;
-			margin: 15mm;
-		}
+		/*@page {*/
+		/*	!* A4 portrait with normal margins *!*/
+		/*	size: A4 portrait;*/
+		/*	margin: 15mm;*/
+		/*}*/
 
 		body {
 			margin: 0;

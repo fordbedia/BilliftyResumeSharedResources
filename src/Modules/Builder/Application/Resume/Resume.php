@@ -49,7 +49,7 @@ class Resume
 			if ($resumeId){
 				$resume = $this->resume->find($resumeId);
 			} else {
-				$resume = $this->resume->create(['user_id' => $userId]);
+				$resume = $this->resume->create(['user_id' => $userId, 'name' => 'resume']);
 			}
 
 			if ($basics) {

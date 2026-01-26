@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('resume', function (Blueprint $table) {
             $table->id();
+			$table->string('name');
 			$table->unsignedBigInteger('user_id');
+
+			$table->string('export_status')->default('idle'); // idle|queued|processing|ready|failed
+			$table->string('export_format')->nullable();      // pdf|docx
+			$table->string('export_disk')->nullable();        // public|s3
+			$table->string('export_path')->nullable();        // resume_pdfs/...
+			$table->text('export_error')->nullable();
+			$table->timestamp('export_requested_at')->nullable();
+			$table->timestamp('export_ready_at')->nullable();
+
             $table->timestamps();
 
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

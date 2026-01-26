@@ -20,7 +20,7 @@ class EloquentResumeRepository extends EloquentBaseRepository implements ResumeR
 
 	public function find(int $id): \Illuminate\Database\Eloquent\Model
 	{
-		return $this->model->find($id);
+		return $this->model->find($id)->loadMissing(Resume::relationships());
 	}
 
 	public function create(array $data): \Illuminate\Database\Eloquent\Model|array

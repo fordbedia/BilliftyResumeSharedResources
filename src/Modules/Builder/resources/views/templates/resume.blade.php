@@ -47,6 +47,48 @@
         </div>
     @endif
 
+	    {{-- ================= SKILLS ================= --}}
+    @if(!empty($resume['skills']))
+        <h2>Skills</h2>
+
+        <div class="row">
+            @foreach($resume['skills'] as $skill)
+                <span class="pill">
+                    {{ $skill['name'] ?? $skill }}
+                    @if(!empty($skill['level']))
+                        <span class="muted"> ({{ $skill['level'] }})</span>
+                    @endif
+                </span>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- ================= EDUCATION ================= --}}
+    @if(!empty($resume['education']))
+        <h2>Education</h2>
+
+        @foreach($resume['education'] as $edu)
+            <div class="row">
+                <strong>
+                    {{ $edu['institution'] ?? '' }}
+                </strong>
+                @if(!empty($edu['studyType']) || !empty($edu['area']))
+                    — {{ trim(($edu['studyType'] ?? '') . ' ' . ($edu['area'] ?? '')) }}
+                @endif
+
+                <div class="muted">
+                    {{ $edu['startDate'] ?? '' }}
+                    @if(!empty($edu['endDate'])) – {{ $edu['endDate'] }} @endif
+                </div>
+
+                @if(!empty($edu['score']))
+                    <div class="muted">Score: {{ $edu['score'] }}</div>
+                @endif
+            </div>
+        @endforeach
+    @endif
+
+
     @if(!empty($resume['work']))
         <h2>Experience</h2>
 
