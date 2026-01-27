@@ -95,14 +95,15 @@ class Resume
 			if (!empty($work)) {
 				$keepIds = [];
 
-				foreach ($work as $item) {
+				foreach ($work as $i => $item) {
 					$data = [
-						'resume_id'  => $resume->id,
-						'name'       => $item['name'] ?? '',
-						'position'   => $item['position'] ?? null,
-						'startDate'  => $item['startDate'] ?? null,
-						'endDate'    => $item['endDate'] ?? null,
-						'summary'    => $item['summary'] ?? null,
+						'resume_id'  	=> $resume->id,
+						'name'       	=> $item['name'] ?? '',
+						'position'   	=> $item['position'] ?? null,
+						'startDate'  	=> $item['startDate'] ?? null,
+						'endDate'    	=> $item['endDate'] ?? null,
+						'summary'    	=> $item['summary'] ?? null,
+						'sort_order' 	=> $i
 					];
 
 					if (!empty($item['id'])) {
@@ -121,14 +122,15 @@ class Resume
 			}
 
 			if (!empty($education)) {
-				foreach ($education as $item) {
+				foreach ($education as $i => $item) {
 					$data = [
-						'resume_id' => $resume->id,
-						'institution' => $item['institution'],
-						'area' => $item['area'],
-						'studyType' => $item['studyType'],
-						'startDate' => $item['startDate'],
-						'endDate' => $item['endDate'],
+						'resume_id' 	=> $resume->id,
+						'institution' 	=> $item['institution'],
+						'area' 			=> $item['area'],
+						'studyType' 	=> $item['studyType'],
+						'startDate' 	=> $item['startDate'],
+						'endDate' 		=> $item['endDate'],
+						'sort_order' 	=> $i
 					];
 					if (!empty($item['id'])) {
 						$savedEducation = $this->education->updateById($resume->id, (int) $item['id'], $data);
@@ -141,11 +143,12 @@ class Resume
 			}
 
 			if (!empty($skills)) {
-				foreach ($skills as $item) {
+				foreach ($skills as $i => $item) {
 					$data = [
-						'level' => $item['level'],
-						'resume_id' => $resume->id,
-						'name' => $item['name']
+						'level' 		=> $item['level'],
+						'resume_id' 	=> $resume->id,
+						'name' 			=> $item['name'],
+						'sort_order' 	=> $i
 					];
 					if (!empty($item['id'])) {
 						$savedSkills = $this->skills->updateById($resume->id, (int) $item['id'], $data);
@@ -158,11 +161,12 @@ class Resume
 			}
 
 			if (!empty($references)) {
-				foreach ($references as $item) {
+				foreach ($references as $i => $item) {
 					$data = [
-						'reference' => $item['reference'],
-						'resume_id' => $resume->id,
-						'name' => $item['name']
+						'reference' 	=> $item['reference'],
+						'resume_id' 	=> $resume->id,
+						'name' 			=> $item['name'],
+						'sort_order' 	=> $i
 					];
 					if (!empty($item['id'])) {
 						$savedReferences = $this->reference->updateById($resume->id, (int) $item['id'], $data);

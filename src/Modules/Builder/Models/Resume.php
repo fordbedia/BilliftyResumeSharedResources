@@ -51,7 +51,15 @@ class Resume extends Model
 
 	public static function relationships()
 	{
-		return ['basic', 'basic.profile', 'education', 'work', 'skills', 'reference', 'template'];
+		return [
+			'basic',
+			'basic.profile',
+			'education' => fn ($q) => $q->orderBy('sort_order'),
+			'work' => fn ($q) => $q->orderBy('sort_order'),
+			'skills' => fn ($q) => $q->orderBy('sort_order'),
+			'reference' => fn ($q) => $q->orderBy('sort_order'),
+			'template'
+		];
 	}
 
 	protected static function booted(): void

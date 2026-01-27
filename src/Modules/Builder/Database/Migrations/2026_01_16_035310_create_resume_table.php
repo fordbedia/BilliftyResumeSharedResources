@@ -68,6 +68,7 @@ return new class extends Migration
 			$table->string('endDate')->nullable();
 			$table->text('summary')->nullable();
 			$table->text('highlights')->nullable();
+			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
             $table->timestamps();
         });
@@ -77,6 +78,7 @@ return new class extends Migration
 			$table->unsignedBigInteger('resume_id');
 			$table->string('name');
 			$table->string('level')->nullable();
+			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
             $table->timestamps();
         });
@@ -90,6 +92,7 @@ return new class extends Migration
 			$table->string('startDate')->nullable();
 			$table->string('endDate')->nullable();
 			$table->float('score')->nullable();
+			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
             $table->timestamps();
         });
@@ -99,6 +102,7 @@ return new class extends Migration
 			$table->unsignedBigInteger('resume_id');
 			$table->string('name');
 			$table->text('reference');
+			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
             $table->timestamps();
         });

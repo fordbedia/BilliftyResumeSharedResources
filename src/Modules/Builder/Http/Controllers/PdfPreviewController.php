@@ -13,7 +13,7 @@ class PdfPreviewController extends Controller
     public function show(Request $request, int $resumeId)
     {
         // Load your resume (adjust query as needed)
-        $resume = Resume::query()->findOrFail($resumeId);
+        $resume = Resume::query()->findOrFail($resumeId)->loadMissing(Resume::relationships());
 
 		$resumeArray = (new ResumeJsonResource($resume))->resolve();
 

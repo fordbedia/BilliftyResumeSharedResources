@@ -15,7 +15,7 @@ class ResumeBuilderController extends Controller
 {
 	public function resume(int $id, ResumeRepository $resumes)
 	{
-		return $resumes->find($id)->loadMissing(ResumeModel::relationships());
+		return $resumes->find($id);
 	}
 
 	public function update(int $id, ResumeFinalizeRequest $request, ResumeRepository $resumes)
