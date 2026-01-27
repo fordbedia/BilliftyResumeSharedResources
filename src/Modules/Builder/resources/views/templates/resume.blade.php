@@ -33,7 +33,7 @@
     </div>
 
     @if(!empty($basics['summary']))
-        <div class="row">{{ $basics['summary'] }}</div>
+        <div class="row">{!! $basics['summary'] !!}</div>
     @endif
 
     @if(!empty($basics['profiles']))
@@ -51,12 +51,12 @@
     @if(!empty($resume['skills']))
         <h2>Skills</h2>
 
-        <div class="row">
+        <div class="row" style="padding-top: 12px;">
             @foreach($resume['skills'] as $skill)
                 <span class="pill">
                     {{ $skill['name'] ?? $skill }}
                     @if(!empty($skill['level']))
-                        <span class="muted"> ({{ $skill['level'] }})</span>
+                        <span class="muted" style="margin-bottom: 12px;"> ({{ $skill['level'] }})</span>
                     @endif
                 </span>
             @endforeach
@@ -102,7 +102,7 @@
                 </div>
 
                 @if(!empty($work['summary']))
-                    <div>{{ $work['summary'] }}</div>
+                    <div>{!! $work['summary'] !!}</div>
                 @endif
 
                 @if(!empty($work['highlights']))
@@ -120,8 +120,11 @@
 		<h2>References</h2>
 
 		@foreach($resume['references'] as $r)
-			<div class="row">
-				<p>{{$r['name']}} - <br />{{$r['reference']}}</p>
+			<div class="row" style="padding-top: 12px;">
+				<strong>{{$r['name']}}</strong>
+				<div style="padding-top: 12px;">
+					{!! $r['reference'] !!}
+				</div>
 			</div>
 		@endforeach
 	@endif

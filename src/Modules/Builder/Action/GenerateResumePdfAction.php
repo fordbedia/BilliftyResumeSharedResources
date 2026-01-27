@@ -17,7 +17,7 @@ class GenerateResumePdfAction
      */
     public function handle(
         array $resume,
-        string $templateView = 'builder::templates.resume',
+        string $templateView = 'builder::resume',
         string $disk = 'public'
     ): array {
         $pdf = Pdf::loadView($templateView, ['resume' => $resume])

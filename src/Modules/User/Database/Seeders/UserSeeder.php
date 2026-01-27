@@ -17,7 +17,8 @@ class UserSeeder extends MakeSeeder
 		User::create([
 			'name' => 'Ed Bedia',
 			'email' => 'me@fordbedia.com',
-			'password' => bcrypt('123456')
+			'password' => bcrypt('123456'),
+			'is_admin' => true
 		]);
     }
 

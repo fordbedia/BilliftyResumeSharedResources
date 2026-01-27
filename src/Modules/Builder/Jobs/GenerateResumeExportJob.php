@@ -42,7 +42,7 @@ class GenerateResumeExportJob implements ShouldQueue
                 // Render a SIMPLE, standalone HTML template first
                 $result = $pdfAction->handle(
 					resume: $resumeArray,
-					templateView: 'builder::templates.resume',
+					templateView: 'builder::resume',
 					disk: $disk
 				);
 

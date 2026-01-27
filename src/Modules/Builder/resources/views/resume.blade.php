@@ -91,6 +91,15 @@
 		.text-left {
 			text-align: left;
 		}
+		ul {
+			margin: 6px 0 0 18px;
+			padding: 0;
+		}
+
+		li {
+			margin-bottom: 4px;
+		}
+
 
 		/*@page {*/
 		/*	!* A4 portrait with normal margins *!*/
@@ -102,7 +111,7 @@
 			margin: 0;
 			padding: 0;
 			font-family: DejaVu Sans, sans-serif;
-			font-size: 11px;
+			font-size: 14px;
 		}
 
 		.invoice-page {

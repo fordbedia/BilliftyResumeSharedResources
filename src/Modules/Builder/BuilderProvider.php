@@ -2,9 +2,12 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\DevAutoLogin;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\EnsureAdmin;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\EloquentResumeRepositoryProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 
 class BuilderProvider extends ServiceProvider
 {
@@ -23,8 +26,12 @@ class BuilderProvider extends ServiceProvider
 		}
 	}
 
-	public function boot(): void
+	public function boot(Router $router): void
     {
+		// register alias
+		$router->aliasMiddleware('builder.admin', EnsureAdmin::class);
+		$router->aliasMiddleware('builder.dev-login', DevAutoLogin::class);
+
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);
         }
