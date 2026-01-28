@@ -4,69 +4,6 @@
 
 @endphp
 
-@php
-    function fmt_date($value) {
-        if (!$value) return null;
-        $ts = strtotime($value);
-        if (!$ts) return $value;
-        return date('F Y', $ts);
-    }
-
-    function fmt_range($start, $end) {
-        $s = fmt_date($start);
-        $e = $end ? fmt_date($end) : 'Present';
-        if (!$s && !$end) return null;
-        if (!$s) return $e;
-        return $s . ' - ' . $e;
-    }
-
-    $basics = data_get($resume, 'basics', []);
-    $location = data_get($basics, 'location', []);
-    $profiles = collect(data_get($basics, 'profiles', []));
-    $work = collect(data_get($resume, 'work', []));
-    $education = collect(data_get($resume, 'education', []));
-    $references = collect(data_get($resume, 'references', []));
-    $skills = collect(data_get($resume, 'skills', []));
-
-    // Name split for stacked look
-    $fullName = (string) data_get($basics, 'name', '');
-    $parts = preg_split('/\s+/', trim($fullName)) ?: [];
-    $first = $parts[0] ?? $fullName;
-    $middle = $parts[1] ?? '';
-    $last = $parts[2] ?? '';
-
-    if (count($parts) === 2) { $first = $parts[0]; $middle = ''; $last = $parts[1]; }
-    if (count($parts) >= 4) { $first = $parts[0]; $middle = $parts[1]; $last = implode(' ', array_slice($parts, 2)); }
-
-    $city = data_get($location, 'city');
-    $region = data_get($location, 'region');
-    $postal = data_get($location, 'postalCode');
-    $addressLine = trim(collect([$city, $region])->filter()->join(', ') . ($postal ? " {$postal}" : ''));
-
-    $urls = collect()
-        ->when(data_get($basics, 'url'), fn($c) => $c->push(['label' => 'WWW', 'url' => data_get($basics, 'url')]))
-        ->merge(
-            $profiles->map(function ($p) {
-                $u = data_get($p, 'url');
-                if (!$u) return null;
-                return ['label' => strtolower((string) data_get($p, 'network', 'WWW')), 'url' => $u];
-            })->filter()->values()
-        )->values();
-
-    // Normalize skills
-    $skillLines = collect();
-    if ($skills->isNotEmpty() && is_array($skills->first())) {
-        foreach ($skills as $s) {
-            $name = data_get($s, 'name');
-            if ($name) $skillLines->push($name);
-            else foreach ((array) data_get($s, 'keywords', []) as $kw) $skillLines->push($kw);
-        }
-    } else {
-        foreach ($skills as $s) $skillLines->push($s);
-    }
-    $skillLines = $skillLines->filter()->unique()->values();
-@endphp
-
 @extends('builder::main')
 
 @section('content')
@@ -77,6 +14,19 @@
 
 @section('globalcss')
 	<style>
+		:root{
+		  --foreground: 0 0% 10%;
+		  --background: 0 0% 100%;
+		  --muted-foreground: 0 0% 35%;
+		  --primary: 222 89% 55%;
+		}
+
+		body{
+		  color: #111;                  /* hard fallback */
+		  background: #fff;
+		  font-family: DejaVu Sans, sans-serif;
+		}
+
 		body, .page, .invoice-root {
 			font-family: "DejaVu Sans", sans-serif !important;
 		}

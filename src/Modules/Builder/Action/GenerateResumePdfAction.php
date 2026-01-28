@@ -21,6 +21,8 @@ class GenerateResumePdfAction
         string $disk = 'public'
     ): array {
         $pdf = Pdf::loadView($templateView, ['resume' => $resume])
+			->setOption('isRemoteEnabled', true)
+  			->setOption('isHtml5ParserEnabled', true)
             ->setPaper('a4', 'portrait');
 
         $bytes = $pdf->output();

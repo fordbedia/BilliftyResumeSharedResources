@@ -8,6 +8,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\Re
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeWorkController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeBuilderController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeController;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeExportController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumePdfController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\SubmitResumeController;
 use Illuminate\Http\Request;
@@ -63,7 +64,14 @@ Route::prefix('v1')->group(function () {
 		Route::get('{id}/export-status', [ResumeController::class, 'exportStatus']); // polling
 		Route::get('{id}/export-download', [ResumeController::class, 'exportDownload']); // actual download
 
+		Route::post('/{resume}/export/email', [ResumeExportController::class, 'sendEmail']);
 
+		// Optional: check status (so your UI can show queued/processing/sent/failed)
+		Route::get('/{resume}/export/email/status', [ResumeExportController::class, 'emailStatus']);
+
+		// ----------------------------------------------------------------------------
+		// DO NOT ADD ANY ROUTES AFTER THIS LINE.
+		// ----------------------------------------------------------------------------
 		Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
 		Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);
 		Route::apiResource('/', ResumeController::class);

@@ -8,7 +8,10 @@
     "psr-4": {
       "BilliftyResumeSDK\\SharedResources\\": "src/",
        "BilliftyResumeSDK\\SharedResources\\TestCase\\": "TestCase/"
-    }
+    },
+    "files": [
+      "src/Modules/Builder/Support/helpers.php"
+    ]
   },
   "extra": {
     "laravel": {

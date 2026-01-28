@@ -35,5 +35,10 @@ class BuilderProvider extends ServiceProvider
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);
         }
+
+		$helpers = base_path('../shared-resources/src/Support/helpers.php');
+		if (file_exists($helpers)) {
+			require_once $helpers;
+		}
     }
 }

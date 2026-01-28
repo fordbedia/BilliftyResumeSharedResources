@@ -21,6 +21,8 @@ return new class extends Migration
 			$table->string('export_disk')->nullable();        // public|s3
 			$table->string('export_path')->nullable();        // resume_pdfs/...
 			$table->text('export_error')->nullable();
+			$table->string('email_export_status')->nullable(); // queued|processing|sent|failed
+    		$table->text('email_export_error')->nullable();
 			$table->timestamp('export_requested_at')->nullable();
 			$table->timestamp('export_ready_at')->nullable();
 
