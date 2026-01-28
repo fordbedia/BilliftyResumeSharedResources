@@ -23,6 +23,31 @@ class GenerateResumeDocxAction
         $phpWord = new PhpWord();
         $section = $phpWord->addSection();
 
+        // ---- Styles to remove the huge gaps around bullets ----
+        $phpWord->addParagraphStyle('resume.list.item', [
+            'spaceBefore' => 0,
+            'spaceAfter'  => 0,
+            'spacing'     => 120, // line spacing (twips). ~1.0–1.15 line
+        ]);
+
+        $phpWord->addParagraphStyle('resume.section.title', [
+            'spaceBefore' => 120,
+            'spaceAfter'  => 60,
+        ]);
+
+        // Used as a "blank line" spacer after a section
+        $phpWord->addParagraphStyle('resume.block.after', [
+            'spaceBefore' => 0,
+            'spaceAfter'  => 120,
+        ]);
+
+        // NEW: paragraph style for normal text blocks (summary, paragraphs)
+        $phpWord->addParagraphStyle('resume.paragraph', [
+            'spaceBefore' => 0,
+            'spaceAfter'  => 120,
+            'spacing'     => 240, // slightly looser than list items; tweak if you want
+        ]);
+
         $basics = $resume['basics'] ?? [];
 
         // Header
@@ -46,16 +71,16 @@ class GenerateResumeDocxAction
 
         // Summary (supports basic HTML)
         if (!empty($basics['summary'])) {
+            // FIX: inline-only HTML is now rendered as ONE paragraph
             $this->addHtmlBlock($section, (string) $basics['summary'], ['size' => 11]);
-            $section->addTextBreak(1);
         }
 
         // Skills
         if (!empty($resume['skills']) && is_array($resume['skills'])) {
-            $section->addText('Skills', ['bold' => true, 'size' => 14]);
+            $section->addText('Skills', ['bold' => true, 'size' => 14], 'resume.section.title');
 
             foreach ($resume['skills'] as $skill) {
-                $name = is_array($skill) ? ($skill['name'] ?? null) : $skill;
+                $name  = is_array($skill) ? ($skill['name'] ?? null) : $skill;
                 $level = is_array($skill) ? ($skill['level'] ?? null) : null;
 
                 $line = trim((string) $name);
@@ -67,23 +92,25 @@ class GenerateResumeDocxAction
                     $this->plain($line),
                     0,
                     ['size' => 11],
-                    ListItem::TYPE_BULLET_FILLED
+                    ListItem::TYPE_BULLET_FILLED,
+                    'resume.list.item'
                 );
             }
 
-            $section->addTextBreak(1);
+            // spacer after section
+            $section->addText('', [], 'resume.block.after');
         }
 
         // Education
         if (!empty($resume['education']) && is_array($resume['education'])) {
-            $section->addText('Education', ['bold' => true, 'size' => 14]);
+            $section->addText('Education', ['bold' => true, 'size' => 14], 'resume.section.title');
 
             foreach ($resume['education'] as $edu) {
                 if (!is_array($edu)) continue;
 
                 $institution = $this->plain($edu['institution'] ?? '');
-                $studyType = $this->plain($edu['studyType'] ?? '');
-                $area = $this->plain($edu['area'] ?? '');
+                $studyType   = $this->plain($edu['studyType'] ?? '');
+                $area        = $this->plain($edu['area'] ?? '');
 
                 $line = trim($institution . ' — ' . trim($studyType . ' ' . $area), " —");
                 if ($line !== '') {
@@ -91,7 +118,7 @@ class GenerateResumeDocxAction
                 }
 
                 $start = $this->plain($edu['startDate'] ?? '');
-                $end = $this->plain($edu['endDate'] ?? '');
+                $end   = $this->plain($edu['endDate'] ?? '');
                 $dates = trim($start . ' - ' . ($end ?: 'Present'), ' -');
                 if ($dates !== '') {
                     $section->addText($dates, ['italic' => true, 'size' => 10]);
@@ -107,7 +134,7 @@ class GenerateResumeDocxAction
 
         // Work (supports basic HTML: p/br/strong/em/u/ul/ol/li)
         if (!empty($resume['work']) && is_array($resume['work'])) {
-            $section->addText('Experience', ['bold' => true, 'size' => 14]);
+            $section->addText('Experience', ['bold' => true, 'size' => 14], 'resume.section.title');
 
             foreach ($resume['work'] as $work) {
                 if (!is_array($work)) continue;
@@ -128,16 +155,21 @@ class GenerateResumeDocxAction
                 }
 
                 if (!empty($work['summary'])) {
-                    // This is the key: convert HTML-ish summary into Word content
                     $this->addHtmlBlock($section, (string) $work['summary'], ['size' => 11]);
                 }
 
-                // Optional highlights (array) => bullet list
                 if (!empty($work['highlights']) && is_array($work['highlights'])) {
                     foreach ($work['highlights'] as $h) {
                         $hText = $this->plain((string) $h);
                         if ($hText === '') continue;
-                        $section->addListItem($hText, 0, ['size' => 11], ListItem::TYPE_BULLET_FILLED);
+
+                        $section->addListItem(
+                            $hText,
+                            0,
+                            ['size' => 11],
+                            ListItem::TYPE_BULLET_FILLED,
+                            'resume.list.item'
+                        );
                     }
                 }
 
@@ -147,7 +179,7 @@ class GenerateResumeDocxAction
 
         // References
         if (!empty($resume['references']) && is_array($resume['references'])) {
-            $section->addText('References', ['bold' => true, 'size' => 14]);
+            $section->addText('References', ['bold' => true, 'size' => 14], 'resume.section.title');
 
             foreach ($resume['references'] as $r) {
                 if (!is_array($r)) continue;
@@ -188,23 +220,26 @@ class GenerateResumeDocxAction
     /**
      * Convert a HTML-ish string into Word content:
      * Supports: <p>, <br>, <b>/<strong>, <i>/<em>, <u>, <ul>/<ol>/<li>
-     * Ignores other tags but keeps their text content.
+     *
+     * IMPORTANT FIX:
+     * If the HTML is inline-only (no p/div/ul/ol/li), render it as ONE paragraph
+     * so it doesn't break into random lines.
      */
     private function addHtmlBlock(Section $section, string $html, array $baseTextStyle = ['size' => 11]): void
     {
         $html = trim($html);
         if ($html === '') return;
 
-        // Normalize common "editor" outputs
         $html = str_replace(["\r\n", "\r"], "\n", $html);
 
-        // Ensure it can be parsed by DOMDocument
         $wrapped = '<div>' . $html . '</div>';
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
-        // Keep it tolerant: no implied html/body, preserve UTF-8-ish content
-        $dom->loadHTML(mb_convert_encoding($wrapped, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $dom->loadHTML(
+            mb_convert_encoding($wrapped, 'HTML-ENTITIES', 'UTF-8'),
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
         libxml_clear_errors();
 
         $root = $dom->getElementsByTagName('div')->item(0);
@@ -213,13 +248,46 @@ class GenerateResumeDocxAction
             return;
         }
 
+        // If there are no block-level tags, render it as one paragraph TextRun
+        if (!$this->hasBlockLevelChildren($root)) {
+            $run = $section->addTextRun('resume.paragraph');
+            $this->renderInlineIntoRun($run, $root, $baseTextStyle, [
+                'bold' => false,
+                'italic' => false,
+                'underline' => false,
+            ]);
+            return;
+        }
+
+        // Otherwise use normal block rendering
         $this->renderNodeChildren($section, $root, $baseTextStyle, 0, null);
+
+        // Add consistent spacing after the block
+        $section->addText('', [], 'resume.block.after');
     }
 
     /**
-     * Render children of a DOM node into the section.
-     * $listType: null | 'ul' | 'ol'
+     * Detect block-level tags anywhere inside a node.
+     * If present, we should render with paragraph/list logic instead of a single TextRun.
      */
+    private function hasBlockLevelChildren(\DOMNode $node): bool
+    {
+        foreach ($node->childNodes as $child) {
+            if (!($child instanceof \DOMElement)) continue;
+
+            $tag = strtolower($child->tagName);
+            if (in_array($tag, ['p', 'div', 'ul', 'ol', 'li'], true)) {
+                return true;
+            }
+
+            if ($this->hasBlockLevelChildren($child)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function renderNodeChildren(
         Section $section,
         \DOMNode $node,
@@ -231,7 +299,8 @@ class GenerateResumeDocxAction
             if ($child->nodeType === XML_TEXT_NODE) {
                 $text = $this->plain($child->nodeValue ?? '');
                 if ($text !== '') {
-                    $section->addText($text, $baseTextStyle);
+                    // IMPORTANT: keep block rendering behavior for real block content
+                    $section->addText($text, $baseTextStyle, 'resume.paragraph');
                 }
                 continue;
             }
@@ -246,29 +315,23 @@ class GenerateResumeDocxAction
             }
 
             if ($tag === 'p' || $tag === 'div') {
-                // Paragraph: build a run for inline styles inside it
-                $run = $section->addTextRun();
+                $run = $section->addTextRun('resume.paragraph');
                 $this->renderInlineIntoRun($run, $child, $baseTextStyle, ['bold' => false, 'italic' => false, 'underline' => false]);
-                $section->addTextBreak(1);
                 continue;
             }
 
             if ($tag === 'ul' || $tag === 'ol') {
                 $this->renderList($section, $child, $baseTextStyle, $listLevel, $tag);
-                $section->addTextBreak(1);
                 continue;
             }
 
             if ($tag === 'li') {
-                // If we got a bare li (rare), render as bullet by default
                 $this->renderListItem($section, $child, $baseTextStyle, $listLevel, $listType ?: 'ul');
                 continue;
             }
 
-            // Fallback: render its text content as a paragraph/run
-            $run = $section->addTextRun();
+            $run = $section->addTextRun('resume.paragraph');
             $this->renderInlineIntoRun($run, $child, $baseTextStyle, ['bold' => false, 'italic' => false, 'underline' => false]);
-            $section->addTextBreak(1);
         }
     }
 
@@ -277,7 +340,7 @@ class GenerateResumeDocxAction
         \DOMElement $listEl,
         array $baseTextStyle,
         int $level,
-        string $type // 'ul'|'ol'
+        string $type
     ): void {
         foreach ($listEl->childNodes as $child) {
             if (!($child instanceof \DOMElement)) continue;
@@ -292,43 +355,37 @@ class GenerateResumeDocxAction
         \DOMElement $li,
         array $baseTextStyle,
         int $level,
-        string $type // 'ul'|'ol'
+        string $type
     ): void {
-        // Build the "main line" of the li excluding nested ul/ol
-        $textParts = [];
         $inlineHtml = '';
 
         foreach ($li->childNodes as $child) {
             if ($child instanceof \DOMElement) {
                 $t = strtolower($child->tagName);
                 if ($t === 'ul' || $t === 'ol') {
-                    continue; // handled after
+                    continue;
                 }
             }
 
-            // We want to preserve inline formatting, so gather HTML-ish for inline rendering
             $inlineHtml .= $li->ownerDocument->saveHTML($child);
         }
 
         $inlineHtml = trim($inlineHtml);
 
-        // If no inline html, fallback plain text
-        $plainText = $inlineHtml !== '' ? null : $this->plain($li->textContent ?? '');
-
-        // Choose list type
-        $listStyleType = $type === 'ol' ? ListItem::TYPE_NUMBER : ListItem::TYPE_BULLET_FILLED;
+        $listStyleType = $type === 'ol'
+            ? ListItem::TYPE_NUMBER
+            : ListItem::TYPE_BULLET_FILLED;
 
         if ($inlineHtml !== '') {
-            // Create list item as a TextRun so we can apply bold/italic/underline inline
-            $run = $section->addListItemRun($level, $listStyleType);
+            $run = $section->addListItemRun($level, $listStyleType, 'resume.list.item');
             $this->renderInlineHtmlStringIntoRun($run, $inlineHtml, $baseTextStyle);
         } else {
+            $plainText = $this->plain($li->textContent ?? '');
             if ($plainText !== '') {
-                $section->addListItem($plainText, $level, $baseTextStyle, $listStyleType);
+                $section->addListItem($plainText, $level, $baseTextStyle, $listStyleType, 'resume.list.item');
             }
         }
 
-        // Render nested lists (if any)
         foreach ($li->childNodes as $child) {
             if (!($child instanceof \DOMElement)) continue;
 
@@ -345,7 +402,10 @@ class GenerateResumeDocxAction
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
         libxml_use_internal_errors(true);
-        $dom->loadHTML(mb_convert_encoding($wrapped, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $dom->loadHTML(
+            mb_convert_encoding($wrapped, 'HTML-ENTITIES', 'UTF-8'),
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
         libxml_clear_errors();
 
         $root = $dom->getElementsByTagName('span')->item(0);
@@ -357,14 +417,11 @@ class GenerateResumeDocxAction
         $this->renderInlineIntoRun($run, $root, $baseTextStyle, ['bold' => false, 'italic' => false, 'underline' => false]);
     }
 
-    /**
-     * Render inline nodes (text + <b>/<i>/<u> + <br>) into a TextRun.
-     */
     private function renderInlineIntoRun(
         TextRun $run,
         \DOMNode $node,
         array $baseTextStyle,
-        array $flags // ['bold'=>bool,'italic'=>bool,'underline'=>bool]
+        array $flags
     ): void {
         foreach ($node->childNodes as $child) {
             if ($child->nodeType === XML_TEXT_NODE) {
@@ -377,7 +434,6 @@ class GenerateResumeDocxAction
                     'underline' => ($flags['underline'] ?? false) ? 'single' : null,
                 ];
 
-                // Remove null underline to avoid odd PhpWord behavior
                 if (empty($style['underline'])) unset($style['underline']);
 
                 $run->addText($text, $style);
@@ -393,7 +449,6 @@ class GenerateResumeDocxAction
                 continue;
             }
 
-            // If inline list somehow appears inside a run, just render its text
             if ($tag === 'ul' || $tag === 'ol') {
                 $txt = $this->plain($child->textContent ?? '');
                 if ($txt !== '') {
@@ -408,7 +463,6 @@ class GenerateResumeDocxAction
             if ($tag === 'i' || $tag === 'em') $nextFlags['italic'] = true;
             if ($tag === 'u') $nextFlags['underline'] = true;
 
-            // p/div inside inline: treat as newline blocks
             if ($tag === 'p' || $tag === 'div') {
                 $this->renderInlineIntoRun($run, $child, $baseTextStyle, $nextFlags);
                 $run->addTextBreak(1);
