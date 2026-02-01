@@ -1,8 +1,9 @@
 <?php
 
-namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
+namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Providers;
 
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 use Illuminate\Database\Eloquent\Model;
 
 class Work extends Model

@@ -1,226 +1,366 @@
-<div class="moderno--theme invoice-root scheme cat">
-  <div class="page">
+{{-- shared-resources/src/Modules/Builder/resources/views/templates/edbedia-green.blade.php --}}
+@php
+    // Expecting $resume shaped like ResumeJsonResource output:
+    // $resume['basics'], $resume['work'], $resume['education'], $resume['skills'], $resume['references']
 
-	<table class="dompdf-table">
-		<tr class="dompdf-col">
-			<td class="left">
-				<div class="name">
-					<span>{{ $first }}</span>
-					@if($middle)<span>{{ $middle }}</span>@endif
-					@if($last)<span>{{ $last }}</span>@endif
-				</div>
+    $basics = data_get($resume ?? [], 'basics', []);
+    $location = data_get($basics, 'location', []);
+    $profiles = data_get($basics, 'profiles', []);
 
-				<div class="contact">
-					@if($addressLine)
-						<div class="row">{{ $addressLine }}</div>
-					@endif
+    $skills = data_get($resume ?? [], 'skills', []);
+    $work = data_get($resume ?? [], 'work', []);
+    $education = data_get($resume ?? [], 'education', []);
+    $references = data_get($resume ?? [], 'references', []);
 
-					@if(data_get($basics, 'email'))
-						<div class="row">{{ data_get($basics, 'email') }}</div>
-					@endif
+    // Split name like the PDF: first line = first token, second line = the rest
+    $fullName = trim((string) data_get($basics, 'name', ''));
+    $nameParts = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $nameFirst = strtoupper($nameParts[0] ?? $fullName);
+    $nameRest = strtoupper(implode(' ', array_slice($nameParts, 1)));
 
-					@if(data_get($basics, 'phone'))
-						<div class="row">{{ data_get($basics, 'phone') }}</div>
-					@endif
+    // Contact lines (match the PDF order)
+    $contactLine1 = trim(implode(' ', array_filter([
+        data_get($location, 'city'),
+        data_get($location, 'region'),
+        data_get($location, 'postalCode'),
+    ])));
 
-					@foreach($urls as $u)
-						<div class="row">
-							<span class="muted">{{ data_get($u, 'label', 'www') }}:</span>
-							{{ data_get($u, 'url') }}
-						</div>
-					@endforeach
-				</div>
+    $email = (string) data_get($basics, 'email');
+    $phone = (string) data_get($basics, 'phone');
 
-				@if(data_get($basics, 'summary'))
-					<div class="summary">{{ data_get($basics, 'summary') }}</div>
-				@endif
+    $url = (string) data_get($basics, 'url');
+    $profileUrl = (string) data_get($profiles, '0.url');
 
-				@if($skillLines->isNotEmpty())
-					<div class="section">
-						<div class="section-title">Skills</div>
-						<ul class="skill-list">
-							@foreach($skillLines as $skill)
-								<li>{{ $skill }}</li>
+    $label = (string) data_get($basics, 'label');
+    $summary = (string) data_get($basics, 'summary');
+
+    // Small helper: show date range exactly as stored
+    $fmtRange = function ($start, $end) {
+        $start = trim((string) $start);
+        $end = trim((string) $end);
+        if ($start && $end) return $start . ' - ' . $end;
+        return $start ?: $end;
+    };
+@endphp
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        /* Dompdf-safe: no flex/grid, keep it table-based */
+        @page { margin: 0 28px 28px 28px; }
+
+        body {
+            font-family: DejaVu Sans, Arial, sans-serif;
+            color: #2b2b2b;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .green { color: #5f8b70; }
+        .muted { color: #6b6b6b; }
+
+        .name-font { font-family: DejaVu Serif, Georgia, serif; }
+        .title-font { font-family: DejaVu Serif, Georgia, serif; }
+
+        .h-name-1 {
+            font-size: 58px;
+            line-height: 0.92;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0;
+            padding: 0;
+        }
+        .h-name-2 {
+            font-size: 58px;
+            line-height: 0.92;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .contact {
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: left;
+        }
+        .contact .line { margin: 0; padding: 0; }
+
+        .summary-band {
+            background: #eeeeee;
+            padding: 14px 16px;
+            margin-top: 12px;
+        }
+        .summary-text {
+            font-size: 13px;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        .layout {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .layout td { vertical-align: top; }
+
+        .sidebar {
+            background: #5f8b70;
+            color: #ffffff;
+            padding: 16px 14px;
+        }
+
+        .section-title-sidebar {
+            font-family: DejaVu Serif, Georgia, serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            padding: 0;
+        }
+
+        .section-title-main {
+            font-family: DejaVu Serif, Georgia, serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #5f8b70;
+            margin: 0 0 10px 0;
+            padding: 0;
+        }
+		.skills {
+
+		}
+        .skills-ul {
+            margin: 0;
+            padding: 0 0 0 16px; /* bullet indent */
+        }
+        .skills-ul li {
+            margin: 0 0 0 0;
+            padding: 8px 0 0 0;
+			break-inside: avoid;
+        }
+
+        .divider {
+            border-top: 2px solid #ffffff;
+            margin: 14px 0 16px 0;
+            height: 0;
+            line-height: 0;
+        }
+
+        .edu-item { margin: 0 0 18px 0; }
+        .edu-line1 { font-size: 16px; font-weight: 700; margin: 0 0 4px 0; }
+        .edu-line2 { font-size: 15px; font-weight: 700; text-transform: uppercase; margin: 0 0 6px 0; }
+        .edu-line3 { font-size: 13px; margin: 0; }
+
+        .main {
+            padding: 16px 16px 16px 18px;
+        }
+
+        .job-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-bottom: 26px;
+        }
+        .job-table td { vertical-align: top; }
+
+        .job-dates {
+            width: 26%;
+            font-size: 13px;
+            color: #6b6b6b;
+            padding-right: 10px;
+        }
+
+        .job-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 2px 0;
+        }
+        .job-company {
+            font-size: 13px;
+            font-style: italic;
+            color: #6b6b6b;
+            margin: 0 0 10px 0;
+        }
+
+        .bullets {
+            margin: 0;
+            padding: 0 0 0 18px;
+            color: #555555;
+        }
+        .bullets li {
+            margin: 0 0 10px 0;
+            padding: 0;
+        }
+
+        .refs-item {
+            margin: 0 0 14px 0;
+            padding: 0;
+        }
+        .ref-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+        }
+        .ref-text {
+            margin: 0;
+            color: #555555;
+            white-space: pre-line; /* dompdf supports this */
+        }
+    </style>
+</head>
+<body>
+
+    {{-- HEADER (name left, contact right) --}}
+    <table class="layout">
+        <tr>
+            <td style="width: 70%; padding-right: 16px;">
+                <div class="name-font green">
+                    <p class="h-name-1">{{ $nameFirst }}</p>
+                    <p class="h-name-2">{{ $nameRest }}</p>
+                </div>
+            </td>
+            <td style="width: 30%;">
+                <div class="contact green">
+                    @if($contactLine1)
+                        <p class="line">{{ $contactLine1 }}</p>
+                    @endif
+                    @if($email)
+                        <p class="line">{{ $email }}</p>
+                    @endif
+                    @if($phone)
+                        <p class="line">{{ $phone }}</p>
+                    @endif
+                    @if($url)
+                        <p class="line">WWW: {{ $url }}</p>
+                    @endif
+                    @if($profileUrl)
+                        <p class="line">WWW: {{ $profileUrl }}</p>
+                    @endif
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    {{-- SUMMARY BAND --}}
+    <div class="summary-band">
+        <p class="summary-text">
+            @if($label)
+                <span style="font-weight:700;">{{ $label }}</span>
+                @if($summary) — @endif
+            @endif
+            {!! $summary !!}
+        </p>
+    </div>
+
+    {{-- BODY: LEFT GREEN SIDEBAR + RIGHT MAIN --}}
+    <table class="layout" style="margin-top: 0;">
+        <tr>
+            {{-- SIDEBAR --}}
+            <td class="sidebar" style="width: 34%;">
+                <p class="section-title-sidebar">Skills</p>
+
+                @if(!empty($skills))
+					<div class="skills">
+						<ul class="skills-ul">
+							@foreach($skills as $s)
+								@php $skillName = (string) data_get($s, 'name'); @endphp
+								@if($skillName !== '')
+									<li>{{ $skillName }}</li>
+								@endif
 							@endforeach
 						</ul>
 					</div>
-				@endif
-			</td>
+                @endif
 
-			<td class="right">
-				@if($work->isNotEmpty())
-					<div class="section">
-						<div class="section-title">Work history</div>
+                <div class="divider"></div>
 
-						@foreach($work as $job)
-							@php
-								$position = data_get($job, 'position');
-								$company = data_get($job, 'name') ?: data_get($job, 'company');
-								$locationText = data_get($job, 'location');
-								$range = fmt_range(data_get($job, 'startDate'), data_get($job, 'endDate'));
-								$highlights = collect(data_get($job, 'highlights', []))->filter()->values();
-							@endphp
+                <p class="section-title-sidebar">Education</p>
 
-							<div class="job">
-								<div class="job-title">{{ $position ?: $company }}</div>
+                @foreach($education as $e)
+                    @php
+                        $institution = (string) data_get($e, 'institution');
+                        $area = (string) data_get($e, 'area');
+                        $studyType = (string) data_get($e, 'studyType');
+                        $endDate = (string) data_get($e, 'endDate');
+                        $startDate = (string) data_get($e, 'startDate');
+                    @endphp
 
-								<div class="job-meta">
-									@if($company)<span>{{ $company }}</span>@endif
-									@if($range)<span class="sep">|</span><span>{{ $range }}</span>@endif
-									@if($locationText)<span class="sep">|</span><span>{{ $locationText }}</span>@endif
-								</div>
+                    <div class="edu-item">
+                        @if($studyType)
+                            <p class="edu-line1">{{ $studyType }}</p>
+                        @endif
 
-								@if($highlights->isNotEmpty())
-									<ul class="bullets">
-										@foreach($highlights as $h)
-											<li>{{ $h }}</li>
-										@endforeach
-									</ul>
-								@endif
-							</div>
-						@endforeach
-					</div>
-				@endif
+                        @if($area)
+                            <p class="edu-line2">{{ $area }}</p>
+                        @endif
 
-				@if($education->isNotEmpty())
-					<div class="section">
-						<div class="section-title">Education</div>
+                        <p class="edu-line3">
+                            {{ $institution }}
+                            @if($endDate || $startDate)
+                                | {{ $fmtRange($startDate, $endDate) }}
+                            @endif
+                        </p>
+                    </div>
+                @endforeach
+            </td>
 
-						@foreach($education as $edu)
-							@php
-								$studyType = data_get($edu, 'studyType');
-								$area = data_get($edu, 'area');
-								$institution = data_get($edu, 'institution');
-								$eduRange = fmt_range(data_get($edu, 'startDate'), data_get($edu, 'endDate'));
-							@endphp
+            {{-- MAIN CONTENT --}}
+            <td class="main" style="width: 66%;">
+                <p class="section-title-main">Work history</p>
 
-							<div class="edu">
-								<div class="edu-degree">
-									{{ trim(($studyType ? $studyType . ' in ' : '') . ($area ?? '')) ?: ($studyType ?: 'Education') }}
-								</div>
-								<div class="muted">
-									{{ $institution }}
-									@if($eduRange) | {{ $eduRange }} @endif
-								</div>
-							</div>
-						@endforeach
-					</div>
-				@endif
+                @foreach($work as $w)
+                    @php
+                        $company = (string) data_get($w, 'name');
+						$workSummary = (string) data_get($w, 'summary');
+                        $position = (string) data_get($w, 'position');
+                        $startDate = (string) data_get($w, 'startDate');
+                        $endDate = (string) data_get($w, 'endDate');
+                        $highlights = (array) (data_get($w, 'highlights') ?? []);
+                    @endphp
 
-				@if($references->isNotEmpty())
-					<div class="section">
-						<div class="section-title">References</div>
+                    <table class="job-table">
+                        <tr>
+                            <td class="job-dates">
+                                {{ $fmtRange($startDate, $endDate) }}
+                            </td>
+                            <td>
+                                <p class="job-title">{{ $position }}</p>
+                                <p class="job-company">{{ $company }}</p>
+								<p>{!! $workSummary !!}</p>
 
-						@foreach($references as $ref)
-							@php
-								$refName = data_get($ref, 'name');
-								$refText = data_get($ref, 'reference');
-							@endphp
+                                @if(!empty($highlights))
+                                    <ul class="bullets">
+                                        @foreach($highlights as $h)
+                                            @php $h = trim((string) $h); @endphp
+                                            @if($h !== '')
+                                                <li>{{ $h }}</li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
+                @endforeach
 
-							<div class="ref">
-								<div style="font-weight: 800;">{{ $refName }}</div>
-								@if($refText)
-									<div class="muted">{{ $refText }}</div>
-								@endif
-							</div>
-						@endforeach
-					</div>
-				@endif
-			</td>
-		</tr>
-	</table>
+                <p class="section-title-main" style="margin-top: 6px;">References</p>
 
-	<style>
-        /*@page { margin: 24px; }*/
+                @foreach($references as $r)
+                    @php
+                        $rName = (string) data_get($r, 'name');
+                        $rText = (string) data_get($r, 'reference');
+                    @endphp
 
-        /** { box-sizing: border-box; }*/
+                    <div class="refs-item">
+                        <p class="ref-name">{{ $rName }}</p>
+                        <p class="ref-text">{!! $rText !!}</p>
+                    </div>
+                @endforeach
+            </td>
+        </tr>
+    </table>
 
-        /*html, body {*/
-        /*    margin: 0;*/
-        /*    padding: 0;*/
-        /*    width: 100%;*/
-        /*}*/
-
-        /*body {*/
-        /*    font-family: DejaVu Sans, Arial, Helvetica, sans-serif;*/
-        /*    font-size: 11px;*/
-        /*    color: #111;*/
-        /*    line-height: 1.35;*/
-        /*}*/
-
-        /* ✅ Main two-column table */
-        /*table.layout {*/
-        /*    width: 100%;*/
-        /*    border-collapse: collapse;*/
-        /*    table-layout: fixed;*/
-        /*}*/
-
-        td.left {
-            width: 32%;
-            vertical-align: top;
-            background: #f4f4f4;
-            padding: 18px 16px;
-        }
-
-        td.right {
-            width: 68%;
-            vertical-align: top;
-            background: #fff;
-            padding: 18px 18px;
-        }
-
-        /* Avoid table-row "keep together" behavior */
-        /*tr { page-break-inside: auto; }*/
-
-        /* Name block */
-        /*.name {*/
-        /*    font-size: 30px;*/
-        /*    font-weight: 800;*/
-        /*    letter-spacing: -0.4px;*/
-        /*    line-height: 1.05;*/
-        /*    margin: 0 0 10px 0;*/
-        /*}*/
-        /*.name span { display: block; }*/
-
-        /*!* Contact *!*/
-        /*.contact { margin: 6px 0 14px 0; color: #222; }*/
-        /*.contact .row { margin: 2px 0; word-break: break-word; }*/
-
-        /*.muted { color: #555; }*/
-
-        /*!* Sections *!*/
-        /*.section { margin-top: 16px; }*/
-
-        /*.section-title {*/
-        /*    font-size: 12px;*/
-        /*    font-weight: 800;*/
-        /*    text-transform: uppercase;*/
-        /*    letter-spacing: 0.6px;*/
-        /*    margin: 0 0 8px 0;*/
-
-        /*    !* Prevent lonely titles at bottom of page *!*/
-        /*    page-break-after: avoid;*/
-        /*}*/
-
-        /*.summary { margin-top: 10px; color: #222; }*/
-
-        /*.skill-list { margin: 0; padding: 0; list-style: none; }*/
-        /*.skill-list li { margin: 3px 0; }*/
-
-        /*!* Work / Education / References blocks *!*/
-        /*.job, .edu, .ref {*/
-        /*    margin: 0 0 12px 0;*/
-        /*    page-break-inside: avoid; !* keep each block together *!*/
-        /*}*/
-
-        /*.job-title { font-weight: 800; font-size: 12px; margin: 0 0 1px 0; }*/
-        /*.job-meta { margin: 0 0 6px 0; color: #444; }*/
-        /*.job-meta .sep { padding: 0 6px; color: #777; }*/
-
-        /*.bullets { margin: 0; padding-left: 16px; }*/
-        /*.bullets li { margin: 4px 0; }*/
-
-        /*.edu-degree { font-weight: 800; margin: 0 0 1px 0; }*/
-    </style>
-	</div>
-</div>
+</body>
+</html>

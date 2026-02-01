@@ -3,8 +3,9 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\Work;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class Resume extends Model

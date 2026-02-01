@@ -139,5 +139,11 @@
 		  margin-top: 4px;
 		  border-radius: 6px; /* optional */
 		}
+		.left{
+			float: left;
+		}
+		.right{
+			float: right;
+		}
 	</style>
 @endsection

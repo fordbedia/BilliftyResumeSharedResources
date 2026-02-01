@@ -32,6 +32,18 @@ class TemplatesSeeder extends MakeSeeder
 			],
 			'slug' => 'moderno-one',
 			'path' => 'templates.moderno-one',
+		],
+		[
+			'name' => 'Simple One',
+			'description' => 'Traditional layout perfect for corporate roles',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'simple-one',
+			'path' => 'templates.simple-one',
 		]
 	];
     /**
