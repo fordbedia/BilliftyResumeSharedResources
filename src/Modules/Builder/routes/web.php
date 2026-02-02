@@ -13,4 +13,4 @@ Route::middleware(['web'])->group(function () {
 
 Route::get('/preview/pdf/{resume}', [PdfPreviewController::class, 'show'])
     ->name('preview.pdf')
-    ->middleware(['signed']);
+    ->middleware(['signed:relative']);

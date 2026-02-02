@@ -13,4 +13,9 @@ class User extends Authenticatable
 
     protected $table = 'users';
 	protected $guarded = [];
+
+	public function info()
+	{
+		return $this->hasOne(UserInfo::class);
+	}
 }

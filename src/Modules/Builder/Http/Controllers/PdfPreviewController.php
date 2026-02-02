@@ -35,6 +35,7 @@ class PdfPreviewController extends Controller
 	// Put your allowed templates here (slugs)
     private array $allowedTemplates = [
         'moderno-one',
+		'simple-one',
         // add more slugs...
     ];
 

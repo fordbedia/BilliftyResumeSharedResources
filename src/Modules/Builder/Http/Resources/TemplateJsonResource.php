@@ -5,7 +5,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ResumeResource extends JsonResource
+class TemplateJsonResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,13 @@ class ResumeResource extends JsonResource
     {
         return [
 			'id' => $this->id,
-			'title' => $this->basic->label,
-			'lastUpdated' => $this->updated_at->diffForHumans(),
-			'basics' => new BasicsJsonResource($this->basic),
-			'template' => TemplateJsonResource::collection($this->template),
+			'name' => $this->name,
+			'description' => $this->description,
+			'icon' => $this->icon,
+			'slug' => $this->slug,
+			'colors' => $this->colors,
+			'is_active' => $this->is_active,
+			'path' => $this->path
 		];
     }
 }
