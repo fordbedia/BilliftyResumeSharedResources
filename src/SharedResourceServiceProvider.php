@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources;
 
 use BilliftyResumeSDK\SharedResources\Modules\Builder\BuilderProvider;
+use BilliftyResumeSDK\SharedResources\Modules\User\UserProvider;
 use BilliftyResumeSDK\SharedResources\SDK\Console\Config\Make;
 use BilliftyResumeSDK\SharedResources\SDK\Console\Config\ResetTestData;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,7 @@ class SharedResourceServiceProvider extends ServiceProvider
 {
     protected array $providers = [
 		BuilderProvider::class,
+		UserProvider::class,
     ];
 
     public function boot()
