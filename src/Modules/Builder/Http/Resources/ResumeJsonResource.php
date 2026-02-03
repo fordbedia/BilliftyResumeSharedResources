@@ -12,6 +12,7 @@ class ResumeJsonResource extends JsonResource
         $resume = $this->resource;
 
         return [
+			'name' => $resume->name,
             'basics' => [
                 'name' => data_get($resume, 'basic.name'),
                 'label' => data_get($resume, 'basic.label'),

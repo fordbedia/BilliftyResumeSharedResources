@@ -44,22 +44,23 @@ class Resume
 			'references' 		=> $references,
 			'template'			=> $template,
 			'color_scheme_id' 	=> $colorSchemeId,
+			'name'				=> $name
 		] = $payload;
 
 		return $this->transaction->run(function () use (
-			$userId, $resumeId, $basics, $work, $education, $skills, $references, $template, $colorSchemeId
+			$userId, $resumeId, $basics, $work, $education, $skills, $references, $template, $colorSchemeId, $name
 		) {
 			if ($resumeId){
 				$resume = $this->resume->find($resumeId);
 				$resume->forceFill([
-					'name' => 'resume',
+					'name' => $name,
 					'template_id' => $template,
 					'color_scheme_id' => $colorSchemeId
 				])->save();
 			} else {
 				$resume = $this->resume->create([
 					'user_id' => $userId,
-					'name' => 'resume',
+					'name' => $name,
 					'template_id' => $template,
 					'color_scheme_id' => $colorSchemeId
 				]);
