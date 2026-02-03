@@ -3,7 +3,9 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ResumeRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Jobs\SendResumeExportEmailJob;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
@@ -63,4 +65,14 @@ class ResumeExportController extends Controller
             'error'  => $resume->email_export_error ?? null,
         ]);
     }
+
+	public function cleanUpDrive(int $resumeId, ResumeRepository $resume)
+	{
+		$model = $resume->find($resumeId);
+		$disk = $model->export_disk ?? 'public';
+
+		Storage::disk($disk)->delete($model->export_path);
+
+		return response()->json(['message' => 'Deleted'], 200);
+	}
 }

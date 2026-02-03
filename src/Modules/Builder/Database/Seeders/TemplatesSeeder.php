@@ -19,7 +19,7 @@ class TemplatesSeeder extends MakeSeeder
 			  'accent'  => 'hsl(var(--accent))',
 			  'bg'      => 'hsl(var(--background))',
 			],
-			'path' => 'templates.resume',
+			'path' => 'templates.basic',
 		],
 		[
 			'name' => 'Moderno One',

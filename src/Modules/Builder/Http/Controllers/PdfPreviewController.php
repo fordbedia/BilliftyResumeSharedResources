@@ -52,11 +52,9 @@ class PdfPreviewController extends Controller
         $template = (string) $request->query('template', '');
         if ($template === '') {
             $template = (string) ($resumeModel->template?->path ?? '');
-        }
-        if ($template === '') {
-            $template = 'simple-one';
-        }
-
+        } else {
+			$template = "templates.{$template}";
+		}
         // 2) Validate template (critical)
 //        abort_unless(in_array($template, $this->allowedTemplates, true), 404);
 

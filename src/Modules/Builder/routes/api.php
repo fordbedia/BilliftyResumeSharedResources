@@ -69,6 +69,7 @@ Route::prefix('v1')->group(function () {
 
 			// Optional: check status (so your UI can show queued/processing/sent/failed)
 			Route::get('/{resume}/export/email/status', [ResumeExportController::class, 'emailStatus']);
+			Route::post('/{resume}/export/clean-up', [ResumeExportController::class, 'cleanUpDrive']);
 
 			// ----------------------------------------------------------------------------
 			// DO NOT ADD ANY ROUTES AFTER THIS LINE.
