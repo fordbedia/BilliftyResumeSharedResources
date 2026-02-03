@@ -4,7 +4,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repos
 
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\WorkRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentBaseRepository;
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\Work;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Work;
 
 class EloquentWorkRepository extends EloquentBaseRepository implements WorkRepository
 {

@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
 	// api.php
 	Route::get('/resume/preview-link/{resume}', function (Request $request, $resume) {
 		$template = $request->query('template');
+		$colorScheme = $request->query('colorScheme');
 
 		// Enforce ownership here (global scope applies because user is authenticated on API)
 		$resumeModel = Resume::query()
@@ -90,6 +91,7 @@ Route::prefix('v1')->group(function () {
 
 		$params = ['resume' => $resumeModel->id];
 		if ($template) $params['template'] = $template;
+		if ($colorScheme) $params['colorScheme'] = $colorScheme;
 
 		$url = URL::temporarySignedRoute(
 			'preview.pdf',

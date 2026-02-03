@@ -10,7 +10,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Reference;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Skills;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Templates;
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\Work;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Work;
 use BilliftyResumeSDK\SharedResources\SDK\Database\MakeSeeder;
 
 class ResumeSeeder extends MakeSeeder

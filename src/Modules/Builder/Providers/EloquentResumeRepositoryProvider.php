@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Providers;
 
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\BasicRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ColorSchemeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\EducationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ProfileRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ReferenceRepository;
@@ -13,6 +14,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Transactional;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentDbTransaction;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\EloquentBasicRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\EloquentColorSchemeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\EloquentEducationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\EloquentProfileRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\EloquentReferenceRepository;
@@ -38,6 +40,7 @@ class EloquentResumeRepositoryProvider extends ServiceProvider
 		$this->app->bind(WorkRepository::class, EloquentWorkRepository::class);
 		$this->app->bind(Transactional::class, EloquentDbTransaction::class);
 		$this->app->bind(TemplatesRepository::class, EloquentTemplatesRepository::class);
+		$this->app->bind(ColorSchemeRepository::class, EloquentColorSchemeRepository::class);
     }
 
     /**

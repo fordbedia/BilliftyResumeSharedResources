@@ -17,6 +17,8 @@
     $nameParts = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
     $nameFirst = strtoupper($nameParts[0] ?? $fullName);
     $nameRest = strtoupper(implode(' ', array_slice($nameParts, 1)));
+	$previewColorScheme = $previewColorScheme ?? null;
+	$colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
 
     // Contact lines (match the PDF order)
     $contactLine1 = trim(implode(' ', array_filter([
@@ -42,11 +44,6 @@
         return $start ?: $end;
     };
 @endphp
-
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
     <style>
         /* Dompdf-safe: no flex/grid, keep it table-based */
         @page { margin: 0 28px 28px 28px; }
@@ -61,7 +58,7 @@
         .green { color: #5f8b70; }
         .muted { color: #6b6b6b; }
 
-        .name-font { font-family: DejaVu Serif, Georgia, serif; }
+        .name-font { font-family: DejaVu Serif, Georgia, serif; color: {{$colorScheme ?? '#5f8b70'}}; }
         .title-font { font-family: DejaVu Serif, Georgia, serif; }
 
         .h-name-1 {
@@ -71,6 +68,7 @@
             letter-spacing: 1px;
             margin: 0;
             padding: 0;
+			color: {{$colorScheme}};
         }
         .h-name-2 {
             font-size: 58px;
@@ -79,12 +77,14 @@
             letter-spacing: 1px;
             margin: 0;
             padding: 0;
+			color: {{$colorScheme}};
         }
 
         .contact {
             font-size: 13px;
             line-height: 1.5;
             text-align: left;
+			color: {{$colorScheme ?? '#5f8b70'}};
         }
         .contact .line { margin: 0; padding: 0; }
 
@@ -107,7 +107,7 @@
         .layout td { vertical-align: top; }
 
         .sidebar {
-            background: #5f8b70;
+            background: {{$colorScheme ?? '#5f8b70'}};
             color: #ffffff;
             padding: 16px 14px;
         }
@@ -124,7 +124,7 @@
             font-family: DejaVu Serif, Georgia, serif;
             font-size: 26px;
             font-weight: 700;
-            color: #5f8b70;
+            color: {{$colorScheme ?? '#5f8b70'}};
             margin: 0 0 10px 0;
             padding: 0;
         }
@@ -209,20 +209,18 @@
             white-space: pre-line; /* dompdf supports this */
         }
     </style>
-</head>
-<body>
 
     {{-- HEADER (name left, contact right) --}}
     <table class="layout">
         <tr>
             <td style="width: 70%; padding-right: 16px;">
-                <div class="name-font green">
+                <div class="name-font">
                     <p class="h-name-1">{{ $nameFirst }}</p>
                     <p class="h-name-2">{{ $nameRest }}</p>
                 </div>
             </td>
             <td style="width: 30%;">
-                <div class="contact green">
+                <div class="contact">
                     @if($contactLine1)
                         <p class="line">{{ $contactLine1 }}</p>
                     @endif
@@ -361,6 +359,3 @@
             </td>
         </tr>
     </table>
-
-</body>
-</html>

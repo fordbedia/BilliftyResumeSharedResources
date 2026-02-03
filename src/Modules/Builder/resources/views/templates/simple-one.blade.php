@@ -1,10 +1,8 @@
-{{-- resources/views/resumes/templates/resume-human.blade.php --}}
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{{ $basic['name'] ?? 'Resume' }}</title>
+@php
+	$resume = $resume ?? [];
+	$previewColorScheme = $previewColorScheme ?? null;
+	$colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
+@endphp
 
     <style>
         /* -----------------------------
@@ -37,7 +35,7 @@
            Typography + Colors (matching PDF vibe)
         ----------------------------- */
         :root{
-            --ink: #0b1b3a;          /* deep navy for headings */
+            --ink: {{$colorScheme}};          /* deep navy for headings */
             --text: #111827;
             --muted: #6b7280;        /* gray body */
             --line: #111827;         /* divider line */
@@ -225,7 +223,6 @@
         /* Optional: keep headings from orphaning */
         h2, h3 { break-after: avoid; page-break-after: avoid; }
     </style>
-</head>
 
 @php
     /**
@@ -258,7 +255,6 @@
     };
 @endphp
 
-<body>
 <div class="page">
 
     {{-- Header --}}
@@ -423,5 +419,3 @@
 
     </div>
 </div>
-</body>
-</html>

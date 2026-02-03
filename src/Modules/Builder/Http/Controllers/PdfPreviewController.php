@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ColorSchemeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ResumeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Resources\ResumeJsonResource;
 use Illuminate\Http\Request;
@@ -12,40 +13,16 @@ use Illuminate\Support\Facades\Http;
 
 class PdfPreviewController extends Controller
 {
-//    public function show(Request $request, int $resumeId)
-//    {
-//        // Load your resume (adjust query as needed)
-//        $resume = Resume::query()->findOrFail($resumeId)->loadMissing(Resume::relationships());
-//
-//		$resumeArray = (new ResumeJsonResource($resume))->resolve();
-//
-//        $templateView = 'builder::resume';
-//
-//        $pdf = Pdf::loadView($templateView, [
-//                'resume' => $resumeArray,
-//            ])
-//            ->setPaper('a4', 'portrait');
-//
-//        // Stream inline (browser preview)
-//        return $pdf->stream("resume-{$resumeId}.pdf", [
-//            'Attachment' => false, // IMPORTANT: inline preview
-//        ]);
-//    }
-
-	// Put your allowed templates here (slugs)
-    private array $allowedTemplates = [
-        'moderno-one',
-		'simple-one',
-        // add more slugs...
-    ];
-
-    public function show(Request $request, $resume, ResumeRepository $resumeRepo)
+	/**
+	 * @param Request $request
+	 * @param $resume
+	 * @param ResumeRepository $resumeRepo
+	 * @param ColorSchemeRepository $colorSchemeRepo
+	 * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response
+	 * @throws \Illuminate\Http\Client\ConnectionException
+	 */
+    public function show(Request $request, $resume, ResumeRepository $resumeRepo, ColorSchemeRepository $colorSchemeRepo)
     {
-        // $resume might be route-model bound or ID; adapt as needed.
-        // If it's an ID, fetch it here.
-        // Example:
-        // $resumeModel = Resume::with(...)->findOrFail($resume);
-
         $resumeModel = is_object($resume) ? $resume : $this->loadResume($resume, $resumeRepo);
 
         // 1) Decide template
@@ -55,8 +32,12 @@ class PdfPreviewController extends Controller
         } else {
 			$template = "templates.{$template}";
 		}
-        // 2) Validate template (critical)
-//        abort_unless(in_array($template, $this->allowedTemplates, true), 404);
+		// 2 For Preview Color scheme
+		$previewColorScheme = null;
+		$colorSchemeId = $request->query('colorScheme', '');
+		if ($colorSchemeId) {
+			$previewColorScheme = $colorSchemeRepo->getPrimary($colorSchemeId);
+		}
 
         // 3) Build resume array payload for the Blade template
         // Adapt depending on how you store it
@@ -65,7 +46,7 @@ class PdfPreviewController extends Controller
 
         // 4) Render Blade => HTML
         $view = "builder::$template";
-        $html = view($view, ['resume' => $resumeData])->render();
+        $html = view($view, ['resume' => $resumeData, 'previewColorScheme' => $previewColorScheme])->render();
 
         // 5) Call pdf-service
         $pdfService = rtrim(config('services.pdf.url'), '/');
