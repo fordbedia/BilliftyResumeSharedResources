@@ -2,20 +2,22 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Storage\ImageProcessor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-class ImageProcessor
+class ImageFileUploadProcessor implements ImageProcessor
 {
+	public function __construct(
+		protected UploadedFile $file,
+		protected string $name,
+		protected string $storageDirectory = 'resume_images'
+	) {}
 
-	public function __construct(protected UploadedFile $file, protected string $name)
+	public static function make(UploadedFile $file, string $name, string $storageDirectory = 'resume_images')
 	{
-	}
-
-	public static function make(UploadedFile $file, string $name)
-	{
-		return new static($file, $name);
+		return new static($file, $name, $storageDirectory);
 	}
 
 	public function store()
@@ -32,7 +34,7 @@ class ImageProcessor
 
 		// choose your folder + disk
 		return $this->file->storeAs(
-			"resume_images/{$year}/{$month}",
+			"{$this->storageDirectory}/{$year}/{$month}",
 			"{$base}.{$time}.{$hash}.{$ext}",
 			'public' // or whatever disk you want
 		);

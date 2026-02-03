@@ -3,8 +3,10 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageFileUploadProcessor;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\PassportUserAuthentication;
+use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\ProfileRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserRequest;
 use DomainException;
 use Illuminate\Http\Request;
@@ -53,9 +55,22 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(
+		ProfileRequest $request,
+		string $id,
+		UserRepository $user
+	) {
+		$data = $request->validated();
+
+		$storedPath = null;
+
+		if (!empty($data['avatar'])) {
+			$storedPath = ImageFileUploadProcessor::make($data['avatar'], $data['avatar']->getClientOriginalName(), 'profile-image')
+				->store();
+			unset($data['avatar']);
+		}
+
+		return $user->save(array_merge($data, ['info' => [...$data['info'], 'avatar' => $storedPath]]));
     }
 
     /**
@@ -80,5 +95,16 @@ class UserController extends Controller
         } catch (DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 401);
         }
+	}
+
+	public function me()
+	{
+		$user = auth()->user();
+
+		abort_unless($user, 401);
+
+		$user->load('info');
+
+		return response()->json($user);
 	}
 }

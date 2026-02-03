@@ -111,8 +111,8 @@ class ResumeSeeder extends MakeSeeder
 		foreach ($this->work as $work) {
 			Work::query()->updateOrCreate($work + ['resume_id' => $resume->id]);
 		}
-		foreach ($this->skills as $skill) {
-			Skills::query()->updateOrCreate(['name' => $skill, 'resume_id' => $resume->id]);
+		foreach ($this->skills as $i => $skill) {
+			Skills::query()->updateOrCreate(['name' => $skill, 'resume_id' => $resume->id, 'sort_order' => $i]);
 		}
 		foreach ($this->profiles as $profile) {
 			Profile::query()->updateOrCreate($profile + ['basic_id' => $basic->id]);
