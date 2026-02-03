@@ -37,19 +37,32 @@ class Resume
 	{
 		// Save and Update logic
 		[
-			'basics' 		=> $basics,
-			'work' 			=> $work,
-			'education' 	=> $education,
-			'skills' 		=> $skills,
-			'references' 	=> $references,
-			'template'		=> $template
+			'basics' 			=> $basics,
+			'work' 				=> $work,
+			'education' 		=> $education,
+			'skills' 			=> $skills,
+			'references' 		=> $references,
+			'template'			=> $template,
+			'color_scheme_id' 	=> $colorSchemeId,
 		] = $payload;
 
-		return $this->transaction->run(function () use ($userId, $resumeId, $basics, $work, $education, $skills, $references, $template) {
+		return $this->transaction->run(function () use (
+			$userId, $resumeId, $basics, $work, $education, $skills, $references, $template, $colorSchemeId
+		) {
 			if ($resumeId){
 				$resume = $this->resume->find($resumeId);
+				$resume->forceFill([
+					'name' => 'resume',
+					'template_id' => $template,
+					'color_scheme_id' => $colorSchemeId
+				])->save();
 			} else {
-				$resume = $this->resume->create(['user_id' => $userId, 'name' => 'resume']);
+				$resume = $this->resume->create([
+					'user_id' => $userId,
+					'name' => 'resume',
+					'template_id' => $template,
+					'color_scheme_id' => $colorSchemeId
+				]);
 			}
 
 			if ($basics) {
@@ -176,10 +189,6 @@ class Resume
 					$keepReferencesIds[] = $savedReferences->id;
 				}
 				$this->reference->deleteMissing($resume->id, $keepReferencesIds);
-			}
-
-			if ($template) {
-				$this->template->save($resume, $template);
 			}
 
 			return $resume->load(ResumeModel::relationships())->refresh();

@@ -40,14 +40,12 @@ class Resume extends Model
 
 	public function template()
 	{
-		return $this->belongsToMany(
-			Templates::class,
-			'resume_template',
-			'resume_id',
-			'template_id',
-			'id',
-			'id'
-		);
+		return $this->belongsTo(Templates::class);
+	}
+
+	public function colorScheme()
+	{
+		return $this->belongsTo(ColorScheme::class);
 	}
 
 	public static function relationships()
@@ -59,7 +57,8 @@ class Resume extends Model
 			'work' => fn ($q) => $q->orderBy('sort_order'),
 			'skills' => fn ($q) => $q->orderBy('sort_order'),
 			'reference' => fn ($q) => $q->orderBy('sort_order'),
-			'template'
+			'template',
+			'colorScheme'
 		];
 	}
 

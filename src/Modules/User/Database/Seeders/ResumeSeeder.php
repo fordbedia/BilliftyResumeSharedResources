@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Database\Seeders;
 
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Basic;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\ColorScheme;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Education;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Profile;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Reference;
@@ -106,8 +107,14 @@ class ResumeSeeder extends MakeSeeder
      */
     public function run(): void
     {
-		$resume = Resume::query()->updateOrCreate($this->resume, $this->resume + ['user_id' => 1]);
+		$templateId = Templates::query()->where('slug', 'basic')->first()->id;
+		$colorSchemeId = ColorScheme::query()->where('slug', 'blue')->first()->id;
+		$resume = Resume::query()->updateOrCreate($this->resume, $this->resume + [
+				'user_id' => 1, 'template_id' => $templateId ?? '1',
+				'color_scheme_id' => $colorSchemeId ?? '1'
+			]);
 		$basic = Basic::query()->updateOrCreate($this->basic + ['resume_id' => $resume->id]);
+
 		foreach ($this->work as $work) {
 			Work::query()->updateOrCreate($work + ['resume_id' => $resume->id]);
 		}
@@ -123,7 +130,6 @@ class ResumeSeeder extends MakeSeeder
 		foreach ($this->references as $reference) {
 			Reference::query()->updateOrCreate($reference + ['resume_id' => $resume->id]);
 		}
-		$resume->template()->sync(['template_id' => Templates::query()->where('slug', 'basic')->first()->id ?? '1']);
     }
 
     /**

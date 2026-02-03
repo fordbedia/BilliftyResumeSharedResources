@@ -11,10 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
+		Schema::create('templates', function (Blueprint $table) {
+            $table->id();
+			$table->string('name');
+			$table->text('description')->nullable();
+			$table->string('icon')->nullable();
+			$table->string('slug');
+			$table->json('colors')->nullable();
+			$table->text('path');
+			$table->tinyInteger('is_active')->default(1);
+            $table->timestamps();
+        });
+
+		Schema::create('color_scheme', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->string('slug');
+			$table->string('primary');
+			$table->string('accent');
+			$table->timestamps();
+		});
+
         Schema::create('resume', function (Blueprint $table) {
             $table->id();
 			$table->string('name');
 			$table->unsignedBigInteger('user_id');
+			$table->unsignedBigInteger('template_id');
+			$table->unsignedBigInteger('color_scheme_id');
 
 			$table->string('export_status')->default('idle'); // idle|queued|processing|ready|failed
 			$table->string('export_format')->nullable();      // pdf|docx
@@ -29,6 +52,8 @@ return new class extends Migration
             $table->timestamps();
 
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->foreign('template_id')->references('id')->on('templates')->onDelete('cascade');
+			$table->foreign('color_scheme_id')->references('id')->on('color_scheme')->onDelete('cascade');
         });
 		Schema::create('basic', function (Blueprint $table) {
             $table->id();

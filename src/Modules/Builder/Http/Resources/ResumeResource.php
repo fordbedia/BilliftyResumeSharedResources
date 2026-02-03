@@ -19,7 +19,7 @@ class ResumeResource extends JsonResource
 			'title' => $this->basic->label,
 			'lastUpdated' => $this->updated_at->diffForHumans(),
 			'basics' => new BasicsJsonResource($this->basic),
-			'template' => TemplateJsonResource::collection($this->template),
+			'template' => TemplateJsonResource::make($this->template),
 		];
     }
 }

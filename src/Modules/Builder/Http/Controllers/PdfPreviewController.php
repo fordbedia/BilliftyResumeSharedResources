@@ -51,10 +51,10 @@ class PdfPreviewController extends Controller
         // 1) Decide template
         $template = (string) $request->query('template', '');
         if ($template === '') {
-            $template = (string) ($resumeModel->template[0]?->path ?? '');
+            $template = (string) ($resumeModel->template?->path ?? '');
         }
         if ($template === '') {
-            $template = 'edbedia-green';
+            $template = 'simple-one';
         }
 
         // 2) Validate template (critical)

@@ -67,8 +67,9 @@ class ResumeJsonResource extends JsonResource
             ])->values()->all() ?? [],
 
             'template' => [
-                'path' => data_get($resume, 'template.0.path'), // because template is a Collection
+                'path' => $resume->template->path,
             ],
+			'colorScheme' => $resume->colorScheme->primary
         ];
     }
 }

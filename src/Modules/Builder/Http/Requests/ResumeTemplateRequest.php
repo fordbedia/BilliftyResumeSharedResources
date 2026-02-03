@@ -22,7 +22,8 @@ class ResumeTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'template' => 'required|integer'
+            'template' => 'required|integer',
+			'color_scheme_id' => 'required|integer',
         ];
     }
 
@@ -30,6 +31,7 @@ class ResumeTemplateRequest extends FormRequest
 	{
 		return [
 			'template' => 'You forgot to select a template for your resume.',
+			'color_scheme_id' => 'You forgot to select a color scheme for your resume.',
 		];
 	}
 }
