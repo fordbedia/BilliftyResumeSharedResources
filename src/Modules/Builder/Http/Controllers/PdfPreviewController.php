@@ -51,7 +51,8 @@ class PdfPreviewController extends Controller
         // 5) Call pdf-service
         $pdfService = rtrim(config('services.pdf.url'), '/');
 
-        $resp = Http::timeout(60)
+        $resp = Http::retry(3, 200, throw: false)
+			->timeout(60)
             ->accept('application/pdf')
             ->post($pdfService . '/render', [
                 'html' => $html,

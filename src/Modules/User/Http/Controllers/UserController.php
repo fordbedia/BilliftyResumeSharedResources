@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageFileUploadProcessor;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\PassportUserAuthentication;
+use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\UpdateUserPassword;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\ProfileRequest;
+use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserNewPasswordVerifierRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserRequest;
 use DomainException;
 use Illuminate\Http\Request;
@@ -107,4 +109,12 @@ class UserController extends Controller
 
 		return response()->json($user);
 	}
+
+	public function updatePassword(UserNewPasswordVerifierRequest $request, UpdateUserPassword $passwordUpdater)
+	{
+		$data = $request->validated();
+
+		$passwordUpdater->execute(auth()->user()->id, $data['currentPassword'], $data['newPassword']);;
+	}
+
 }
