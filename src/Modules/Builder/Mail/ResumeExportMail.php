@@ -23,7 +23,7 @@ class ResumeExportMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Resume Export (' . strtoupper($this->fileFormat) . ')',
+            subject: 'Your Resume is Ready',
         );
     }
 

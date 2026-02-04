@@ -41,7 +41,8 @@ class SendResumeExportEmailJob implements ShouldQueue
         $disk = $result['disk'] ?? config('builder.export_disk', 'public');
         $path = $result['path'] ?? null;
         $absolutePath = $result['absolute_path'] ?? null;
-        $downloadName = $result['filename'] ?? "resume_{$resume->getKey()}.{$this->fileFormat}";
+		$resumeFileName = $resume->name ?? $resume->getKey();
+        $downloadName = $result['filename'] ?? "{$resumeFileName}.{$this->fileFormat}";
 
         if (!is_string($path) || $path === '') {
             throw new \RuntimeException('GenerateResumeExportFileAction did not return a valid path.');

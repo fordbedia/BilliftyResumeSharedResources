@@ -50,8 +50,8 @@ class GenerateResumeExportFileAction
         if (!is_string($path) || $path === '') {
             throw new \RuntimeException('Export action did not return a valid path.');
         }
-
-        $filename = "resume_{$resumeModel->getKey()}.{$fileFormat}";
+		$resumeFileName = $resumeModel->name ?? $resumeModel->getKey();
+        $filename = "{$resumeFileName}.{$fileFormat}";
         $driver = config("filesystems.disks.{$disk}.driver");
 
         // Local disk → attach via absolute path
