@@ -28,6 +28,6 @@ class UserProvider extends ServiceProvider
 
 	public function boot(Router $router): void
     {
-
+		$this->loadViewsFrom(__DIR__ . '/../resources/views', 'user');
     }
 }

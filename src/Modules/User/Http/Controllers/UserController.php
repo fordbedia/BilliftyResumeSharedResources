@@ -10,6 +10,7 @@ use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\Upd
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\ProfileRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserNewPasswordVerifierRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserRequest;
+use BilliftyResumeSDK\SharedResources\Modules\User\Jobs\SendPasswordChangedEmailJob;
 use DomainException;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -113,8 +114,14 @@ class UserController extends Controller
 	public function updatePassword(UserNewPasswordVerifierRequest $request, UpdateUserPassword $passwordUpdater)
 	{
 		$data = $request->validated();
+		$user = auth()->user();
 
-		$passwordUpdater->execute(auth()->user()->id, $data['currentPassword'], $data['newPassword']);;
+		$passwordUpdater->execute(auth()->user()->id, $data['currentPassword'], $data['newPassword']);
+
+		SendPasswordChangedEmailJob::dispatch(
+			$user->email,
+			$user->name
+		);
 	}
 
 }
