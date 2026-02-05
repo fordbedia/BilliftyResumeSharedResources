@@ -19,6 +19,7 @@ class ResumeJsonResource extends JsonResource
                 'email' => data_get($resume, 'basic.email'),
                 'phone' => data_get($resume, 'basic.phone'),
                 'url' => data_get($resume, 'basic.url'),
+				'imageUrl' => data_get($resume, 'basic.image_url'),
                 'summary' => data_get($resume, 'basic.summary'),
                 'location' => [
                     'address' => data_get($resume, 'basic.address'),

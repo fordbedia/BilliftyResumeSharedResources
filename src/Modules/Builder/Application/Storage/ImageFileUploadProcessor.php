@@ -5,6 +5,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Storage\ImageProcessor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ImageFileUploadProcessor implements ImageProcessor
@@ -45,6 +46,14 @@ class ImageFileUploadProcessor implements ImageProcessor
 		$image = $model->{$column};
 		if ($image) {
 			unlink(storage_path("app/public/{$image}"));
+		}
+	}
+
+	public static function deleteFile(string $path, ?string $disk = 'public'): void
+	{
+		$disk = $disk ?? 'public';
+		if (Storage::disk($disk)->exists($path)) {
+			Storage::disk($disk)->delete($path);
 		}
 	}
 }

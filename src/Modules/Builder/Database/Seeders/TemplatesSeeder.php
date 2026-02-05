@@ -44,6 +44,18 @@ class TemplatesSeeder extends MakeSeeder
 			],
 			'slug' => 'simple-one',
 			'path' => 'templates.simple-one',
+		],
+		[
+			'name' => 'Slate',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'slate',
+			'path' => 'templates.slate',
 		]
 	];
     /**
