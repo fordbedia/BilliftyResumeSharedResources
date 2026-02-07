@@ -50,10 +50,10 @@ Route::prefix('v1')->group(function () {
 			Route::post('references/index/{index}', [ResumeReferencesController::class, 'handleIndex'])
 				->name('references.index');
 			// Template
-			Route::post('template/{type}', [ResumeTemplateController::class, 'handleSteps'])
-				->name('template.type');
-			Route::post('template/index/{index}', [ResumeTemplateController::class, 'handleIndex'])
-				->name('template.index');
+			Route::post('finalize/{type}', [ResumeTemplateController::class, 'handleSteps'])
+				->name('finalize.type');
+			Route::post('finalize/index/{index}', [ResumeTemplateController::class, 'handleIndex'])
+				->name('finalize.index');
 
 			// Submission
 			Route::post('submit', [SubmitResumeController::class, 'submit']);
@@ -70,6 +70,7 @@ Route::prefix('v1')->group(function () {
 			// Optional: check status (so your UI can show queued/processing/sent/failed)
 			Route::get('/{resume}/export/email/status', [ResumeExportController::class, 'emailStatus']);
 			Route::post('/{resume}/export/clean-up', [ResumeExportController::class, 'cleanUpDrive']);
+			Route::get('/resume-preview', [ResumeBuilderController::class, 'resumePreview']);
 
 			// ----------------------------------------------------------------------------
 			// DO NOT ADD ANY ROUTES AFTER THIS LINE.

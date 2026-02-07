@@ -40,7 +40,7 @@ class ResumeFinalizeRequest extends FormRequest
             (new ResumeWorkRequest())->rules(),
             (new ResumeSkillsRequest())->rules(),
             (new ResumeReferencesRequest())->rules(),
-			(new ResumeTemplateRequest())->rules(),
+			(new ResumeLastStepRequest())->rules(),
 			[
 				'basics_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
 			]
@@ -55,7 +55,7 @@ class ResumeFinalizeRequest extends FormRequest
 			(new ResumeWorkRequest())->messages(),
 			(new ResumeSkillsRequest())->messages(),
 			(new ResumeReferencesRequest())->messages(),
-			(new ResumeTemplateRequest())->messages(),
+			(new ResumeLastStepRequest())->messages(),
 		);
 	}
 

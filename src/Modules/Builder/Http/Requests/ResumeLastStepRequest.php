@@ -4,7 +4,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResumeTemplateRequest extends FormRequest
+class ResumeLastStepRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,19 +21,21 @@ class ResumeTemplateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-			'name' => 'required|string',
-            'template' => 'required|integer',
-			'color_scheme_id' => 'required|integer',
-        ];
+        return array_merge(
+			[
+				'finalize.name' => 'required|string',
+				'finalize.template' => 'required|integer',
+				'finalize.color_scheme_id' => 'required|integer',
+        	]);
     }
 
 	public function messages(): array
 	{
-		return [
-			'name' => 'Please add a name for your resume.',
-			'template' => 'You forgot to select a template for your resume.',
-			'color_scheme_id' => 'You forgot to select a color scheme for your resume.',
-		];
+		return array_merge(
+			[
+				'finalize.name' => 'Please add a name for your resume.',
+				'finalize.template' => 'You forgot to select a template for your resume.',
+				'finalize.color_scheme_id' => 'You forgot to select a color scheme for your resume.',
+			]);
 	}
 }

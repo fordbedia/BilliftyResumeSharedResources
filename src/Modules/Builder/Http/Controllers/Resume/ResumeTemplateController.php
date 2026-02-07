@@ -4,7 +4,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Res
 
 use App\Http\Controllers\Controller;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\BaseResumeController;
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Requests\ResumeTemplateRequest;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Requests\ResumeLastStepRequest;
 use Illuminate\Http\Request;
 
 class ResumeTemplateController extends BaseResumeController
@@ -24,6 +24,6 @@ class ResumeTemplateController extends BaseResumeController
     //
 	protected function requestClass(): string
 	{
-		return ResumeTemplateRequest::class;
+		return ResumeLastStepRequest::class;
 	}
 }

@@ -42,7 +42,7 @@
         }
 
         .name {
-            font-size: 78px;
+            font-size: 65px;
             line-height: 0.95;
             font-weight: 800;
             letter-spacing: -1px;
@@ -219,6 +219,29 @@
             break-inside: avoid;
             page-break-inside: avoid;
         }
+		.avatar-wrap {
+		  margin-top: 2mm;
+		  margin-bottom: 10mm;
+		}
+		.avatar {
+		  width: 86px;
+		  height: 86px;
+		  border-radius: 999px;
+		  border: 4px solid #ffffff;
+		  box-shadow: 0 6px 16px rgba(0,0,0,.10);
+		  object-fit: cover;
+		  display: inline-block;
+		  background: #e5e7eb;
+		}
+		.flex {
+			display: flex;
+		}
+		.flex-column- {
+			flex-direction: column;
+		}
+		.gap-1 {
+			gap: 1rem;
+		}
 
         /* Optional: keep headings from orphaning */
         h2, h3 { break-after: avoid; page-break-after: avoid; }
@@ -265,15 +288,21 @@
                 $nameParts = preg_split('/\s+/', trim($name));
                 $firstLine = implode(' ', array_slice($nameParts, 0, max(1, count($nameParts)-1)));
                 $lastWord  = count($nameParts) ? $nameParts[count($nameParts)-1] : '';
+				$image = data_get($basic, 'imageUrl');
             @endphp
 
             {{-- Mimic 2-line big name like the PDF --}}
-            <h1 class="name">
-                {{ $firstLine ?: $name }}
-                @if($lastWord && $firstLine !== $name)
-                    <br>{{ $lastWord }}
-                @endif
-            </h1>
+			<div class="{{ $image ? 'flex flex-column avatar-wrap gap-1' : '' }}">
+				@if ($image)
+					<img src="{{$image}}"  class="avatar" alt="Photo Image" />
+				@endif
+				<h1 class="name">
+					{{ $firstLine ?: $name }}
+					@if($lastWord && $firstLine !== $name)
+						<br>{{ $lastWord }}
+					@endif
+				</h1>
+			</div>
         </div>
 
         <div class="top-right contact">

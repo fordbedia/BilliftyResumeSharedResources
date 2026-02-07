@@ -50,4 +50,9 @@ class ResumeBuilderController extends Controller
 	{
 		return $templates->all();
 	}
+
+	public function resumePreview(ResumeRepository $resume)
+	{
+		return $resume->find(1);
+	}
 }

@@ -1,12 +1,10 @@
-{{-- resources/views/resumes/slate.blade.php --}}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{ $resume['basics']['name'] ?? 'Resume' }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+@php
+	$resume = $resume ?? [];
+	$previewColorScheme = $previewColorScheme ?? null;
+	$colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
+@endphp
 
-  <style>
+<style>
     /* -----------------------------
       PDF-friendly base (Dompdf/Chromium)
     ------------------------------ */
@@ -50,13 +48,14 @@
 
     /* Header */
     .name {
-      font-size: 30px;
+      font-size: 40px;
       font-weight: 800;
       letter-spacing: -0.02em;
       margin: 0;
+      color: {{$colorScheme}};
     }
     .title {
-      font-size: 14px;
+      font-size: 18px;
       color: #6b7280;
       margin: 2px 0 10px 0;
       font-weight: 500;
@@ -65,7 +64,7 @@
     .contact-row {
       margin-top: 6px;
       color: #6b7280;
-      font-size: 11px;
+      font-size: 14px;
     }
     .contact-item {
       display: inline-block;
@@ -88,18 +87,19 @@
       margin-top: 14px;
     }
     .section-title {
-      font-size: 12px;
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: 0.02em;
       text-transform: none;
       margin: 0 0 8px 0;
+	  color: {{$colorScheme}};
     }
     .muted { color: #6b7280; }
 
     /* About */
     .about {
       color: #374151;
-      font-size: 12px;
+      font-size: 15px;
     }
 
     /* Experience */
@@ -123,14 +123,25 @@
     }
     .role {
       font-weight: 800;
-      font-size: 13px;
+      font-size: 14px;
       margin: 0;
     }
     .company {
       margin: 1px 0 6px 0;
       color: #6b7280;
-      font-size: 11px;
+      font-size: 14px;
     }
+	.experience-summary {
+	  margin: 1px 0 6px 0;
+	}
+	.experience-summary li {
+		font-size: 14px;
+		line-height: 1.2rem;
+	}
+	.experience-summary li strong{
+		font-weight: 800;
+	}
+
     ul.bullets {
       margin: 0;
       padding-left: 16px;
@@ -239,7 +250,7 @@
       display: inline-block;
       padding: 4px 8px;
       margin: 0 6px 6px 0;
-      border: 1px solid #e5e7eb;
+      border: 1px solid {{$colorScheme ?? '#e5e7eb'}};
       border-radius: 999px;
       font-size: 10px;
       color: #374151;
@@ -292,9 +303,7 @@
       margin: 10px 0;
     }
   </style>
-</head>
 
-<body>
   @php
     // Expecting a JSON-Resume-ish structure in $resume (array)
     $basics = $resume['basics'] ?? [];
@@ -403,7 +412,7 @@
                         <div class="company">{{ $company }}</div>
                       @endif
 
-						{!! $summary !!}
+						<div class="experience-summary">{!! $summary !!}</div>
 
                       @if(!empty($highlights))
                         <ul class="bullets">
@@ -566,5 +575,3 @@
       </tr>
     </table>
   </div>
-</body>
-</html>
