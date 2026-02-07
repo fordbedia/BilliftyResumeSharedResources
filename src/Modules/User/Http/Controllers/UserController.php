@@ -66,13 +66,13 @@ class UserController extends Controller
 		$data = $request->validated();
 		$userModel = $user->find($id);
 
-		$storedPath = null;
-
 		if (!empty($data['avatar'])) {
 			$imageProcessor = ImageFileUploadProcessor::make($data['avatar'], $data['avatar']->getClientOriginalName(), 'profile-image');
 			$storedPath = $imageProcessor->store();
 			unset($data['avatar']);
 			$imageProcessor->deleteLastFile('avatar', $userModel->info);
+		} else {
+			$storedPath = $userModel->info['avatar'] ?? null;
 		}
 
 		return $user->save(array_merge($data, ['info' => [...$data['info'], 'avatar' => $storedPath]]), $userModel);
