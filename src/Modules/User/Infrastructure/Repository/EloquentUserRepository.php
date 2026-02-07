@@ -5,6 +5,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\User\Infrastructure\Reposito
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Infrastructure\UserEloquentBaseRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 class EloquentUserRepository extends UserEloquentBaseRepository implements UserRepository
@@ -14,9 +15,9 @@ class EloquentUserRepository extends UserEloquentBaseRepository implements UserR
 		return $this->model->find($id)->loadMissing(User::relationships());
 	}
 
-	public function save(array $data)
+	public function save(array $data, Model|null $userModel = null)
 	{
-		$user = $this->model->newQuery()->find($data['id']);
+		$user = $userModel ?? $this->model->newQuery()->find($data['id']);
 		$userData = Arr::except($data, ['info']);
 		$userInfo = Arr::only($data, ['info']);
 

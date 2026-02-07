@@ -45,7 +45,9 @@ class ImageFileUploadProcessor implements ImageProcessor
 	{
 		$image = $model->{$column};
 		if ($image) {
-			unlink(storage_path("app/public/{$image}"));
+			try {
+				unlink(storage_path("app/public/{$image}"));
+			} catch(\Throwable $e) {}
 		}
 	}
 

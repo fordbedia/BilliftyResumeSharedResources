@@ -60,20 +60,22 @@ class UserController extends Controller
      */
     public function update(
 		ProfileRequest $request,
-		string $id,
+		int $id,
 		UserRepository $user
 	) {
 		$data = $request->validated();
+		$userModel = $user->find($id);
 
 		$storedPath = null;
 
 		if (!empty($data['avatar'])) {
-			$storedPath = ImageFileUploadProcessor::make($data['avatar'], $data['avatar']->getClientOriginalName(), 'profile-image')
-				->store();
+			$imageProcessor = ImageFileUploadProcessor::make($data['avatar'], $data['avatar']->getClientOriginalName(), 'profile-image');
+			$storedPath = $imageProcessor->store();
 			unset($data['avatar']);
+			$imageProcessor->deleteLastFile('avatar', $userModel->info);
 		}
 
-		return $user->save(array_merge($data, ['info' => [...$data['info'], 'avatar' => $storedPath]]));
+		return $user->save(array_merge($data, ['info' => [...$data['info'], 'avatar' => $storedPath]]), $userModel);
     }
 
     /**
