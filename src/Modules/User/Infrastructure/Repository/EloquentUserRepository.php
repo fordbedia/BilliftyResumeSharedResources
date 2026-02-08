@@ -15,6 +15,11 @@ class EloquentUserRepository extends UserEloquentBaseRepository implements UserR
 		return $this->model->find($id)->loadMissing(User::relationships());
 	}
 
+	public function findStripeCustomer(string $stripeCustomerId)
+	{
+		return $this->model->where('stripe_customer_id', $stripeCustomerId)->first();
+	}
+
 	public function save(array $data, Model|null $userModel = null)
 	{
 		$user = $userModel ?? $this->model->newQuery()->find($data['id']);

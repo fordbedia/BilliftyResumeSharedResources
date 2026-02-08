@@ -4,6 +4,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\User;
 
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\DevAutoLogin;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\EnsureAdmin;
+use BilliftyResumeSDK\SharedResources\Modules\User\Providers\BillingServiceProvider;
 use BilliftyResumeSDK\SharedResources\Modules\User\Providers\RepositoryProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -13,6 +14,7 @@ class UserProvider extends ServiceProvider
 {
 	protected array $providers = [
 		RepositoryProvider::class,
+		BillingServiceProvider::class
 	];
 
 	protected array $policies = [
