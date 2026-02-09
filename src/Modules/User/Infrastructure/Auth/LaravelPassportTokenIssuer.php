@@ -28,6 +28,7 @@ class LaravelPassportTokenIssuer implements AuthTokenIssuer
                 'id'    => $user->id,
                 'email' => $user->email,
                 'name'  => $user->name,
+				'plan' 	=> $user->plan
             ],
         ];
 	}

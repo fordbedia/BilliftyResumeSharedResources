@@ -16,6 +16,7 @@ Route::prefix('v1')->group(function () {
 
 			Route::post('/billing/checkout', [BillingController::class, 'createCheckoutSession']);
     		Route::post('/billing/portal', [BillingController::class, 'createPortalSession']);
+			Route::get('/billing/info', [BillingController::class, 'subscriptionInfo']);
 		});
 		Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 

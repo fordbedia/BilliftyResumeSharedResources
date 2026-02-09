@@ -3,8 +3,10 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\User\Application\Billing\Contracts\StripeBilling;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Billing\UseCases\CreateCheckoutSession;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Billing\UseCases\CreatePortalSession;
+use BilliftyResumeSDK\SharedResources\Modules\User\Infrastructure\Services\StripeSubscriptionInfoService;
 use Illuminate\Http\Request;
 use Stripe\StripeClient;
 
@@ -28,4 +30,18 @@ class BillingController extends Controller
 
         return response()->json(['url' => $url]);
     }
+
+	public function subscriptionInfo(Request $request, StripeSubscriptionInfoService $svc)
+	{
+		$user = $request->user();
+
+		if (!$user->stripe_subscription_id) {
+			return response()->json([
+				'next_billing_date' => null,
+				'payment_method' => null,
+			]);
+		}
+
+		return response()->json($svc->getSubscriptionInfo($user->stripe_subscription_id));
+	}
 }

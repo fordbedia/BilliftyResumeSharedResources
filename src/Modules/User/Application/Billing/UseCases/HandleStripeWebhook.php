@@ -49,6 +49,17 @@ class HandleStripeWebhook
         ], (int) $userId);
     }
 
+	private function billingCycleFromPriceId(?string $priceId): ?string
+	{
+		if (!$priceId) return null;
+
+		return match ($priceId) {
+			config('services.stripe.pro_price_monthly') => 'monthly',
+			config('services.stripe.pro_price_yearly')  => 'yearly',
+			default => null,
+		};
+	}
+
     private function handleSubscriptionUpsert(object $sub): void
 	{
 		$customerId = (string) data_get($sub, 'customer');
@@ -58,29 +69,33 @@ class HandleStripeWebhook
 		if (!$user) return;
 
 		$status  = (string) data_get($sub, 'status', '');
+
+		// Price id for the first subscription item
 		$priceId = data_get($sub, 'items.data.0.price.id');
 
-		$cancelAtPeriodEnd = (bool) data_get($sub, 'cancel_at_period_end', false);
-
-		// Prefer current_period_end; fallback to cancel_at if present
+		// Stripe moved period end to the subscription item in newer API versions
 		$periodEndRaw =
-			data_get($sub, 'current_period_end')
-			?? data_get($sub, 'cancel_at');
+			data_get($sub, 'items.data.0.current_period_end')
+			?? data_get($sub, 'current_period_end') // fallback (older versions)
+			?? data_get($sub, 'cancel_at');         // fallback if present
 
 		$periodEndTs = is_numeric($periodEndRaw) ? (int) $periodEndRaw : null;
 		$periodEndAt = $periodEndTs ? now()->setTimestamp($periodEndTs) : null;
 
+		$cancelAtPeriodEnd = (bool) data_get($sub, 'cancel_at_period_end', false);
 		$isEntitled = in_array($status, ['active', 'trialing'], true);
+
+		$billingCycle = $this->billingCycleFromPriceId(is_string($priceId) ? $priceId : null);
 
 		$this->users->update([
 			'stripe_subscription_id'      => data_get($sub, 'id'),
 			'stripe_price_id'             => $priceId,
+			'billing_cycle'               => $billingCycle, // ✅ new
 			'stripe_status'               => $status,
 			'stripe_cancel_at_period_end' => $cancelAtPeriodEnd,
 			'stripe_current_period_end'   => $periodEndAt,
 			'plan'                        => $isEntitled ? 'pro' : 'free',
 
-			// key line: store expiry when cancel-at-period-end is true
 			'plan_expires_at' => ($cancelAtPeriodEnd && $periodEndAt) ? $periodEndAt : null,
 		], (int) $user->id);
 	}
