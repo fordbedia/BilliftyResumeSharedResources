@@ -53,6 +53,6 @@ class ResumeBuilderController extends Controller
 
 	public function resumePreview(ResumeRepository $resume)
 	{
-		return $resume->find(1);
+		return $resume->getByKey(1);
 	}
 }

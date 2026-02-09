@@ -84,10 +84,12 @@ Route::prefix('v1')->group(function () {
 	Route::get('/resume/preview-link/{resume}', function (Request $request, $resume) {
 		$template = $request->query('template');
 		$colorScheme = $request->query('colorScheme');
+		$resumeBuilder = $request->query('resumeBuilder');
 
 		// Enforce ownership here (global scope applies because user is authenticated on API)
 		$resumeModel = Resume::query()
 			->whereKey($resume)
+			->when($resumeBuilder, fn ($q) => $q->withoutGlobalScope('owned_by_user'))
 			->firstOrFail();
 
 		$params = ['resume' => $resumeModel->id];

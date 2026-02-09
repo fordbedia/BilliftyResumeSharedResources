@@ -76,7 +76,7 @@ class PdfPreviewController extends Controller
     private function loadResume(int $id, ResumeRepository $resume)
     {
         // Implement for your app
-         return $resume->find($id);
+         return $resume->getByKey($id);
 
         throw new \RuntimeException('Implement loadResume()');
     }

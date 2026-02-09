@@ -23,6 +23,13 @@ class EloquentResumeRepository extends EloquentBaseRepository implements ResumeR
 		return $this->model->find($id)->loadMissing(Resume::relationships());
 	}
 
+	public function getByKey(int $id): Resume
+	{
+		return $this->model->withoutGlobalScope('owned_by_user')
+			->find($id)
+			->loadMissing(Resume::relationships());
+	}
+
 	public function create(array $data): \Illuminate\Database\Eloquent\Model|array
 	{
 		return $this->model->create($data);

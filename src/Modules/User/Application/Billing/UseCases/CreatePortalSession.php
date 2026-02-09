@@ -22,7 +22,7 @@ class CreatePortalSession
 
         $result = $this->stripe->createCustomerPortalSession([
             'customer' => $user->stripe_customer_id,
-            'return_url' => rtrim(config('app.frontend_url'), '/') . '/settings/billing',
+            'return_url' => rtrim(config('app.frontend_url'), '/') . '/dashboard/subscription',
         ]);
 
         return $result['url'];
