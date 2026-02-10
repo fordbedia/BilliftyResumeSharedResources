@@ -133,6 +133,67 @@ return new class extends Migration
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
             $table->timestamps();
         });
+
+		// ----------------------------------------------------------------------------
+		// Additional Information
+		// ----------------------------------------------------------------------------
+		Schema::create('certification', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('accomplishment', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('languages', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->string('language');
+			$table->timestamps();
+		});
+		// ----------------------------------------------------------------------------
+		// For US Candidate
+		// ----------------------------------------------------------------------------
+		Schema::create('affiliations', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('interest', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('volunteering', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('websites', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->string('url');
+			$table->timestamps();
+		});
+		Schema::create('project', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('resume_id');
+			$table->text('body');
+			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
     }
 
     /**

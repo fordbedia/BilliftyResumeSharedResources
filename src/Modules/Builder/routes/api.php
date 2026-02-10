@@ -107,3 +107,10 @@ Route::prefix('v1')->group(function () {
 	})->middleware(['auth:api']);
 
 });
+
+// ----------------------------------------------------------------------------
+// V2 Resume Builder
+// ----------------------------------------------------------------------------
+Route::prefix('v2')->group(function () {
+	require __DIR__ . '/v2/resumeBuilder.php';
+});
