@@ -15,10 +15,10 @@ class ResumeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'title' => $this->basic->label,
-			'lastUpdated' => $this->updated_at->diffForHumans(),
+			'id' => $this->id ?? '',
+			'name' => $this->name ?? '',
+			'title' => $this->basic?->label ?? '',
+			'lastUpdated' => $this->updated_at->diffForHumans() ?? '',
 			'basics' => new BasicsJsonResource($this->basic),
 			'template' => TemplateJsonResource::make($this->template),
 		];
