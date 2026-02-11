@@ -141,6 +141,7 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
@@ -148,6 +149,7 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
@@ -155,7 +157,9 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->string('language');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
 		// ----------------------------------------------------------------------------
 		// For US Candidate
@@ -164,6 +168,7 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
@@ -171,6 +176,7 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
@@ -178,6 +184,7 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
@@ -185,12 +192,15 @@ return new class extends Migration
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->string('url');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
+			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
 		Schema::create('project', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
 			$table->text('body');
+			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
 		});
