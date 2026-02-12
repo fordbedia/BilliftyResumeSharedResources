@@ -12,6 +12,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\WorkRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Transactional;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume as ResumeModel;
+use Illuminate\Support\Arr;
 
 class Resume
 {
@@ -31,6 +32,11 @@ class Resume
 	public static function make()
 	{
 		return app(self::class);
+	}
+
+	public function upsert(string $modelName, int $userId, array $payload, int $resumeId)
+	{
+		$this->$modelName($userId, $payload, $resumeId);
 	}
 
 	public function create(int $userId, array $payload, int $resumeId = null)
@@ -53,6 +59,35 @@ class Resume
 				]);
 			}
 			return $resume->load(ResumeModel::relationships())->refresh();
+		});
+	}
+
+	protected function basics(int $userId, array $payload, int $resumeId)
+	{
+		['basics' => $basics] = $payload;
+		return $this->transaction->run(function () use ($basics, $resumeId, $userId) {
+			$data = Arr::only($basics, [
+				'name',
+				'label',
+				'url',
+				'image',
+				'email',
+				'phone',
+				'address',
+				'postalCode',
+				'countryCode',
+				'city',
+				'region',
+				'summary',
+			]);
+
+			$basics = $this->basics->findBy('resume_id', $resumeId);
+			if ($basics) {
+				$basics->forceFill($data)->save();
+			} else {
+				$basics = $this->basics->create(array_merge($data, ['resume_id' => $resumeId]));
+			}
+			return $basics->refresh();
 		});
 	}
 }

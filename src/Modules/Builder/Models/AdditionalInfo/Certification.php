@@ -1,6 +1,6 @@
 <?php
 
-namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
+namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo;
 
 
 use Illuminate\Database\Eloquent\Model;

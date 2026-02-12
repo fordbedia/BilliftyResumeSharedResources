@@ -40,11 +40,9 @@ abstract class RepositoryLayer
 		return $this->getModelByAuthUser()->whereKey($id)->delete();
 	}
 
-    public function findBy(string $field, string $value): self
+    public function findBy(string $field, string $value)
     {
-        $model = $this->model->where($field, $value)->first();
-
-        return $model;
+		return $this->model->where($field, $value)->first();
     }
 
     public function paginate(
