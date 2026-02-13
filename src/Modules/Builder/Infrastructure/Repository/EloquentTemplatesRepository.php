@@ -9,14 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EloquentTemplatesRepository extends EloquentBaseRepository implements TemplatesRepository
 {
-//	public function save(Model|int $resume, int $template)
-//	{
-//		if ($resume instanceof Model) {
-//			$resume->template()->sync(['template_id' => $template]);
-//		} else {
-//			$this->model->resume()->sync(['template_id' => $template]);
-//		}
-//	}
 
 	public function all()
 	{

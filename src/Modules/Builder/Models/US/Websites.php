@@ -5,8 +5,13 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Volunteering extends Model
+class Websites extends Model
 {
-    protected $table = 'volunteering';
+    protected $table = 'websites';
 	protected $guarded = [];
+
+	public function website()
+	{
+		return $this->hasMany(Website::class);
+	}
 }

@@ -14,11 +14,13 @@ class CreateController extends Controller
 	{
 		$data = $request->validated();
 
-		$resume = Resume::make()->create(Auth::user()->id ??  1, $data);
+		$resume = Resume::make()->upsert('create', Auth::user()->id ??  1, $data);
 
 		return response()->json([
 			'success' => true,
-			'data' => $resume
+			'data' => $resume,
+			'step' => 'create',
+			'type' => 'create'
 		]);
 	}
 }

@@ -35,6 +35,11 @@ class EloquentResumeRepository extends EloquentBaseRepository implements ResumeR
 		return $this->model->create($data);
 	}
 
+	public function save(int $resumeId, array $data)
+	{
+		return $this->model->updateOrCreate(['id' => $resumeId], $data);
+	}
+
 	public function makeModel(): string
 	{
 		return Resume::class;

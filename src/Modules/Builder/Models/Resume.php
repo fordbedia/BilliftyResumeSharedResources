@@ -3,9 +3,17 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
 
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Volunteering;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Certification;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Accomplishment;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Languages;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Affiliation;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Interest;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Websites;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Project;
 
 class Resume extends Model
 {
@@ -47,6 +55,46 @@ class Resume extends Model
 		return $this->belongsTo(ColorScheme::class);
 	}
 
+	public function certificate()
+	{
+		return $this->hasOne(Certification::class, 'resume_id', 'id');
+	}
+
+	public function accomplishment()
+	{
+		return $this->hasOne(Accomplishment::class, 'resume_id', 'id');
+	}
+
+	public function languages()
+	{
+		return $this->hasOne(Languages::class);
+	}
+
+	public function affiliation()
+	{
+		return $this->hasOne(Affiliation::class);
+	}
+
+	public function interest()
+	{
+		return $this->hasOne(Interest::class);
+	}
+
+	public function volunteer()
+	{
+		return $this->hasOne(Volunteering::class);
+	}
+
+	public function websites()
+	{
+		return $this->hasOne(Websites::class);
+	}
+
+	public function project()
+	{
+		return $this->hasOne(Project::class);
+	}
+
 	public static function relationships()
 	{
 		return [
@@ -57,7 +105,15 @@ class Resume extends Model
 			'skills' => fn ($q) => $q->orderBy('sort_order'),
 			'reference' => fn ($q) => $q->orderBy('sort_order'),
 			'template',
-			'colorScheme'
+			'colorScheme',
+			'certificate',
+			'accomplishment',
+			'languages.language',
+			'affiliation',
+			'interest',
+			'volunteer',
+			'websites.website',
+			'project',
 		];
 	}
 

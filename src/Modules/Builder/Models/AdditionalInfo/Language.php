@@ -2,11 +2,10 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo;
 
-
 use Illuminate\Database\Eloquent\Model;
 
-class Accomplishment extends Model
+class Language extends Model
 {
-    protected $table = 'accomplishment';
+	protected $table = 'language';
 	protected $guarded = [];
 }
