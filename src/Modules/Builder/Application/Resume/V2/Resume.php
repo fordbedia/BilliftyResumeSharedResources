@@ -2,6 +2,9 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\V2;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\AccomplishmentRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\CertificationRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\LanguageRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\BasicRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\EducationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ProfileRepository;
@@ -25,7 +28,10 @@ class Resume
 		protected ProfileRepository $profile,
 		protected ReferenceRepository $reference,
 		protected Transactional $transaction,
-		protected TemplatesRepository $template
+		protected TemplatesRepository $template,
+		protected CertificationRepository $certifications,
+		protected AccomplishmentRepository $accomplishments,
+		protected LanguageRepository $languages,
 	)
 	{}
 
@@ -34,9 +40,9 @@ class Resume
 		return app(self::class);
 	}
 
-	public function upsert(string $modelName, int $userId, array $payload, int $resumeId)
+	public function upsert(string $modelName, int $userId, array $payload, int $resumeId = null)
 	{
-		$this->$modelName($userId, $payload, $resumeId);
+		return $this->$modelName($userId, $payload, $resumeId);
 	}
 
 	public function create(int $userId, array $payload, int $resumeId = null)
@@ -62,11 +68,11 @@ class Resume
 		});
 	}
 
-	protected function basics(int $userId, array $payload, int $resumeId)
+	protected function basics(int $userId, array $payload, int $resumeId = null)
 	{
-		['basics' => $basics] = $payload;
-		return $this->transaction->run(function () use ($basics, $resumeId, $userId) {
-			$data = Arr::only($basics, [
+		['basics' => $basicsPayload] = $payload;
+		return $this->transaction->run(function () use ($basicsPayload, $resumeId, $userId) {
+			$data = Arr::only($basicsPayload, [
 				'name',
 				'label',
 				'url',
@@ -87,6 +93,56 @@ class Resume
 			} else {
 				$basics = $this->basics->create(array_merge($data, ['resume_id' => $resumeId]));
 			}
+			// ----------------------------------------------------------------------------
+			// Additional Information
+			// ----------------------------------------------------------------------------
+			// Certifications
+			$certificateData = Arr::only($basicsPayload, ['certifications']);
+			$certifications = $this->certifications->findBy('resume_id', $resumeId);
+			if ($certifications) {
+				$certifications->forceFill($basicsPayload['certifications'])->save();
+			} else {
+				$certifications = $this->certifications->create(array_merge($certificateData['certifications'], ['resume_id' => $resumeId]));
+			}
+			// Accomplishments
+			$accomplishmentData = Arr::only($basicsPayload, ['accomplishments']);
+			$accomplishments = $this->accomplishments->findBy('resume_id', $resumeId);
+			if ($accomplishments) {
+				$accomplishments->forceFill($accomplishmentData['accomplishments'])->save();
+			} else {
+				$accomplishments = $this->accomplishments->create(array_merge($accomplishmentData['accomplishments'], ['resume_id' => $resumeId]));
+			}
+			// Languages
+			$languagesData = Arr::only($basicsPayload, ['languages']);
+			$language = collect($languagesData['languages']['language'] ?? [])
+				->filter(fn ($value) => filled($value))
+				->unique()
+				->values()
+				->toArray();
+			unset($languagesData['languages']['language']);
+
+			$languages = $this->languages->findBy('resume_id', $resumeId);
+			if ($languages) {
+				$languages->forceFill($languagesData['languages'])->save();
+			} else {
+				$languages = $this->languages->create(array_merge($languagesData['languages'], ['resume_id' => $resumeId]));
+			}
+
+			// Replace rows to avoid duplicates on subsequent updates.
+			$languages->language()->delete();
+			if (!empty($language)) {
+				$languagesId = $languages->id;
+				$languageRows = collect($language)
+					->map(fn ($value) => [
+						'language' => $value,
+						'languages_id' => $languagesId,
+					])
+					->values()
+					->toArray();
+				$languages->language()->createMany($languageRows);
+			}
+
+
 			return $basics->refresh();
 		});
 	}

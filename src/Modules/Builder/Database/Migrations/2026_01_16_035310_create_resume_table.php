@@ -156,10 +156,16 @@ return new class extends Migration
 		Schema::create('languages', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
-			$table->string('language');
 			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+
+		Schema::create('language', function (Blueprint $table) {
+			$table->unsignedBigInteger('languages_id');
+			$table->string('language');
+			$table->timestamps();
+			$table->foreign('languages_id')->references('id')->on('languages')->onDelete('cascade');
 		});
 		// ----------------------------------------------------------------------------
 		// For US Candidate
@@ -191,10 +197,15 @@ return new class extends Migration
 		Schema::create('websites', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedBigInteger('resume_id');
-			$table->string('url');
 			$table->tinyInteger('is_active')->default(1);
 			$table->timestamps();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+		});
+		Schema::create('website', function (Blueprint $table) {
+			$table->unsignedBigInteger('websites_id');
+			$table->string('url');
+			$table->timestamps();
+			$table->foreign('websites_id')->references('id')->on('websites')->onDelete('cascade');
 		});
 		Schema::create('project', function (Blueprint $table) {
 			$table->id();

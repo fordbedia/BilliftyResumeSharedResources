@@ -25,7 +25,7 @@ class BasicController extends Controller
 			$imageProcessor->deleteLastFile('image', $basicModel);
 			$payload['basics']['image'] = $storedPath;
 		} else {
-			$payload['basics']['image'] = $basicModel->image;
+			$payload['basics']['image'] = $basicModel->image ?? null;
 		}
 		$resume = Resume::make()->upsert('basics', Auth::user()->id ??  1, $payload, $resumeId);
 

@@ -2,16 +2,10 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo;
 
-
 use Illuminate\Database\Eloquent\Model;
 
-class Languages extends Model
+class Language extends Model
 {
-    protected $table = 'languages';
+	protected $table = 'language';
 	protected $guarded = [];
-
-	public function language()
-	{
-		return $this->hasMany(Language::class);
-	}
 }

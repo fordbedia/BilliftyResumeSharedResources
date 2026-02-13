@@ -12,7 +12,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Acco
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Languages;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Affiliation;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Interest;
-use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Website;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Websites;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Project;
 
 class Resume extends Model
@@ -65,9 +65,9 @@ class Resume extends Model
 		return $this->hasOne(Accomplishment::class, 'resume_id', 'id');
 	}
 
-	public function languages(): Builder|\Illuminate\Database\Eloquent\Relations\HasMany|Resume
+	public function languages()
 	{
-		return $this->hasMany(Languages::class);
+		return $this->hasOne(Languages::class);
 	}
 
 	public function affiliation()
@@ -87,7 +87,7 @@ class Resume extends Model
 
 	public function websites()
 	{
-		return $this->hasMany(Website::class);
+		return $this->hasOne(Websites::class);
 	}
 
 	public function project()
@@ -108,11 +108,11 @@ class Resume extends Model
 			'colorScheme',
 			'certificate',
 			'accomplishment',
-			'languages',
+			'languages.language',
 			'affiliation',
 			'interest',
 			'volunteer',
-			'websites',
+			'websites.website',
 			'project',
 		];
 	}
