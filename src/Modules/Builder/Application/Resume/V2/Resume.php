@@ -302,4 +302,27 @@ class Resume
 				$this->skills->deleteMissing($resumeId, $keepSkillsIds);
 		});
 	}
+
+	protected function references(int $userId, array $payload, int $resumeId = null)
+	{
+		['references' => $referencesPayload] = $payload;
+		return $this->transaction->run(function () use ($referencesPayload, $resumeId, $userId) {
+			$keepReferencesIds = [];
+			foreach ($referencesPayload as $i => $item) {
+				$data = [
+					'reference' 	=> $item['reference'],
+					'resume_id' 	=> $resumeId,
+					'name' 			=> $item['name'],
+					'sort_order' 	=> $i
+				];
+				if (!empty($item['id'])) {
+					$savedReferences = $this->reference->updateById($resumeId, (int) $item['id'], $data);
+				} else {
+					$savedReferences = $this->reference->create($data);
+				}
+				$keepReferencesIds[] = $savedReferences->id;
+			}
+			$this->reference->deleteMissing($resumeId, $keepReferencesIds);
+		});
+	}
 }
