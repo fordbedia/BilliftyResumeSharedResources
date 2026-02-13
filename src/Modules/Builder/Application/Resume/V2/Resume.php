@@ -252,4 +252,30 @@ class Resume
 			return $workModel->refresh();
 		});
 	}
+
+	protected function education(int $userId, array $payload, int $resumeId = null)
+	{
+		['education' => $educationPayload] = $payload;
+		return $this->transaction->run(function () use ($educationPayload, $resumeId, $userId) {
+			$keepIds = [];
+			foreach ($educationPayload as $i => $item) {
+					$data = [
+						'resume_id' 	=> $resumeId,
+						'institution' 	=> $item['institution'],
+						'area' 			=> $item['area'],
+						'studyType' 	=> $item['studyType'],
+						'startDate' 	=> $item['startDate'],
+						'endDate' 		=> $item['endDate'],
+						'sort_order' 	=> $i
+					];
+					if (!empty($item['id'])) {
+						$savedEducation = $this->education->updateById($resumeId, (int) $item['id'], $data);
+					} else {
+						$savedEducation = $this->education->create($data);
+					}
+					$keepEducationIds[] = $savedEducation->id;
+				}
+				$this->education->deleteMissing($resumeId, $keepEducationIds);
+		});
+	}
 }

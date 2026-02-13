@@ -4,7 +4,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Requests\V2;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResumeWorkRequest extends FormRequest
+class ResumeEducationRequest extends FormRequest
 {
 	use DecodesJsonFormData;
 
@@ -26,12 +26,13 @@ class ResumeWorkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'work.*.name'  		=> 'nullable|string',
-			'work.*.position'		=> 'nullable|string',
-			'work.*.startDate'		=> 'nullable|date',
-			'work.*.endDate'		=> 'nullable|date',
-			'work.*.summary'		=> 'nullable|string',
-			'sort_order' 		=> 'nullable|string',
+           	'education.*.resume_id' 	=> 'nullable|string',
+			'education.*.institution' 	=> 'nullable|string',
+			'education.*.area' 			=> 'nullable|string',
+			'education.*.studyType' 	=> 'nullable|string',
+			'education.*.startDate' 	=> 'nullable|string',
+			'education.*.endDate' 		=> 'nullable|string',
+			'education.*.sort_order' 	=> 'nullable|string',
         ];
     }
 }
