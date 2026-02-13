@@ -18,7 +18,9 @@ class CreateController extends Controller
 
 		return response()->json([
 			'success' => true,
-			'data' => $resume
+			'data' => $resume,
+			'step' => 'create',
+			'type' => 'create'
 		]);
 	}
 }

@@ -13,9 +13,9 @@ class EloquentWebsiteRepository extends EloquentBaseRepository implements Websit
 		return parent::findBy($field, $value);
 	}
 
-	public function create(array $data): \Illuminate\Database\Eloquent\Model|array
+	public function save(int $resumeId, array $data): \Illuminate\Database\Eloquent\Model|array
 	{
-		return $this->model->updateOrCreate($data);
+		return $this->model->updateOrCreate(['resume_id' => $resumeId], $data);
 	}
 
 	public function makeModel(): string

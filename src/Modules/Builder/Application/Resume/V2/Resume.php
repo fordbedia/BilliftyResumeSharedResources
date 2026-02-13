@@ -6,6 +6,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\CertificationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\LanguageRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\BasicRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ColorSchemeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\EducationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ProfileRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ReferenceRepository;
@@ -135,7 +136,7 @@ class Resume
 			if ($languages) {
 				$languages->forceFill($languagesData['languages'])->save();
 			} else {
-				$languages = $this->languages->create(array_merge($languagesData['languages'], ['resume_id' => $resumeId]));
+				$languages = $this->languages->save($resumeId, array_merge($languagesData['languages'], ['resume_id' => $resumeId]));
 			}
 
 			// Replace rows to avoid duplicates on subsequent updates.
@@ -191,7 +192,7 @@ class Resume
 			if ($websites) {
 				$websites->forceFill($websitesData['websites'])->save();
 			} else {
-				$websites = $this->websites->create(array_merge($websitesData['websites'], ['resume_id' => $resumeId]));
+				$websites = $this->websites->save($resumeId, array_merge($websitesData['websites'], ['resume_id' => $resumeId]));
 			}
 
 			// Replace rows to avoid duplicates on subsequent updates.
@@ -324,5 +325,18 @@ class Resume
 			}
 			$this->reference->deleteMissing($resumeId, $keepReferencesIds);
 		});
+	}
+
+	protected function finalize(int $userId, array $payload, int $resumeId = null)
+	{
+		['finalize' => $finalizePayload] = $payload;
+		// Resume name
+		$this->resume->save($resumeId, [
+			'name' => $finalizePayload['name'],
+			'template_id' => $finalizePayload['template'],
+			'color_scheme_id' => $finalizePayload['color_scheme_id']
+		]);
+
+		return $this->resume->find($resumeId);
 	}
 }

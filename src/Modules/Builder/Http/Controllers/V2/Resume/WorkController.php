@@ -20,7 +20,8 @@ class WorkController extends Controller
 		return response()->json([
 			'success' => true,
 			'data' => $resume,
-			'type' => $type
+			'type' => $type,
+			'step' => 'work'
 		]);
 	}
 

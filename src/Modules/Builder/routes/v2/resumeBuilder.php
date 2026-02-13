@@ -4,6 +4,7 @@
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\BasicController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\CreateController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\EducationController;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\FinalizeController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\ReferencesController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\SkillsController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\WorkController;
@@ -33,7 +34,7 @@ Route::prefix('resume')->middleware(['auth:api'])
 	Route::post('/{resumeId}/references/index/{index}', [ReferencesController::class, 'handleIndex'])
 		->name('basic.index');
 
-	Route::post('/{resumeId}/finalize/{type}', [WorkController::class, 'handleSteps']);
-	Route::post('/{resumeId}/finalize/index/{index}', [WorkController::class, 'handleIndex'])
+	Route::post('/{resumeId}/finalize/{type}', [FinalizeController::class, 'handleSteps']);
+	Route::post('/{resumeId}/finalize/index/{index}', [FinalizeController::class, 'handleIndex'])
 		->name('basic.index');
 });

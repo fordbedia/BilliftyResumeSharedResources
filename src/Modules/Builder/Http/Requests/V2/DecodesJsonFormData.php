@@ -15,7 +15,7 @@ trait DecodesJsonFormData
      */
     protected function jsonFormDataKeys(): array
     {
-        return ['create', 'basics', 'skills', 'work', 'education', 'references'];
+        return ['create', 'basics', 'skills', 'work', 'education', 'references', 'finalize'];
     }
 
     /**
