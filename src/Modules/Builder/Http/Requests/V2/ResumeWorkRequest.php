@@ -31,7 +31,7 @@ class ResumeWorkRequest extends FormRequest
 			'work.*.startDate'		=> 'nullable|date',
 			'work.*.endDate'		=> 'nullable|date',
 			'work.*.summary'		=> 'nullable|string',
-			'sort_order' 		=> 'nullable|string',
+			'work.*.sort_order' 	=> 'nullable|integer',
         ];
     }
 }

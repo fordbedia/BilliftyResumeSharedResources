@@ -32,7 +32,7 @@ class ResumeEducationRequest extends FormRequest
 			'education.*.studyType' 	=> 'nullable|string',
 			'education.*.startDate' 	=> 'nullable|string',
 			'education.*.endDate' 		=> 'nullable|string',
-			'education.*.sort_order' 	=> 'nullable|string',
+			'education.*.sort_order' 	=> 'nullable|integer',
         ];
     }
 }

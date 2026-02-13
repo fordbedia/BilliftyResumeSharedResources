@@ -224,6 +224,7 @@ class Resume
 	protected function work(int $userId, array $payload, int $resumeId = null)
 	{
 		['work' => $workPayload] = $payload;
+
 		return $this->transaction->run(function () use ($workPayload, $resumeId, $userId) {
 			$keepIds = [];
 			foreach($workPayload as $i => $work){
