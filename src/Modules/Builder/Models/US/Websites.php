@@ -12,6 +12,6 @@ class Websites extends Model
 
 	public function website()
 	{
-		return $this->hasOne(Website::class);
+		return $this->hasMany(Website::class);
 	}
 }
