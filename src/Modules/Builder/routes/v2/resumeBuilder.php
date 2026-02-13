@@ -4,6 +4,7 @@
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\BasicController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\CreateController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\EducationController;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\SkillsController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\WorkController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +24,8 @@ Route::prefix('resume')->middleware(['auth:api'])
 	Route::post('/{resumeId}/education/index/{index}', [EducationController::class, 'handleIndex'])
 		->name('basic.index');
 
-	Route::post('/{resumeId}/skills/{type}', [WorkController::class, 'handleSteps']);
-	Route::post('/{resumeId}/skills/index/{index}', [WorkController::class, 'handleIndex'])
+	Route::post('/{resumeId}/skills/{type}', [SkillsController::class, 'handleSteps']);
+	Route::post('/{resumeId}/skills/index/{index}', [SkillsController::class, 'handleIndex'])
 		->name('basic.index');
 
 	Route::post('/{resumeId}/references/{type}', [WorkController::class, 'handleSteps']);

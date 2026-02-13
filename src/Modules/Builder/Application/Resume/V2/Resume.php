@@ -279,4 +279,27 @@ class Resume
 				$this->education->deleteMissing($resumeId, $keepEducationIds);
 		});
 	}
+
+	protected function skills(int $userId, array $payload, int $resumeId = null)
+	{
+		['skills' => $skillsPayload] = $payload;
+		return $this->transaction->run(function () use ($skillsPayload, $resumeId, $userId) {
+			$keepSkillsIds = [];
+			foreach ($skillsPayload as $i => $item) {
+					$data = [
+						'level' 		=> $item['level'],
+						'resume_id' 	=> $resumeId,
+						'name' 			=> $item['name'],
+						'sort_order' 	=> $i
+					];
+					if (!empty($item['id'])) {
+						$savedSkills = $this->skills->updateById($resumeId, (int) $item['id'], $data);
+					} else {
+						$savedSkills = $this->skills->create($data);
+					}
+					$keepSkillsIds[] = $savedSkills->id;
+				}
+				$this->skills->deleteMissing($resumeId, $keepSkillsIds);
+		});
+	}
 }
