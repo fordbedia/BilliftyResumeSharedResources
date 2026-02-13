@@ -220,4 +220,36 @@ class Resume
 			return $basics->refresh();
 		});
 	}
+
+	protected function work(int $userId, array $payload, int $resumeId = null)
+	{
+		['work' => $workPayload] = $payload;
+		return $this->transaction->run(function () use ($workPayload, $resumeId, $userId) {
+			$keepIds = [];
+			foreach($workPayload as $i => $work){
+				$data = [
+					'resume_id'  	=> $resumeId,
+					'name'       	=> $work['name'] ?? '',
+					'position'   	=> $work['position'] ?? null,
+					'startDate'  	=> $work['startDate'] ?? null,
+					'endDate'    	=> $work['endDate'] ?? null,
+					'summary'    	=> $work['summary'] ?? null,
+					'sort_order' 	=> $i
+				];
+				if(!empty($work['id'])){
+					$saved = $this->work->updateById($resumeId, (int) $work['id'], $data);
+				} else {
+					// CREATE (duplicates allowed → never search by name)
+					$saved = $this->work->create($data);
+				}
+
+				$keepIds[] = $saved->id;
+			}
+			// delete rows not present anymore
+			$this->work->deleteMissing($resumeId, $keepIds);
+
+			$workModel = $this->work->findBy('resume_id', $resumeId);
+			return $workModel->refresh();
+		});
+	}
 }
