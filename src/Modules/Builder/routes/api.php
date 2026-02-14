@@ -71,13 +71,14 @@ Route::prefix('v1')->group(function () {
 			Route::get('/{resume}/export/email/status', [ResumeExportController::class, 'emailStatus']);
 			Route::post('/{resume}/export/clean-up', [ResumeExportController::class, 'cleanUpDrive']);
 			Route::get('/resume-preview', [ResumeBuilderController::class, 'resumePreview']);
+			Route::delete('/{id}', [ResumeController::class, 'destroy']);
 
 			// ----------------------------------------------------------------------------
 			// DO NOT ADD ANY ROUTES AFTER THIS LINE.
 			// ----------------------------------------------------------------------------
 			Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
 			Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);
-			Route::apiResource('/', ResumeController::class);
+			Route::apiResource('', ResumeController::class);
 	});
 
 	// api.php

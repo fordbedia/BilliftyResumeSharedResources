@@ -6,6 +6,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Volunteering;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Certification;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\AdditionalInfo\Accomplishment;
@@ -17,6 +18,8 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Project;
 
 class Resume extends Model
 {
+	use SoftDeletes;
+
     protected $table = 'resume';
 	protected $guarded = [];
 

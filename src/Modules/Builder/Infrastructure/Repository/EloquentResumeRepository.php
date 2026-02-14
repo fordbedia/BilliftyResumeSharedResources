@@ -44,4 +44,9 @@ class EloquentResumeRepository extends EloquentBaseRepository implements ResumeR
 	{
 		return Resume::class;
 	}
+
+	public function destroy(int $id)
+	{
+		return $this->model->destroy($id);
+	}
 }

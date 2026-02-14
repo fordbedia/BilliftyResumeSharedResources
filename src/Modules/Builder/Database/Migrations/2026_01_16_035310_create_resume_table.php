@@ -50,6 +50,7 @@ return new class extends Migration
 			$table->timestamp('export_ready_at')->nullable();
 
             $table->timestamps();
+			$table->softDeletes();
 
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			$table->foreign('template_id')->references('id')->on('templates')->onDelete('cascade');
@@ -107,6 +108,7 @@ return new class extends Migration
 			$table->string('level')->nullable();
 			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+			$table->softDeletes();
             $table->timestamps();
         });
 
@@ -121,6 +123,7 @@ return new class extends Migration
 			$table->float('score')->nullable();
 			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+			$table->softDeletes();
             $table->timestamps();
         });
 
@@ -131,6 +134,7 @@ return new class extends Migration
 			$table->text('reference');
 			$table->unsignedInteger('sort_order')->default(0)->index();
 			$table->foreign('resume_id')->references('id')->on('resume')->onDelete('cascade');
+			$table->softDeletes();
             $table->timestamps();
         });
 
@@ -165,6 +169,7 @@ return new class extends Migration
 			$table->unsignedBigInteger('languages_id');
 			$table->string('language');
 			$table->timestamps();
+			$table->softDeletes();
 			$table->foreign('languages_id')->references('id')->on('languages')->onDelete('cascade');
 		});
 		// ----------------------------------------------------------------------------
@@ -205,6 +210,7 @@ return new class extends Migration
 			$table->unsignedBigInteger('websites_id');
 			$table->string('url');
 			$table->timestamps();
+			$table->softDeletes();
 			$table->foreign('websites_id')->references('id')->on('websites')->onDelete('cascade');
 		});
 		Schema::create('project', function (Blueprint $table) {
