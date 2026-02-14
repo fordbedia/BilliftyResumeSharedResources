@@ -34,8 +34,8 @@ class ResumeBasicRequest extends FormRequest
 			'basics.url' => 'nullable|string',
 			'basics_image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:1120'],
 			'basics.image_disk' => 'nullable|string',
-			'basics.email' => 'nullable|string',
-			'basics.phone' => 'nullable|string',
+			'basics.email' => 'nullable|email',
+			'basics.phone' => ['nullable', 'string', 'regex:/^\+?[0-9\s().-]{7,20}$/'],
 			'basics.address' => 'nullable|string',
 			'basics.postalCode' => 'nullable|string',
 			'basics.city' => 'nullable|string',
@@ -60,4 +60,11 @@ class ResumeBasicRequest extends FormRequest
 			'basics.projects.body' => 'nullable|string',
         ];
     }
+
+	public function attributes()
+	{
+		return [
+			'basics.email' => 'Email',
+		];
+	}
 }

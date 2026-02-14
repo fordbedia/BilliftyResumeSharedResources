@@ -70,7 +70,7 @@ class UserController extends Controller
 			$imageProcessor = ImageFileUploadProcessor::make($data['avatar'], $data['avatar']->getClientOriginalName(), 'profile-image');
 			$storedPath = $imageProcessor->store();
 			unset($data['avatar']);
-			$imageProcessor->deleteLastFile('avatar', $userModel->info);
+			if ($userModel->info) $imageProcessor->deleteLastFile('avatar', $userModel->info);
 		} else {
 			$storedPath = $userModel->info['avatar'] ?? null;
 		}

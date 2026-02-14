@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface ImageProcessor
 {
-    public function store();
+    public function store(?int $maxWidth = null, ?int $maxHeight = null);
 
     public function deleteLastFile(string $column, Model $model);
 }
