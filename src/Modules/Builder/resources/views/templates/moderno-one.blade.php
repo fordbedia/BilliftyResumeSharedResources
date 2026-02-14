@@ -1,4 +1,4 @@
-{{-- shared-resources/src/Modules/Builder/resources/views/templates/edbedia-green.blade.php --}}
+{{-- shared-resources/src/Modules/Builder/resources/views/templates/moderno-one.blade.php --}}
 @php
     // Expecting $resume shaped like ResumeJsonResource output:
     // $resume['basics'], $resume['work'], $resume['education'], $resume['skills'], $resume['references']
@@ -7,21 +7,20 @@
     $location = data_get($basics, 'location', []);
     $profiles = data_get($basics, 'profiles', []);
 
-    $skills = data_get($resume ?? [], 'skills', []);
-    $work = data_get($resume ?? [], 'work', []);
-    $education = data_get($resume ?? [], 'education', []);
-    $references = data_get($resume ?? [], 'references', []);
+    $skills = (array) data_get($resume ?? [], 'skills', []);
+    $work = (array) data_get($resume ?? [], 'work', []);
+    $education = (array) data_get($resume ?? [], 'education', []);
+    $references = (array) data_get($resume ?? [], 'references', []);
 
-    // Split name like the PDF: first line = first token, second line = the rest
     $fullName = trim((string) data_get($basics, 'name', ''));
     $nameParts = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-    $nameFirst = strtoupper($nameParts[0] ?? $fullName);
-    $nameRest = strtoupper(implode(' ', array_slice($nameParts, 1)));
-	$previewColorScheme = $previewColorScheme ?? null;
-	$colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
+    $nameFirst = $nameParts[0] ?? $fullName;
+    $nameRest = implode(' ', array_slice($nameParts, 1));
 
-    // Contact lines (match the PDF order)
-    $contactLine1 = trim(implode(' ', array_filter([
+    $previewColorScheme = $previewColorScheme ?? null;
+    $colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme', '#5f8b70');
+
+    $contactLine1 = trim(implode(', ', array_filter([
         data_get($location, 'city'),
         data_get($location, 'region'),
         data_get($location, 'postalCode'),
@@ -36,326 +35,711 @@
     $label = (string) data_get($basics, 'label');
     $summary = (string) data_get($basics, 'summary');
 
-    // Small helper: show date range exactly as stored
     $fmtRange = function ($start, $end) {
         $start = trim((string) $start);
         $end = trim((string) $end);
-        if ($start && $end) return $start . ' - ' . $end;
+        if ($start && $end) return $start . ' — ' . $end;
         return $start ?: $end;
     };
+
+    // New sections (rich text bodies)
+    $accomplishmentActive = (bool) data_get($resume, 'accomplishment.is_active');
+    $affiliationActive    = (bool) data_get($resume, 'affiliation.is_active');
+    $interestActive       = (bool) data_get($resume, 'interest.is_active');
+    $volunteerActive      = (bool) data_get($resume, 'volunteer.is_active');
+    $projectActive        = (bool) data_get($resume, 'project.is_active');
+
+    $accomplishmentBody = (string) data_get($resume, 'accomplishment.body', '');
+    $affiliationBody    = (string) data_get($resume, 'affiliation.body', '');
+    $interestBody       = (string) data_get($resume, 'interest.body', '');
+    $volunteerBody      = (string) data_get($resume, 'volunteer.body', '');
+    $projectBody        = (string) data_get($resume, 'project.body', '');
+
+    // Sidebar extras
+    $languagesActive = (bool) data_get($resume, 'languages.is_active');
+    $languages = (array) data_get($resume, 'languages.languages', []);
+
+    $websitesActive = (bool) data_get($resume, 'websites.is_active');
+    $websites = (array) data_get($resume, 'websites.websites', []);
+
+    // Helpers
+    $hasAnyTopSections =
+        ($accomplishmentActive && trim($accomplishmentBody) !== '') ||
+        ($affiliationActive && trim($affiliationBody) !== '') ||
+        ($interestActive && trim($interestBody) !== '') ||
+        ($volunteerActive && trim($volunteerBody) !== '');
+
+    $safeText = function ($value) {
+        return trim((string) $value);
+    };
 @endphp
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
     <style>
-        /* Dompdf-safe: no flex/grid, keep it table-based */
-        @page { margin: 0 28px 28px 28px; }
+        /* ====== Print / PDF ====== */
+        @page { margin: 26px; }
+        html, body { height: 100%; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; box-sizing: border-box; }
+
+        :root{
+            --accent: {{ $colorScheme ?? '#5f8b70' }};
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --soft: #eef2f7;
+            --paper: #ffffff;
+            --sidebar-ink: rgba(255,255,255,0.92);
+            --sidebar-ink-2: rgba(255,255,255,0.78);
+            --shadow: 0 10px 26px rgba(17,24,39,0.10);
+            --radius: 18px;
+            --radius-sm: 12px;
+        }
 
         body {
-            font-family: DejaVu Sans, Arial, sans-serif;
-            color: #2b2b2b;
-            font-size: 12px;
+            margin: 0;
+            font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+            color: var(--ink);
+            font-size: 12.5px;
+            line-height: 1.55;
+            background: var(--paper);
+        }
+
+        /* ====== Page wrapper ====== */
+        .page {
+            width: 100%;
+        }
+
+        /* ====== Header ====== */
+        .header {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .name {
+            margin: 0;
+            padding: 0;
+        }
+        .name .first {
+            font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            font-size: 52px;
+            line-height: 0.95;
+            margin: 0;
+        }
+        .name .rest {
+            font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            font-size: 52px;
+            line-height: 0.95;
+            margin: 0;
+        }
+
+        .contactCard {
+            border: 1px solid rgba(31,41,55,0.10);
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
+            border-radius: var(--radius);
+            padding: 14px 14px 12px 14px;
+            box-shadow: 0 6px 18px rgba(17,24,39,0.06);
+        }
+
+        .contactLine {
+            margin: 0;
+            padding: 0;
+            color: var(--muted);
+            font-size: 12.5px;
             line-height: 1.45;
         }
-
-        .green { color: #5f8b70; }
-        .muted { color: #6b6b6b; }
-
-        .name-font { font-family: DejaVu Serif, Georgia, serif; color: {{$colorScheme ?? '#5f8b70'}}; }
-        .title-font { font-family: DejaVu Serif, Georgia, serif; }
-
-        .h-name-1 {
-            font-size: 58px;
-            line-height: 0.92;
+        .contactLine strong {
+            color: var(--ink);
             font-weight: 700;
-            letter-spacing: 1px;
-            margin: 0;
-            padding: 0;
-			color: {{$colorScheme}};
-        }
-        .h-name-2 {
-            font-size: 58px;
-            line-height: 0.92;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin: 0;
-            padding: 0;
-			color: {{$colorScheme}};
         }
 
-        .contact {
+        /* ====== Summary ====== */
+        .summaryCard {
+            margin-top: 14px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31,41,55,0.10);
+        }
+        .summaryTop {
+            background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 88%, #000 12%) 0%, var(--accent) 48%, color-mix(in srgb, var(--accent) 78%, #fff 22%) 100%);
+            padding: 10px 16px;
+            color: white;
+        }
+        .summaryTop .label {
+            font-weight: 800;
+            letter-spacing: 0.4px;
             font-size: 13px;
-            line-height: 1.5;
-            text-align: left;
-			color: {{$colorScheme ?? '#5f8b70'}};
-        }
-        .contact .line { margin: 0; padding: 0; }
-
-        .summary-band {
-            background: #eeeeee;
-            padding: 14px 16px;
-            margin-top: 12px;
-        }
-        .summary-text {
-            font-size: 13px;
-            line-height: 1.55;
             margin: 0;
         }
-
-        .layout {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
+        .summaryBody {
+            background: #ffffff;
+            padding: 12px 16px 14px 16px;
         }
-        .layout td { vertical-align: top; }
+        .summaryBody p { margin: 0; }
+        .summaryBody * { max-width: 100%; }
 
-        .sidebar {
-            background: {{$colorScheme ?? '#5f8b70'}};
-            color: #ffffff;
-            padding: 16px 14px;
-        }
-
-        .section-title-sidebar {
-            font-family: DejaVu Serif, Georgia, serif;
-            font-size: 26px;
-            font-weight: 700;
-            margin: 0 0 10px 0;
-            padding: 0;
+        /* ====== Highlight sections (Accomplishments/Affiliations/Interest/Volunteer/Projects) ====== */
+        .featureGrid {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 12px;
         }
 
-        .section-title-main {
-            font-family: DejaVu Serif, Georgia, serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: {{$colorScheme ?? '#5f8b70'}};
-            margin: 0 0 10px 0;
-            padding: 0;
+        .feature {
+            grid-column: span 6;
+            border-radius: var(--radius);
+            border: 1px solid rgba(31,41,55,0.10);
+            background: linear-gradient(180deg, #ffffff 0%, rgba(248,250,252,1) 100%);
+            box-shadow: 0 8px 24px rgba(17,24,39,0.07);
+            overflow: hidden;
         }
-		.skills {
 
-		}
-        .skills-ul {
+        .featureHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: linear-gradient(90deg,
+                color-mix(in srgb, var(--accent) 14%, #fff 86%) 0%,
+                color-mix(in srgb, var(--accent) 8%, #fff 92%) 100%);
+            border-bottom: 1px solid rgba(31,41,55,0.08);
+        }
+
+        .featureTitle {
             margin: 0;
-            padding: 0 0 0 16px; /* bullet indent */
-        }
-        .skills-ul li {
-            margin: 0 0 0 0;
-            padding: 8px 0 0 0;
-			break-inside: avoid;
-        }
-
-        .divider {
-            border-top: 2px solid #ffffff;
-            margin: 14px 0 16px 0;
-            height: 0;
-            line-height: 0;
-        }
-
-        .edu-item { margin: 0 0 18px 0; }
-        .edu-line1 { font-size: 16px; font-weight: 700; margin: 0 0 4px 0; }
-        .edu-line2 { font-size: 15px; font-weight: 700; text-transform: uppercase; margin: 0 0 6px 0; }
-        .edu-line3 { font-size: 13px; margin: 0; }
-
-        .main {
-            padding: 16px 16px 16px 18px;
-        }
-
-        .job-table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin-bottom: 26px;
-        }
-        .job-table td { vertical-align: top; }
-
-        .job-dates {
-            width: 26%;
-            font-size: 13px;
-            color: #6b6b6b;
-            padding-right: 10px;
-        }
-
-        .job-title {
+            font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+            font-weight: 900;
             font-size: 16px;
-            font-weight: 700;
-            margin: 0 0 2px 0;
+            letter-spacing: 0.3px;
+            color: var(--ink);
         }
-        .job-company {
-            font-size: 13px;
-            font-style: italic;
-            color: #6b6b6b;
+
+        .featurePill {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+            background: var(--accent);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .featureBody {
+            padding: 12px 14px 14px 14px;
+            color: #374151;
+        }
+        .featureBody p { margin: 0 0 10px 0; }
+        .featureBody ul, .featureBody ol { margin: 0 0 10px 0; padding-left: 18px; }
+        .featureBody li { margin: 0 0 8px 0; }
+        .featureBody a { color: var(--accent); text-decoration: underline; }
+
+        /* Make these sections never split awkwardly */
+        .feature { break-inside: avoid; page-break-inside: avoid; }
+
+        /* ====== Main two-column layout ====== */
+        .content {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 310px 1fr;
+            gap: 14px;
+            align-items: stretch;
+        }
+
+        /* ====== Sidebar ====== */
+        .sidebar {
+            border-radius: var(--radius);
+            padding: 14px;
+            background: radial-gradient(1200px 500px at -10% -20%,
+                color-mix(in srgb, var(--accent) 80%, #fff 20%) 0%,
+                var(--accent) 40%,
+                color-mix(in srgb, var(--accent) 65%, #000 35%) 100%);
+            color: var(--sidebar-ink);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar:before {
+            content: "";
+            position: absolute;
+            inset: -80px -120px auto auto;
+            width: 220px;
+            height: 220px;
+            background: rgba(255,255,255,0.10);
+            border-radius: 999px;
+            transform: rotate(12deg);
+        }
+
+        .sbSection {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 14px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .sbTitle {
             margin: 0 0 10px 0;
+            font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.2px;
+            color: #ffffff;
         }
+
+        .sbDivider {
+            height: 1px;
+            background: rgba(255,255,255,0.28);
+            margin: 12px 0;
+        }
+
+        /* Skills as "tags" */
+        .tagWrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.30);
+            background: rgba(255,255,255,0.10);
+            color: #ffffff;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        /* Education cards */
+        .eduCard {
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.10);
+            border-radius: var(--radius-sm);
+            padding: 10px 10px;
+            margin-bottom: 10px;
+        }
+        .eduLine1 { margin: 0; font-size: 13px; font-weight: 900; color: #fff; }
+        .eduLine2 { margin: 2px 0 0 0; font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--sidebar-ink); }
+        .eduLine3 { margin: 4px 0 0 0; font-size: 12px; color: var(--sidebar-ink-2); }
+
+        /* Sidebar lists (Languages/Websites) */
+        .sbList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 8px;
+        }
+        .sbList li {
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.10);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #fff;
+            word-break: break-word;
+        }
+        .sbList a { color: #fff; text-decoration: underline; }
+
+        /* ====== Main column ====== */
+        .main {
+            border-radius: var(--radius);
+            border: 1px solid rgba(31,41,55,0.10);
+            background: linear-gradient(180deg, #ffffff 0%, rgba(248,250,252,1) 100%);
+            box-shadow: var(--shadow);
+            padding: 14px 16px;
+            min-height: 100%;
+        }
+
+        .mainTitleRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .mainTitle {
+            margin: 0;
+            font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 0.2px;
+            color: var(--ink);
+        }
+
+        .accentLine {
+            height: 10px;
+            flex: 1;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent), rgba(31,41,55,0.08));
+            opacity: 0.9;
+        }
+
+        /* Work items */
+        .job {
+            border: 1px solid rgba(31,41,55,0.08);
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 12px 12px 10px 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 20px rgba(17,24,39,0.05);
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .jobTop {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .jobDates {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+            padding-top: 2px;
+        }
+
+        .jobRole {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--ink);
+        }
+
+        .jobCompany {
+            margin: 2px 0 0 0;
+            color: var(--muted);
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .jobSummary {
+            margin: 8px 0 0 0;
+            color: #374151;
+        }
+
+        .jobSummary p { margin: 0 0 10px 0; }
+        .jobSummary a { color: var(--accent); text-decoration: underline; }
 
         .bullets {
-            margin: 0;
-            padding: 0 0 0 18px;
-            color: #555555;
+            margin: 10px 0 0 0;
+            padding-left: 18px;
+            color: #374151;
         }
-        .bullets li {
-            margin: 0 0 10px 0;
-            padding: 0;
+        .bullets li { margin: 0 0 8px 0; }
+
+        /* References */
+        .refsGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
-        .refs-item {
-            margin: 0 0 14px 0;
-            padding: 0;
+        .refCard {
+            border: 1px solid rgba(31,41,55,0.08);
+            background: #ffffff;
+            border-radius: var(--radius);
+            padding: 12px 12px 10px 12px;
+            box-shadow: 0 8px 20px rgba(17,24,39,0.05);
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
-        .ref-name {
-            font-size: 14px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
+
+        .refName {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--ink);
         }
-        .ref-text {
+        .refText {
             margin: 0;
-            color: #555555;
-            white-space: pre-line; /* dompdf supports this */
+            color: #374151;
+            white-space: pre-line;
+        }
+
+        /* Responsive-ish (helps if you test on different viewport widths before printing) */
+        @media print {
+            .feature { box-shadow: none; }
+            .summaryCard, .sidebar, .main, .job, .refCard { box-shadow: none; }
         }
     </style>
+</head>
 
-    {{-- HEADER (name left, contact right) --}}
-    <table class="layout">
-        <tr>
-            <td style="width: 70%; padding-right: 16px;">
-                <div class="name-font">
-                    <p class="h-name-1">{{ $nameFirst }}</p>
-                    <p class="h-name-2">{{ $nameRest }}</p>
-                </div>
-            </td>
-            <td style="width: 30%;">
-                <div class="contact">
-                    @if($contactLine1)
-                        <p class="line">{{ $contactLine1 }}</p>
-                    @endif
-                    @if($email)
-                        <p class="line">{{ $email }}</p>
-                    @endif
-                    @if($phone)
-                        <p class="line">{{ $phone }}</p>
-                    @endif
-                    @if($url)
-                        <p class="line">WWW: {{ $url }}</p>
-                    @endif
-                    @if($profileUrl)
-                        <p class="line">WWW: {{ $profileUrl }}</p>
-                    @endif
-                </div>
-            </td>
-        </tr>
-    </table>
+<body>
+<div class="page">
 
-    {{-- SUMMARY BAND --}}
-    <div class="summary-band">
-        <p class="summary-text">
-            @if($label)
-                <span style="font-weight:700;">{{ $label }}</span>
-                @if($summary) — @endif
+    {{-- HEADER --}}
+    <div class="header">
+        <div class="name">
+            <p class="first">{{ $nameFirst }}</p>
+            @if(trim($nameRest) !== '')
+                <p class="rest">{{ $nameRest }}</p>
             @endif
-            {!! $summary !!}
-        </p>
+        </div>
+
+        <div class="contactCard">
+            @if($contactLine1)
+                <p class="contactLine"><strong>Location:</strong> {{ $contactLine1 }}</p>
+            @endif
+            @if($email)
+                <p class="contactLine"><strong>Email:</strong> {{ $email }}</p>
+            @endif
+            @if($phone)
+                <p class="contactLine"><strong>Phone:</strong> {{ $phone }}</p>
+            @endif
+            @if($url)
+                <p class="contactLine"><strong>Web:</strong> {{ $url }}</p>
+            @endif
+            @if($profileUrl)
+                <p class="contactLine"><strong>Profile:</strong> {{ $profileUrl }}</p>
+            @endif
+        </div>
     </div>
 
-    {{-- BODY: LEFT GREEN SIDEBAR + RIGHT MAIN --}}
-    <table class="layout" style="margin-top: 0;">
-        <tr>
-            {{-- SIDEBAR --}}
-            <td class="sidebar" style="width: 34%;">
-                <p class="section-title-sidebar">Skills</p>
+    {{-- SUMMARY --}}
+    <div class="summaryCard">
+        <div class="summaryTop">
+            <p class="label">
+                @if($label) {{ $label }} @else Professional Summary @endif
+            </p>
+        </div>
+        <div class="summaryBody">
+            {!! $summary !!}
+        </div>
+    </div>
 
+    {{-- TOP FEATURE SECTIONS (Accomplishments / Affiliations / Interest / Volunteer) --}}
+    @if ($hasAnyTopSections)
+        <div class="featureGrid">
+            @if ($accomplishmentActive && trim($accomplishmentBody) !== '')
+                <section class="feature">
+                    <div class="featureHeader">
+                        <p class="featureTitle">Accomplishments</p>
+                        <span class="featurePill">Highlights</span>
+                    </div>
+                    <div class="featureBody">{!! $accomplishmentBody !!}</div>
+                </section>
+            @endif
+
+            @if ($affiliationActive && trim($affiliationBody) !== '')
+                <section class="feature">
+                    <div class="featureHeader">
+                        <p class="featureTitle">Affiliations</p>
+                        <span class="featurePill">Network</span>
+                    </div>
+                    <div class="featureBody">{!! $affiliationBody !!}</div>
+                </section>
+            @endif
+
+            @if ($interestActive && trim($interestBody) !== '')
+                <section class="feature">
+                    <div class="featureHeader">
+                        <p class="featureTitle">Interests</p>
+                        <span class="featurePill">Personal</span>
+                    </div>
+                    <div class="featureBody">{!! $interestBody !!}</div>
+                </section>
+            @endif
+
+            @if ($volunteerActive && trim($volunteerBody) !== '')
+                <section class="feature">
+                    <div class="featureHeader">
+                        <p class="featureTitle">Volunteer</p>
+                        <span class="featurePill">Service</span>
+                    </div>
+                    <div class="featureBody">{!! $volunteerBody !!}</div>
+                </section>
+            @endif
+        </div>
+    @endif
+
+    {{-- MAIN 2-COLUMN CONTENT --}}
+    <div class="content">
+
+        {{-- SIDEBAR --}}
+        <aside class="sidebar">
+
+            <div class="sbSection">
+                <p class="sbTitle">Skills</p>
                 @if(!empty($skills))
-					<div class="skills">
-						<ul class="skills-ul">
-							@foreach($skills as $s)
-								@php $skillName = (string) data_get($s, 'name'); @endphp
-								@if($skillName !== '')
-									<li>{{ $skillName }}</li>
-								@endif
-							@endforeach
-						</ul>
-					</div>
+                    <div class="tagWrap">
+                        @foreach($skills as $s)
+                            @php $skillName = $safeText(data_get($s, 'name')); @endphp
+                            @if($skillName !== '')
+                                <span class="tag">{{ $skillName }}</span>
+                            @endif
+                        @endforeach
+                    </div>
                 @endif
+            </div>
 
-                <div class="divider"></div>
+            <div class="sbDivider"></div>
 
-                <p class="section-title-sidebar">Education</p>
-
+            <div class="sbSection">
+                <p class="sbTitle">Education</p>
                 @foreach($education as $e)
                     @php
-                        $institution = (string) data_get($e, 'institution');
-                        $area = (string) data_get($e, 'area');
-                        $studyType = (string) data_get($e, 'studyType');
-                        $endDate = (string) data_get($e, 'endDate');
-                        $startDate = (string) data_get($e, 'startDate');
+                        $institution = $safeText(data_get($e, 'institution'));
+                        $area = $safeText(data_get($e, 'area'));
+                        $studyType = $safeText(data_get($e, 'studyType'));
+                        $endDate = $safeText(data_get($e, 'endDate'));
+                        $startDate = $safeText(data_get($e, 'startDate'));
                     @endphp
 
-                    <div class="edu-item">
+                    <div class="eduCard">
                         @if($studyType)
-                            <p class="edu-line1">{{ $studyType }}</p>
+                            <p class="eduLine1">{{ $studyType }}</p>
                         @endif
 
                         @if($area)
-                            <p class="edu-line2">{{ $area }}</p>
+                            <p class="eduLine2">{{ $area }}</p>
                         @endif
 
-                        <p class="edu-line3">
+                        <p class="eduLine3">
                             {{ $institution }}
                             @if($endDate || $startDate)
-                                | {{ $fmtRange($startDate, $endDate) }}
+                                <br/>{{ $fmtRange($startDate, $endDate) }}
                             @endif
                         </p>
                     </div>
                 @endforeach
-            </td>
+            </div>
 
-            {{-- MAIN CONTENT --}}
-            <td class="main" style="width: 66%;">
-                <p class="section-title-main">Work history</p>
+            @if (!empty($languages) && $languagesActive)
+                <div class="sbDivider"></div>
+                <div class="sbSection">
+                    <p class="sbTitle">Languages</p>
+                    <ul class="sbList">
+                        @foreach ($languages as $language)
+                            @php $lang = $safeText(data_get($language, 'language')); @endphp
+                            @if($lang !== '')
+                                <li>{{ $lang }}</li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                @foreach($work as $w)
-                    @php
-                        $company = (string) data_get($w, 'name');
-						$workSummary = (string) data_get($w, 'summary');
-                        $position = (string) data_get($w, 'position');
-                        $startDate = (string) data_get($w, 'startDate');
-                        $endDate = (string) data_get($w, 'endDate');
-                        $highlights = (array) (data_get($w, 'highlights') ?? []);
-                    @endphp
+            @if (!empty($websites) && $websitesActive)
+                <div class="sbDivider"></div>
+                <div class="sbSection">
+                    <p class="sbTitle">Websites</p>
+                    <ul class="sbList">
+                        @foreach ($websites as $website)
+                            @php $w = $safeText(data_get($website, 'url')); @endphp
+                            @if($w !== '')
+                                <li>{{ $w }}</li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <table class="job-table">
-                        <tr>
-                            <td class="job-dates">
-                                {{ $fmtRange($startDate, $endDate) }}
-                            </td>
-                            <td>
-                                <p class="job-title">{{ $position }}</p>
-                                <p class="job-company">{{ $company }}</p>
-								<p>{!! $workSummary !!}</p>
+        </aside>
 
-                                @if(!empty($highlights))
-                                    <ul class="bullets">
-                                        @foreach($highlights as $h)
-                                            @php $h = trim((string) $h); @endphp
-                                            @if($h !== '')
-                                                <li>{{ $h }}</li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
-                @endforeach
+        {{-- MAIN --}}
+        <main class="main">
 
-                <p class="section-title-main" style="margin-top: 6px;">References</p>
+            <div class="mainTitleRow">
+                <p class="mainTitle">Work History</p>
+                <div class="accentLine"></div>
+            </div>
 
-                @foreach($references as $r)
-                    @php
-                        $rName = (string) data_get($r, 'name');
-                        $rText = (string) data_get($r, 'reference');
-                    @endphp
+            @foreach($work as $w)
+                @php
+                    $company = $safeText(data_get($w, 'name'));
+                    $workSummary = (string) data_get($w, 'summary');
+                    $position = $safeText(data_get($w, 'position'));
+                    $startDate = $safeText(data_get($w, 'startDate'));
+                    $endDate = $safeText(data_get($w, 'endDate'));
+                    $highlights = (array) (data_get($w, 'highlights') ?? []);
+                @endphp
 
-                    <div class="refs-item">
-                        <p class="ref-name">{{ $rName }}</p>
-                        <p class="ref-text">{!! $rText !!}</p>
+                <section class="job">
+                    <div class="jobTop">
+                        <div class="jobDates">{{ $fmtRange($startDate, $endDate) }}</div>
+                        <div>
+                            <p class="jobRole">{{ $position }}</p>
+                            <p class="jobCompany">{{ $company }}</p>
+                        </div>
                     </div>
-                @endforeach
-            </td>
-        </tr>
-    </table>
+
+                    @if(trim(strip_tags($workSummary)) !== '')
+                        <div class="jobSummary">{!! $workSummary !!}</div>
+                    @endif
+
+                    @if(!empty($highlights))
+                        <ul class="bullets">
+                            @foreach($highlights as $h)
+                                @php $h = trim((string) $h); @endphp
+                                @if($h !== '')
+                                    <li>{{ $h }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+                </section>
+            @endforeach
+
+            {{-- PROJECTS (Styled to stand out) --}}
+            @if ($projectActive && trim($projectBody) !== '')
+                <div style="margin-top: 14px;">
+                    <div class="mainTitleRow">
+                        <p class="mainTitle">Projects</p>
+                        <div class="accentLine"></div>
+                    </div>
+
+                    <section class="job" style="border-left: 6px solid var(--accent);">
+                        <div class="jobSummary">{!! $projectBody !!}</div>
+                    </section>
+                </div>
+            @endif
+
+            {{-- REFERENCES --}}
+            <div style="margin-top: 14px;">
+                <div class="mainTitleRow">
+                    <p class="mainTitle">References</p>
+                    <div class="accentLine"></div>
+                </div>
+
+                <div class="refsGrid">
+                    @foreach($references as $r)
+                        @php
+                            $rName = $safeText(data_get($r, 'name'));
+                            $rText = (string) data_get($r, 'reference');
+                        @endphp
+
+                        <div class="refCard">
+                            <p class="refName">{{ $rName }}</p>
+                            <p class="refText">{!! $rText !!}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -71,7 +71,15 @@ class ResumeJsonResource extends JsonResource
             'template' => [
                 'path' => $resume->template->path,
             ],
-			'colorScheme' => $resume->colorScheme->primary
+			'colorScheme' => $resume->colorScheme->primary,
+			'certificate' => CertificationJsonResource::make($resume->certificate)->toArray($request),
+			'accomplishment' => AccomplishmentJsonResource::make($resume->accomplishment)->toArray($request),
+			'languages' => LanguagesJsonResource::make($resume->languages)->toArray($request),
+			'affiliation' => AffiliationJsonResource::make($resume->affiliation)->toArray($request),
+			'interest' => InterestJsonResource::make($resume->interest)->toArray($request),
+			'volunteer' => VolunteerJsonResource::make($resume->volunteer)->toArray($request),
+			'websites' => WebsitesJsonResource::make($resume->websites)->toArray($request),
+			'project' => ProjectJsonResource::make($resume->project)->toArray($request),
         ];
     }
 }
