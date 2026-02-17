@@ -8,14 +8,20 @@ class LanguagesJsonResource extends JsonResource
 {
 	public function toArray($request): array
 	{
+		$resource = $this->resource;
+		$languages = collect($resource?->language ?? [])
+			->map(fn ($r) => [
+				'languages_id' => $r?->languages_id,
+				'language' => $r?->language,
+			])
+			->values()
+			->all();
+
 		return [
-			'resume_id' => $this->resume_id ?? null,
-			'is_active' => $this->is_active ?? null,
-			'id' => $this->id ?? null,
-			'languages' => $this->language?->map(fn ($r) => [
-                'languages_id' => $r->languages_id,
-                'language' => $r->language,
-            ])->values()->all() ?? [],
+			'resume_id' => $resource?->resume_id,
+			'is_active' => $resource?->is_active,
+			'id' => $resource?->id,
+			'languages' => $languages,
 		];
 	}
 }

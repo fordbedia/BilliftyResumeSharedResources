@@ -19,7 +19,7 @@ class TemplatePreviewController extends Controller
         TemplatesRepository $templates,
 		ColorSchemeRepository $colorSchemes
     ) {
-        $templateSlug = $request->string('template', 'moderno-one')->toString();
+        $templateSlug = $request->string('template', 'echelon')->toString();
         $colorSchemeId  = $request->input('colorScheme', '1');
 		$colorSchemeId = $colorSchemeId === 'teal' ? 1 : $colorSchemeId;
 

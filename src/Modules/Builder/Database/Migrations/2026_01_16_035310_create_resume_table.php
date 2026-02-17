@@ -19,6 +19,7 @@ return new class extends Migration
 			$table->string('slug');
 			$table->json('colors')->nullable();
 			$table->text('path');
+			$table->string('plan')->default('free');
 			$table->tinyInteger('is_active')->default(1);
             $table->timestamps();
         });

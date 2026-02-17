@@ -10,7 +10,7 @@ class TemplatesSeeder extends MakeSeeder
 {
 	protected array $templates = [
 		[
-			'name' => 'Basic',
+			'name' => 'Basic One',
 			'slug' => 'basic',
 			'description' => 'Clean, minimalist design with a contemporary feel',
 			'icon' => 'FileText',
@@ -20,6 +20,18 @@ class TemplatesSeeder extends MakeSeeder
 			  'bg'      => 'hsl(var(--background))',
 			],
 			'path' => 'templates.basic',
+		],
+		[
+			'name' => 'Basic Two',
+			'slug' => 'basic-two',
+			'description' => 'Clean, minimalist design with a contemporary feel',
+			'icon' => 'FileText',
+			'colors' => [
+			  'primary' => 'hsl(var(--primary))',
+			  'accent'  => 'hsl(var(--accent))',
+			  'bg'      => 'hsl(var(--background))',
+			],
+			'path' => 'templates.basic-two',
 		],
 		[
 			'name' => 'Moderno One',
@@ -56,6 +68,19 @@ class TemplatesSeeder extends MakeSeeder
 			],
 			'slug' => 'slate',
 			'path' => 'templates.slate',
+		],
+		[
+			'name' => 'Echelon',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'echelon',
+			'path' => 'templates.echelon',
+			'plan' => 'pro'
 		]
 	];
     /**
