@@ -272,7 +272,7 @@
     /* ===== Sidebar ===== */
     /* UPDATED: remove gradient, use solid background color (primary) */
     .side{
-        background: var(--primary);
+        background: {{$colorScheme}};
         color: #FFFFFF; /* base text */
         padding: 26px 22px;
 		align-items: stretch;
@@ -296,7 +296,7 @@
         height: 100%;
         object-fit: cover;
         display: block;
-		object-position: center 0%;
+		object-position: center 0;
     }
     .avatar .initials{
         font-size: 24px;

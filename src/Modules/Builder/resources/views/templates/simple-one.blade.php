@@ -235,12 +235,13 @@
 	}
 
 	.avatar {
-		width: 86px;
-		height: 86px;
+		width: 120px;
+		height: 120px;
 		border-radius: 999px;
 		border: 4px solid #ffffff;
 		box-shadow: 0 6px 16px rgba(0,0,0,.10);
 		object-fit: cover;
+		object-position: center 3%; /* ← move focus UP */
 		display: inline-block;
 		background: #e5e7eb;
 	}
