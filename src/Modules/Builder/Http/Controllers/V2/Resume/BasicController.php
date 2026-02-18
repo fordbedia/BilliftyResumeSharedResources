@@ -21,7 +21,7 @@ class BasicController extends Controller
 			$name = data_get($payload, 'basics.name', 'resume');
 
 			$imageProcessor = ImageFileUploadProcessor::make($file, $name);
-			$storedPath = $imageProcessor->store();
+			$storedPath = $imageProcessor->store(400, 400);
 			$imageProcessor->deleteLastFile('image', $basicModel);
 			$payload['basics']['image'] = $storedPath;
 		} else {

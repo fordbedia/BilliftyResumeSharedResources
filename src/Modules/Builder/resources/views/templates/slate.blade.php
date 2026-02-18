@@ -209,14 +209,15 @@
     margin-bottom: 10mm;
   }
   .avatar {
-    width: 86px;
-    height: 86px;
+    width: 100px;
+    height: 100px;
     border-radius: 999px;
     border: 4px solid #ffffff;
     box-shadow: 0 6px 16px rgba(0,0,0,.10);
     object-fit: cover;
     display: inline-block;
     background: #e5e7eb;
+	object-position: center 0;
   }
 
   .side-section { margin-bottom: 14px; }
