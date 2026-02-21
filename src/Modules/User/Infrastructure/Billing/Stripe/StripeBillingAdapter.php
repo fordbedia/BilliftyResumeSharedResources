@@ -57,4 +57,18 @@ class StripeBillingAdapter implements StripeBilling
 
         return CarbonImmutable::createFromTimestampUTC((int) $periodEnd);
     }
+
+    public function cancelSubscriptionImmediately(string $subscriptionId): bool
+    {
+        $sub = $this->stripe->subscriptions->retrieve($subscriptionId, []);
+        $status = (string) ($sub->status ?? '');
+
+        if (in_array($status, ['canceled', 'incomplete_expired'], true)) {
+            return false;
+        }
+
+        $this->stripe->subscriptions->cancel($subscriptionId, []);
+
+        return true;
+    }
 }

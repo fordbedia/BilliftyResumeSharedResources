@@ -14,10 +14,15 @@ class SocialiteGoogleAuthProvider implements GoogleAuthProvider
 		return 'google';
 	}
 
-	public function redirect(): RedirectResponse
+	public function redirect(?string $state = null): RedirectResponse
 	{
 		$scopes = (array) config('services.google.scopes', ['openid', 'profile', 'email']);
-		return Socialite::driver('google')->scopes($scopes)->stateless()->redirect();
+		$client = Socialite::driver('google')->scopes($scopes)->stateless();
+		if ($state) {
+			$client = $client->with(['state' => $state]);
+		}
+
+		return $client->redirect();
 	}
 
 	public function userFromCallback(): SocialProviderUser

@@ -31,10 +31,10 @@ class AuthCookieResponseFactory
 			->withCookie($this->stateCookie('1', $minutes));
 	}
 
-	public function jsonLoggedOut(int $status = 200): JsonResponse
+	public function jsonLoggedOut(int $status = 200, array $payload = ['ok' => true]): JsonResponse
 	{
 		return response()
-			->json(['ok' => true], $status)
+			->json($payload, $status)
 			->withCookie($this->forgetTokenCookie())
 			->withCookie($this->forgetStateCookie());
 	}

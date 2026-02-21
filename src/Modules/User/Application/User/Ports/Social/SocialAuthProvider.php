@@ -9,7 +9,7 @@ interface SocialAuthProvider
 {
 	public function key(): string;
 
-	public function redirect(): RedirectResponse;
+	public function redirect(?string $state = null): RedirectResponse;
 
 	public function userFromCallback(): SocialProviderUser;
 }

@@ -16,10 +16,15 @@ class SocialiteLinkedInAuthProvider implements LinkedInAuthProvider
 		return 'linkedin';
 	}
 
-	public function redirect(): RedirectResponse
+	public function redirect(?string $state = null): RedirectResponse
 	{
 		$scopes = (array) config('services.linkedin.scopes', ['openid', 'profile', 'email']);
-		return $this->resolveClient()->scopes($scopes)->stateless()->redirect();
+		$client = $this->resolveClient()->scopes($scopes)->stateless();
+		if ($state) {
+			$client = $client->with(['state' => $state]);
+		}
+
+		return $client->redirect();
 	}
 
 	public function userFromCallback(): SocialProviderUser

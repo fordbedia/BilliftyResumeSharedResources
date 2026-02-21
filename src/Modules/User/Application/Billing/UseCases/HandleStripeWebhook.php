@@ -3,7 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Application\Billing\UseCases;
 
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
-use Illuminate\Support\Facades\Log;
+use BilliftyResumeSDK\SharedResources\Modules\User\Models\User;
 use Stripe\Event;
 
 class HandleStripeWebhook
@@ -101,21 +101,54 @@ class HandleStripeWebhook
 	}
 
 
-    private function handleSubscriptionDeleted(object $sub): void
+	private function handleSubscriptionDeleted(object $sub): void
 	{
 		$customerId = (string) data_get($sub, 'customer');
-		if (!$customerId) return;
-
-		$user = $this->users->findStripeCustomer($customerId);
+		$subscriptionId = (string) data_get($sub, 'id');
+		$user = $this->resolveUserForSubscriptionEvent($customerId, $subscriptionId);
 		if (!$user) return;
 
-		$this->users->update([
+		// Use withTrashed so immediate-cancel webhooks still update rows after account soft-delete.
+		User::query()->withTrashed()->whereKey((int) $user->id)->update([
+			'stripe_subscription_id' => $subscriptionId ?: null,
 			'stripe_status' => 'canceled',
 			'stripe_cancel_at_period_end' => false,
 			'stripe_current_period_end' => null,
 			'plan' => 'free',
 			'plan_expires_at' => null,
-		], (int) $user->id);
+		]);
+	}
+
+	private function resolveUserForSubscriptionEvent(string $customerId, string $subscriptionId): ?User
+	{
+		if ($customerId !== '') {
+			$user = $this->users->findStripeCustomer($customerId);
+			if ($user) {
+				return $user;
+			}
+
+			/** @var User|null $softDeleted */
+			$softDeleted = User::query()->withTrashed()
+				->where('stripe_customer_id', $customerId)
+				->first();
+
+			if ($softDeleted) {
+				return $softDeleted;
+			}
+		}
+
+		if ($subscriptionId !== '') {
+			/** @var User|null $bySubscription */
+			$bySubscription = User::query()->withTrashed()
+				->where('stripe_subscription_id', $subscriptionId)
+				->first();
+
+			if ($bySubscription) {
+				return $bySubscription;
+			}
+		}
+
+		return null;
 	}
 
 }

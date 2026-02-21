@@ -16,9 +16,9 @@ class ResolveSocialAuthRedirect
 	) {
 	}
 
-	public function execute(string $provider): RedirectResponse
+	public function execute(string $provider, ?string $state = null): RedirectResponse
 	{
-		return $this->resolveProvider($provider)->redirect();
+		return $this->resolveProvider($provider)->redirect($state);
 	}
 
 	protected function resolveProvider(string $provider): SocialAuthProvider

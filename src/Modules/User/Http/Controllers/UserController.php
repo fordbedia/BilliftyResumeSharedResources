@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\User\Application\Billing\Contracts\StripeBilling;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageFileUploadProcessor;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\PassportUserAuthentication;
@@ -15,6 +16,7 @@ use BilliftyResumeSDK\SharedResources\Modules\User\Jobs\SendPasswordChangedEmail
 use DomainException;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -84,9 +86,40 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserRepository $user)
+	public function destroy(
+		Request $request,
+		UserRepository $user,
+		AuthCookieResponseFactory $cookieAuth,
+		StripeBilling $stripeBilling
+	)
     {
-        return $user->delete();
+		$authUser = $request->user();
+		$subscriptionCancelled = false;
+
+		if ($authUser && !empty($authUser->stripe_subscription_id)) {
+			try {
+				$subscriptionCancelled = $stripeBilling->cancelSubscriptionImmediately(
+					(string) $authUser->stripe_subscription_id
+				);
+			} catch (Throwable $e) {
+				return response()->json([
+					'message' => 'We could not cancel your active subscription automatically. Please try again or contact support.',
+				], 422);
+			}
+		}
+
+        $token = $authUser?->token();
+        if ($token) {
+            $token->revoke();
+        }
+
+        $user->delete();
+
+        return $cookieAuth->jsonLoggedOut(200, [
+			'ok' => true,
+			'subscription_cancelled' => $subscriptionCancelled,
+			'had_subscription' => !empty($authUser?->stripe_subscription_id),
+		]);
     }
 
 	public function authenticate(
