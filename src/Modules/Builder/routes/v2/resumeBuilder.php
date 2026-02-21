@@ -10,7 +10,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\V2\Resume\WorkController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('resume')->middleware(['auth:api'])
+Route::prefix('resume')->middleware(['auth.cookie', 'auth:api'])
 	->group(function () {
 	Route::post('create', [CreateController::class, 'create']);
 

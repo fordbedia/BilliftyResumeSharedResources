@@ -23,7 +23,7 @@ Route::get('/resume/build', [ResumePdfController::class, 'buildFromStrings']);
 
 Route::prefix('v1')->group(function () {
 	Route::prefix('resume')
-		->middleware(['auth:api'])
+		->middleware(['auth.cookie', 'auth:api'])
 		->group(function () {
 			// Basic
 			Route::post('basics/{type}', [ResumeBasicController::class, 'handleSteps']);
@@ -105,7 +105,7 @@ Route::prefix('v1')->group(function () {
 		);
 
 		return response()->json(['url' => $url]);
-	})->middleware(['auth:api']);
+	})->middleware(['auth.cookie', 'auth:api']);
 
 });
 

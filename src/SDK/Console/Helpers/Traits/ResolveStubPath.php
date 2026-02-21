@@ -100,4 +100,9 @@ trait ResolveStubPath
 			return base_path(StubsPathEnum::COMMAND->getFullPath() . $stub);
 		}
 
+		public function resolveNotificationStubPath(string $stub): string
+		{
+			return base_path(StubsPathEnum::NOTIFICATION->getFullPath() . $stub);
+		}
+
 }

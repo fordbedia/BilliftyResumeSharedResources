@@ -10,6 +10,7 @@ use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\Upd
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\ProfileRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserNewPasswordVerifierRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserRequest;
+use BilliftyResumeSDK\SharedResources\Modules\User\Http\Responses\AuthCookieResponseFactory;
 use BilliftyResumeSDK\SharedResources\Modules\User\Jobs\SendPasswordChangedEmailJob;
 use DomainException;
 use Illuminate\Http\Request;
@@ -28,10 +29,11 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(
+	public function store(
 		UserRequest $request,
 		UserRepository $user,
-		PassportUserAuthentication $auth
+		PassportUserAuthentication $auth,
+		AuthCookieResponseFactory $cookieAuth
 	) {
         $data = $request->validated();
 
@@ -39,7 +41,8 @@ class UserController extends Controller
 
 		// Proceed to login
 		try {
-            return response()->json($auth->handle($data['email'], $data['password']));
+			$payload = $auth->handle($data['email'], $data['password']);
+            return $cookieAuth->jsonWithAuthCookie($payload, $this->publicPayload($payload), 201);
         } catch (InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (DomainException $e) {
@@ -86,7 +89,11 @@ class UserController extends Controller
         //
     }
 
-	public function authenticate(Request $request, PassportUserAuthentication $auth)
+	public function authenticate(
+		Request $request,
+		PassportUserAuthentication $auth,
+		AuthCookieResponseFactory $cookieAuth
+	)
 	{
 		$data = $request->validate([
 			'email' => 'required|email',
@@ -94,12 +101,23 @@ class UserController extends Controller
 		]);
 
 		try {
-            return response()->json($auth->handle($data['email'], $data['password']));
+			$payload = $auth->handle($data['email'], $data['password']);
+            return $cookieAuth->jsonWithAuthCookie($payload, $this->publicPayload($payload));
         } catch (InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 401);
         }
+	}
+
+	public function logout(Request $request, AuthCookieResponseFactory $cookieAuth)
+	{
+		$token = $request->user()?->token();
+		if ($token) {
+			$token->revoke();
+		}
+
+		return $cookieAuth->jsonLoggedOut();
 	}
 
 	public function me()
@@ -124,6 +142,15 @@ class UserController extends Controller
 			$user->email,
 			$user->name
 		);
+	}
+
+	protected function publicPayload(array $payload): array
+	{
+		return [
+			'token_type' => $payload['token_type'] ?? 'Bearer',
+			'expires_at' => $payload['expires_at'] ?? null,
+			'user' => $payload['user'] ?? null,
+		];
 	}
 
 }

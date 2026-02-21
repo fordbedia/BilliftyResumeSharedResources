@@ -3,7 +3,8 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases;
 
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\Ports\AuthTokenIssuer;
-use http\Exception\InvalidArgumentException;
+use BilliftyResumeSDK\SharedResources\Modules\User\Models\User;
+use InvalidArgumentException;
 
 class PassportUserAuthentication
 {
@@ -19,5 +20,23 @@ class PassportUserAuthentication
 		}
 
 		return $this->tokenIssuer->issueToken($email, $password);
+	}
+
+	public function handleUser(User $user): array
+	{
+		$tokenResult = $user->createToken('auth_token');
+		$token = $tokenResult->token;
+
+		return [
+			'token_type'   => 'Bearer',
+			'access_token' => $tokenResult->accessToken,
+			'expires_at'   => optional($token->expires_at)->toISOString(),
+			'user'         => [
+				'id'    => $user->id,
+				'email' => $user->email,
+				'name'  => $user->name,
+				'plan'  => $user->plan,
+			],
+		];
 	}
 }

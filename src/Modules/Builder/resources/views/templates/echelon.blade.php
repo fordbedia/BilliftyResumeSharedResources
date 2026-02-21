@@ -40,7 +40,8 @@
     $hasWebsites  = $websitesActive && !empty($websites);
 
     $basics = (array) ($resume['basics'] ?? []);
-    $colorScheme = data_get($resume, 'colorScheme');
+    $previewColorScheme = $previewColorScheme ?? null;
+    $colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
 
     $primaryColor = '#6366F1';
     $gradientTop = '#6366F1';
@@ -74,8 +75,11 @@
         }
     }
 
+    // Always use a validated/normalized color string in styles below.
+    $colorScheme = $primaryColor;
+
     // NOTE: assumes you have this helper available globally (as you already use it)
-    $dynamicTextColor = contrastTextFromHsl($colorScheme);
+    $dynamicTextColor = contrastTextFromHsl($primaryColor);
 
     // =========================
     // Small helpers (safe)
