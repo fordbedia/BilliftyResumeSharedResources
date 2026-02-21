@@ -73,6 +73,12 @@ class EloquentUserRepository extends UserEloquentBaseRepository implements UserR
 		UserInfo::query()->firstOrCreate(['user_id' => $userId], []);
 	}
 
+	public function delete(): bool
+	{
+		$user = auth()->user();
+		return $this->model->destroy($user->id);
+	}
+
 	public function makeModel(): string
 	{
 		return User::class;

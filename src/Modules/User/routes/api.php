@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
 			Route::get('/settings/data-export/{export}/download', [UserDataExportController::class, 'download'])
 				->name('data-export.download')
 				->middleware('signed'); // important
+			Route::delete('/', [UserController::class, 'destroy']);
 		});
 		Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
