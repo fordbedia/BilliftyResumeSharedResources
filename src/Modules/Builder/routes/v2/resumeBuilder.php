@@ -14,8 +14,10 @@ Route::prefix('resume')->middleware(['auth.cookie', 'auth:api'])
 	->group(function () {
 	Route::post('create', [CreateController::class, 'create']);
 
-	Route::post('/{resumeId}/basics/{type}', [BasicController::class, 'handleSteps']);
+	Route::post('/{resumeId}/basics/{type}', [BasicController::class, 'handleSteps'])
+		->middleware('resume.photo_upload');
 	Route::post('/{resumeId}/basics/index/{index}', [BasicController::class, 'handleIndex'])
+		->middleware('resume.photo_upload')
 		->name('basic.index');
 
 	Route::post('/{resumeId}/work/{type}', [WorkController::class, 'handleSteps']);

@@ -44,6 +44,7 @@ class TemplatesSeeder extends MakeSeeder
 			],
 			'slug' => 'moderno-one',
 			'path' => 'templates.moderno-one',
+			'plan' => 'pro'
 		],
 		[
 			'name' => 'Simple One',

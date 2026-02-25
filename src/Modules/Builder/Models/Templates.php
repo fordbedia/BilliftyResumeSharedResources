@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Models;
 
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Templates extends Model
@@ -24,5 +25,10 @@ class Templates extends Model
 			'id',
 			'id'
 		);
+	}
+
+	public function scopeAllowedPlans(Builder $query, array $plans): Builder
+	{
+		return $query->whereIn('plan', $plans);
 	}
 }

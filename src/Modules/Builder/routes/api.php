@@ -56,7 +56,8 @@ Route::prefix('v1')->group(function () {
 				->name('finalize.index');
 
 			// Submission
-			Route::post('submit', [SubmitResumeController::class, 'submit']);
+			Route::post('submit', [SubmitResumeController::class, 'submit'])
+				->middleware('resume.photo_upload');
 
 			Route::get('templates', [ResumeBuilderController::class, 'templates']);
 			Route::get('recent', [ResumeController::class, 'recent']);
@@ -77,7 +78,8 @@ Route::prefix('v1')->group(function () {
 			// DO NOT ADD ANY ROUTES AFTER THIS LINE.
 			// ----------------------------------------------------------------------------
 			Route::get('/{slug}', [ResumeBuilderController::class, 'resume']);
-			Route::put('/update/{id}', [ResumeBuilderController::class, 'update']);
+			Route::put('/update/{id}', [ResumeBuilderController::class, 'update'])
+				->middleware('resume.photo_upload');
 			Route::apiResource('', ResumeController::class);
 	});
 

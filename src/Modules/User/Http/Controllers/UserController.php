@@ -8,6 +8,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageF
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\Eloquent\Repository\UserRepository;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\PassportUserAuthentication;
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\UseCases\UpdateUserPassword;
+use BilliftyResumeSDK\SharedResources\Modules\User\Domain\Authorization\UserEntitlementService;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\ProfileRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserNewPasswordVerifierRequest;
 use BilliftyResumeSDK\SharedResources\Modules\User\Http\Requests\UserRequest;
@@ -153,7 +154,7 @@ class UserController extends Controller
 		return $cookieAuth->jsonLoggedOut();
 	}
 
-	public function me()
+	public function me(UserEntitlementService $entitlements)
 	{
 		$user = auth()->user();
 
@@ -161,7 +162,12 @@ class UserController extends Controller
 
 		$user->load('info');
 
-		return response()->json($user);
+		return response()->json(array_merge(
+			$user->toArray(),
+			[
+				'abilities' => $entitlements->abilityMapForUser($user),
+			]
+		));
 	}
 
 	public function updatePassword(UserNewPasswordVerifierRequest $request, UpdateUserPassword $passwordUpdater)

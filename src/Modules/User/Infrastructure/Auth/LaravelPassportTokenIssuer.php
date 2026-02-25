@@ -3,18 +3,31 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\User\Infrastructure\Auth;
 
 use BilliftyResumeSDK\SharedResources\Modules\User\Application\User\Ports\AuthTokenIssuer;
+use BilliftyResumeSDK\SharedResources\Modules\User\Models\User;
 use DomainException;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LaravelPassportTokenIssuer implements AuthTokenIssuer
 {
 
 	public function issueToken(string $email, string $password): array
 	{
-		if (!Auth::attempt(['email' => $email, 'password' => $password])) {
-            throw new DomainException('Invalid credentials.');
-        }
-		$user = Auth::user();
+		$normalizedEmail = mb_strtolower(trim($email));
+
+		/** @var User|null $user */
+		$user = User::query()
+			->whereRaw('LOWER(email) = ?', [$normalizedEmail])
+			->first();
+
+		if (!$user || !Hash::check($password, (string) $user->password)) {
+			throw new DomainException('Invalid credentials.');
+		}
+
+		if (Hash::needsRehash((string) $user->password)) {
+			$user->forceFill([
+				'password' => Hash::make($password),
+			])->save();
+		}
 
 		// Passport Personal Access Token
         $tokenResult = $user->createToken('auth_token');

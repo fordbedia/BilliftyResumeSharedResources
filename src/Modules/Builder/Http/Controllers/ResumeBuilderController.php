@@ -3,6 +3,7 @@
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Authorization\TemplatePlanAccess;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ResumeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\Resume;
@@ -10,7 +11,6 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageF
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Requests\ResumeFinalizeRequest;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume as ResumeModel;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ResumeBuilderController extends Controller
 {
@@ -19,9 +19,21 @@ class ResumeBuilderController extends Controller
 		return $resumes->find($id);
 	}
 
-	public function update(int $id, ResumeFinalizeRequest $request, ResumeRepository $resumes)
+	public function update(
+		int $id,
+		ResumeFinalizeRequest $request,
+		ResumeRepository $resumes,
+		TemplatePlanAccess $templatePlanAccess
+	)
 	{
 		$payload = $request->validated();
+		$user = Auth::user();
+
+		$templateId = (int) data_get($payload, 'finalize.template', 0);
+		if ($templateId > 0) {
+			$templatePlanAccess->ensureCanUseTemplate($user, $templateId);
+		}
+
 		$resume = $resumes->find($id);
 		if ($request->hasFile('basics_image')) {
 			$file = $request->file('basics_image');

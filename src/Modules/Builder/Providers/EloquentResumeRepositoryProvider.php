@@ -2,6 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Providers;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Authorization\TemplatePlanAccess;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\AccomplishmentRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\CertificationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\AdditionalInfo\LanguageRepository;
@@ -21,6 +22,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\WorkRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Transactional;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentDbTransaction;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Authorization\UserPlanTemplateAccessAdapter;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\AdditionalInfo\EloquentAccomplishmentRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\AdditionalInfo\EloquentCertificationRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\Repository\AdditionalInfo\EloquentLanguageRepository;
@@ -58,6 +60,7 @@ class EloquentResumeRepositoryProvider extends ServiceProvider
 		$this->app->bind(WorkRepository::class, EloquentWorkRepository::class);
 		$this->app->bind(Transactional::class, EloquentDbTransaction::class);
 		$this->app->bind(TemplatesRepository::class, EloquentTemplatesRepository::class);
+		$this->app->bind(TemplatePlanAccess::class, UserPlanTemplateAccessAdapter::class);
 		$this->app->bind(ColorSchemeRepository::class, EloquentColorSchemeRepository::class);
 		// ----------------------------------------------------------------------------
 		// Additional Info
