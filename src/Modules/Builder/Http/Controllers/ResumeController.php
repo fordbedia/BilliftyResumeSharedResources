@@ -14,9 +14,15 @@ class ResumeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ResumeRepository $resume)
+    public function index(Request $request, ResumeRepository $resume)
     {
-		return ResumeResource::collection($resume->all());
+		$search = trim((string) $request->query('search', ''));
+		$perPage = (int) $request->query('per_page', 10);
+		$perPage = $perPage > 0 ? $perPage : 10;
+
+		return ResumeResource::collection(
+			$resume->paginated($search ?: null, $perPage)
+		);
     }
 
     /**
