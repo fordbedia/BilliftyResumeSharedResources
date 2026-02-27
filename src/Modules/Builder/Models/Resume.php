@@ -15,6 +15,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Affiliation;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Interest;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Websites;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\US\Project;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\ResumeStrength;
 
 class Resume extends Model
 {
@@ -98,6 +99,11 @@ class Resume extends Model
 		return $this->hasOne(Project::class);
 	}
 
+	public function resumeStrength()
+	{
+		return $this->hasOne(ResumeStrength::class, 'resume_id', 'id');
+	}
+
 	public static function relationships()
 	{
 		return [
@@ -117,6 +123,7 @@ class Resume extends Model
 			'volunteer',
 			'websites.website',
 			'project',
+			'resumeStrength',
 		];
 	}
 

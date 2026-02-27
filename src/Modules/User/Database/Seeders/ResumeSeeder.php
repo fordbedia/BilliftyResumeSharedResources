@@ -63,7 +63,7 @@ class ResumeSeeder extends MakeSeeder
 			'position' => 'Full Stack Wordpress Web Developer',
 			'startDate' => '2012-02',
 			'endDate' => '2015-01',
-			'summary' => '<ul><li>Developed custom WordPress themes and plugins&nbsp;<span style="color: rgb(20, 24, 31);">from the ground up, converting PSD designs into&nbsp;</span>reusable templates for pages and posts while maintaining a consistent look and feel.</li><li>Built fully responsive themes optimized for performance and cross-device compatibility.</li><li>Created flexible content management solutions using</li><li>Advanced Custom Fields (ACF) and Gutenberg, enabling non-technical users to manage content efficiently.</li><li>Developed a custom WordPress plugin that acted as a backend layer for the application, providing shared resources, abstractions, and a structured, layered architecture.</li></ul>',
+			'summary' => '<ul><li>Developed custom WordPress themes and plugins&nbsp;<span style="color: rgb(20, 24, 31);">from the ground up, converting PSD designs into&nbsp;</span>reusable templates for pages and posts while maintaining a consistent look and feel.</li><li>Built fully responsive themes optimized for performance and cross-device compatibility.</li><li>Created flexible content management solutions using advanced Custom Fields (ACF) and Gutenberg, enabling non-technical users to manage content efficiently.</li><li>Developed a custom WordPress plugin that acted as a backend layer for the application, providing shared resources, abstractions, and a structured, layered architecture.</li></ul>',
 			'highlights' => '',
 		]
 	];

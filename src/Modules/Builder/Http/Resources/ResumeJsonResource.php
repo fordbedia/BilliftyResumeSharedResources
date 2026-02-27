@@ -2,6 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Resources;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\ResumeStrengthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,7 +12,7 @@ class ResumeJsonResource extends JsonResource
     {
         $resume = $this->resource;
 
-        return [
+        $data = [
 			'name' => $resume->name,
             'basics' => [
                 'name' => data_get($resume, 'basic.name'),
@@ -81,5 +82,9 @@ class ResumeJsonResource extends JsonResource
 			'websites' => WebsitesJsonResource::make($resume->websites)->toArray($request),
 			'project' => ProjectJsonResource::make($resume->project)->toArray($request),
         ];
+
+		$data['resumeStrength'] = ResumeStrengthService::make()->forResume($resume, $data);
+
+		return $data;
     }
 }

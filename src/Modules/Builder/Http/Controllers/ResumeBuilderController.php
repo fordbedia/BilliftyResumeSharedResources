@@ -5,6 +5,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 use App\Http\Controllers\Controller;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Authorization\TemplatePlanAccess;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ResumeRepository;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\ResumeStrengthService;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\Resume;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Storage\ImageFileUploadProcessor;
@@ -16,7 +17,13 @@ class ResumeBuilderController extends Controller
 {
 	public function resume(int $id, ResumeRepository $resumes)
 	{
-		return $resumes->find($id);
+		$resume = $resumes->find($id);
+		$strength = ResumeStrengthService::make()->forResume($resume, null, true);
+
+		return response()->json([
+			...$resume->toArray(),
+			'resumeStrength' => $strength,
+		]);
 	}
 
 	public function update(
@@ -51,10 +58,12 @@ class ResumeBuilderController extends Controller
 			}
 		}
 		$resume = Resume::make()->upsert(Auth::user()->id ??  1, $payload, $id);
+		$strength = ResumeStrengthService::make()->forResume($resume, null, true);
 
 		return response()->json([
 			'success' => true,
-			'data' => $resume
+			'data' => $resume,
+			'resumeStrength' => $strength,
 		]);
 	}
 
