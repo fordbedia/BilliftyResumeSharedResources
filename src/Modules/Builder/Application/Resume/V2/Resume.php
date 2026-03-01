@@ -20,10 +20,11 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repos
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\US\WebsiteRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\WorkRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Transactional;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\V2\Builder\ResumeBuilder;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume as ResumeModel;
 use Illuminate\Support\Arr;
 
-class Resume
+class Resume implements ResumeBuilder
 {
 	public function __construct(
 		protected ResumeRepository $resume,
@@ -109,113 +110,131 @@ class Resume
 			// ----------------------------------------------------------------------------
 			// Certifications
 			$certificateData = Arr::only($basicsPayload, ['certifications']);
-			$certifications = $this->certifications->findBy('resume_id', $resumeId);
-			if ($certifications) {
-				$certifications->forceFill($basicsPayload['certifications'])->save();
-			} else {
-				$certifications = $this->certifications->create(array_merge($certificateData['certifications'], ['resume_id' => $resumeId]));
+			if (!empty($certificateData['certifications'])) {
+				$certifications = $this->certifications->findBy('resume_id', $resumeId);
+				if ($certifications) {
+					$certifications->forceFill($basicsPayload['certifications'])->save();
+				} else {
+					$certifications = $this->certifications->create(array_merge($certificateData['certifications'], ['resume_id' => $resumeId]));
+				}
 			}
+
 			// Accomplishments
 			$accomplishmentData = Arr::only($basicsPayload, ['accomplishments']);
-			$accomplishments = $this->accomplishments->findBy('resume_id', $resumeId);
-			if ($accomplishments) {
-				$accomplishments->forceFill($accomplishmentData['accomplishments'])->save();
-			} else {
-				$accomplishments = $this->accomplishments->create(array_merge($accomplishmentData['accomplishments'], ['resume_id' => $resumeId]));
+			if (!empty($accomplishmentData['accomplishments'])) {
+				$accomplishments = $this->accomplishments->findBy('resume_id', $resumeId);
+				if ($accomplishments) {
+					$accomplishments->forceFill($accomplishmentData['accomplishments'])->save();
+				} else {
+					$accomplishments = $this->accomplishments->create(array_merge($accomplishmentData['accomplishments'], ['resume_id' => $resumeId]));
+				}
 			}
+
 			// Languages
 			$languagesData = Arr::only($basicsPayload, ['languages']);
-			$language = collect($languagesData['languages']['language'] ?? [])
-				->filter(fn ($value) => filled($value))
-				->unique()
-				->values()
-				->toArray();
-			unset($languagesData['languages']['language']);
-
-			$languages = $this->languages->findBy('resume_id', $resumeId);
-			if ($languages) {
-				$languages->forceFill($languagesData['languages'])->save();
-			} else {
-				$languages = $this->languages->save($resumeId, array_merge($languagesData['languages'], ['resume_id' => $resumeId]));
-			}
-
-			// Replace rows to avoid duplicates on subsequent updates.
-			$languages->language()->delete();
-			if (!empty($language)) {
-				$languagesId = $languages->id;
-				$languageRows = collect($language)
-					->map(fn ($value) => [
-						'language' => $value,
-						'languages_id' => $languagesId,
-					])
+			if (!empty($languagesData['languages'])) {
+				$language = collect($languagesData['languages']['language'] ?? [])
+					->filter(fn($value) => filled($value))
+					->unique()
 					->values()
 					->toArray();
-				$languages->language()->createMany($languageRows);
+				unset($languagesData['languages']['language']);
+
+				$languages = $this->languages->findBy('resume_id', $resumeId);
+				if ($languages) {
+					$languages->forceFill($languagesData['languages'])->save();
+				} else {
+					$languages = $this->languages->save($resumeId, array_merge($languagesData['languages'], ['resume_id' => $resumeId]));
+				}
+
+				// Replace rows to avoid duplicates on subsequent updates.
+				$languages->language()->delete();
+				if (!empty($language)) {
+					$languagesId = $languages->id;
+					$languageRows = collect($language)
+						->map(fn($value) => [
+							'language' => $value,
+							'languages_id' => $languagesId,
+						])
+						->values()
+						->toArray();
+					$languages->language()->createMany($languageRows);
+				}
 			}
 			// ----------------------------------------------------------------------------
 			// For US Candicates
 			// ----------------------------------------------------------------------------
 			// Affiliations
 			$affiliationsData = Arr::only($basicsPayload, ['affiliations']);
-			$affiliations = $this->affiliation->findBy('resume_id', $resumeId);
-			if ($affiliations) {
-				$affiliations->forceFill($affiliationsData['affiliations'])->save();
-			} else {
-				$this->affiliation->create(array_merge($affiliationsData['affiliations'], ['resume_id' => $resumeId]));
+			if (!empty($affiliationsData['affiliations'])) {
+				$affiliations = $this->affiliation->findBy('resume_id', $resumeId);
+				if ($affiliations) {
+					$affiliations->forceFill($affiliationsData['affiliations'])->save();
+				} else {
+					$this->affiliation->create(array_merge($affiliationsData['affiliations'], ['resume_id' => $resumeId]));
+				}
 			}
 			// Interest
 			$interestData = Arr::only($basicsPayload, ['interests']);
-			$interest = $this->interest->findBy('resume_id', $resumeId);
-			if ($interest) {
-				$interest->forceFill($interestData['interests'])->save();
-			} else {
-				$this->interest->create(array_merge($interestData['interests'], ['resume_id' => $resumeId]));
+			if (!empty($interestData['interests'])) {
+				$interest = $this->interest->findBy('resume_id', $resumeId);
+				if ($interest) {
+					$interest->forceFill($interestData['interests'])->save();
+				} else {
+					$this->interest->create(array_merge($interestData['interests'], ['resume_id' => $resumeId]));
+				}
 			}
  			// Volunteering
 			$volunteeringData = Arr::only($basicsPayload, ['volunteering']);
-			$volunteering = $this->volunteering->findBy('resume_id', $resumeId);
-			if ($volunteering) {
-				$volunteering->forceFill($volunteeringData['volunteering'])->save();
-			} else {
-				$this->volunteering->create(array_merge($volunteeringData['volunteering'], ['resume_id' => $resumeId]));
+			if (!empty($volunteeringData['volunteering'])) {
+				$volunteering = $this->volunteering->findBy('resume_id', $resumeId);
+				if ($volunteering) {
+					$volunteering->forceFill($volunteeringData['volunteering'])->save();
+				} else {
+					$this->volunteering->create(array_merge($volunteeringData['volunteering'], ['resume_id' => $resumeId]));
+				}
 			}
 			// Websites
 			$websitesData = Arr::only($basicsPayload, ['websites']);
-			$website = collect($websitesData['websites']['url'] ?? [])
-				->filter(fn ($value) => filled($value))
-				->unique()
-				->values()
-				->toArray();
-			unset($websitesData['websites']['url']);
-
-			$websites = $this->websites->findBy('resume_id', $resumeId);
-			if ($websites) {
-				$websites->forceFill($websitesData['websites'])->save();
-			} else {
-				$websites = $this->websites->save($resumeId, array_merge($websitesData['websites'], ['resume_id' => $resumeId]));
-			}
-
-			// Replace rows to avoid duplicates on subsequent updates.
-			$websites->website()->delete();
-			if (!empty($website)) {
-				$websiteId = $websites->id;
-				$websiteRows = collect($website)
-					->map(fn ($value) => [
-						'url' => $value,
-						'websites_id' => $websiteId,
-					])
+			if (!empty($websitesData['websites'])) {
+				$website = collect($websitesData['websites']['url'] ?? [])
+					->filter(fn($value) => filled($value))
+					->unique()
 					->values()
 					->toArray();
-				$websites->website()->createMany($websiteRows);
+				unset($websitesData['websites']['url']);
+
+				$websites = $this->websites->findBy('resume_id', $resumeId);
+				if ($websites) {
+					$websites->forceFill($websitesData['websites'])->save();
+				} else {
+					$websites = $this->websites->save($resumeId, array_merge($websitesData['websites'], ['resume_id' => $resumeId]));
+				}
+
+				// Replace rows to avoid duplicates on subsequent updates.
+				$websites->website()->delete();
+				if (!empty($website)) {
+					$websiteId = $websites->id;
+					$websiteRows = collect($website)
+						->map(fn($value) => [
+							'url' => $value,
+							'websites_id' => $websiteId,
+						])
+						->values()
+						->toArray();
+					$websites->website()->createMany($websiteRows);
+				}
 			}
 
 			// Projects
 			$projectsData = Arr::only($basicsPayload, ['projects']);
-			$projects = $this->projects->findBy('resume_id', $resumeId);
-			if ($projects) {
-				$projects->forceFill($projectsData['projects'])->save();
-			} else {
-				$this->projects->create(array_merge($projectsData['projects'], ['resume_id' => $resumeId]));
+			if (!empty($projectsData['projects'])) {
+				$projects = $this->projects->findBy('resume_id', $resumeId);
+				if ($projects) {
+					$projects->forceFill($projectsData['projects'])->save();
+				} else {
+					$this->projects->create(array_merge($projectsData['projects'], ['resume_id' => $resumeId]));
+				}
 			}
 
 			return $basics->refresh();

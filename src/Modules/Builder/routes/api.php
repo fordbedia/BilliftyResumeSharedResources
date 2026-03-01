@@ -10,6 +10,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeBui
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeExportController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumePdfController;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\ResumeUploadController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\SubmitResumeController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 use Illuminate\Http\Request;
@@ -58,6 +59,7 @@ Route::prefix('v1')->group(function () {
 			// Submission
 			Route::post('submit', [SubmitResumeController::class, 'submit'])
 				->middleware('resume.photo_upload');
+			Route::post('analyze-upload', [ResumeUploadController::class, 'analyze']);
 
 			Route::get('templates', [ResumeBuilderController::class, 'templates']);
 			Route::get('recent', [ResumeController::class, 'recent']);
