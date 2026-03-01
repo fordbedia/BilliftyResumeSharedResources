@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class ResumeStrengthScorer
 {
     public const PASSING_SCORE = 75;
-    public const VERSION = 'v1.9';
+    public const VERSION = 'v2.0';
 
     private array $actionVerbs = [
         'achieved', 'analyzed', 'architected', 'automated', 'built', 'created', 'defined',
@@ -49,7 +49,7 @@ class ResumeStrengthScorer
         [$basicsPoints, $basicsFeedback, $basicsNotes] = $this->scoreBasics((array) ($resume['basics'] ?? []));
         [$workPoints, $workFeedback, $workNotes] = $this->scoreWork((array) ($resume['work'] ?? []));
         [$educationPoints, $educationFeedback, $educationNotes] = $this->scoreEducation((array) ($resume['education'] ?? []));
-        [$skillsPoints, $skillsFeedback, $skillsNotes] = $this->scoreSkills((array) ($resume['skills'] ?? []));
+        [$skillsPoints, $skillsFeedback, $skillsNotes] = $this->scoreSkills($resume['skills'] ?? []);
         [$atsPoints, $atsFeedback, $atsNotes] = $this->scoreAts((array) $resume);
 
         $score += $basicsPoints + $workPoints + $educationPoints + $skillsPoints + $atsPoints;
@@ -329,13 +329,32 @@ class ResumeStrengthScorer
         return [$points, $this->sectionFeedback($points, $max, $checks), $notes];
     }
 
-    private function scoreSkills(array $skills): array
+    private function scoreSkills(mixed $skills): array
     {
         $points = 0;
         $notes = [];
         $checks = [];
 
-        if (count($skills) === 0) {
+        $body = '';
+        $skillNames = [];
+
+        if (is_array($skills) && array_key_exists('body', $skills)) {
+            $body = $this->value($skills['body'] ?? null);
+            $skillNames = $this->parseSkillKeywordsFromBody($body);
+        } elseif (is_array($skills)) {
+            $skillNames = array_values(array_filter(array_map(
+                fn ($s) => is_array($s) ? $this->value($s['name'] ?? null) : $this->value($s),
+                $skills
+            )));
+            if (!empty($skillNames)) {
+                $body = implode(', ', $skillNames);
+            }
+        } elseif (is_string($skills)) {
+            $body = $this->value($skills);
+            $skillNames = $this->parseSkillKeywordsFromBody($body);
+        }
+
+        if ($body === '' && count($skillNames) === 0) {
             $checks['presence'] = $this->missing('Add a skills section with role-relevant keywords.');
             $notes[] = 'Add a skills section with role-relevant keywords.';
             return [0, $this->sectionFeedback(0, 10, $checks), $notes];
@@ -343,11 +362,6 @@ class ResumeStrengthScorer
 
         $points += 4;
         $checks['presence'] = $this->ok('Skills section is present.');
-
-        $skillNames = array_values(array_filter(array_map(
-            fn ($s) => $this->value($s['name'] ?? null),
-            $skills
-        )));
 
         $count = count($skillNames);
         if ($count >= 6) {
@@ -375,6 +389,20 @@ class ResumeStrengthScorer
         $points = min($max, $points);
 
         return [$points, $this->sectionFeedback($points, $max, $checks), $notes];
+    }
+
+    private function parseSkillKeywordsFromBody(string $body): array
+    {
+        $plain = mb_strtolower($this->visibleText($body));
+        if ($plain === '') {
+            return [];
+        }
+
+        $parts = preg_split('/[\n\r,;|•·]+/u', $plain, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        return array_values(array_filter(array_map(
+            fn ($part) => trim($part),
+            $parts
+        )));
     }
 
     private function scoreAts(array $resume): array
@@ -746,6 +774,11 @@ class ResumeStrengthScorer
             if (is_array($sectionValue) && array_key_exists('body', $sectionValue)) {
                 $push($path, $sectionValue['body']);
             }
+        }
+
+        $skills = $resume['skills'] ?? null;
+        if (is_array($skills) && array_key_exists('body', $skills)) {
+            $push('skills.body', $skills['body']);
         }
 
         return $entries;

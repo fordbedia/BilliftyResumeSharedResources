@@ -26,10 +26,7 @@ class ResumeSkillsRequest extends FormRequest
     public function rules(): array
     {
         return [
-           	'skills.*.level'			=> 'nullable|string',
-			'skills.*.resume_id'		=> 'nullable|integer',
-			'skills.*.name'				=> 'nullable|string',
-			'skills.*.sort_order'		=> 'nullable|integer',
+           	'skills.body' => 'nullable|string',
         ];
     }
 }

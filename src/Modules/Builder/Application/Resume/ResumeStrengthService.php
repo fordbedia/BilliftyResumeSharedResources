@@ -158,10 +158,17 @@ class ResumeStrengthService
                 'endDate' => $e->endDate,
                 'score' => $e->score,
             ])->values()->all() ?? [],
-            'skills' => $resume->skills?->map(fn ($s) => [
-                'name' => $s->name,
-                'level' => $s->level,
-            ])->values()->all() ?? [],
+            'skills' => [
+                'body' => (string) (
+                    data_get($resume, 'skills.0.body')
+                    ?? (
+                        $resume->skills?->pluck('name')
+                            ->filter(fn ($name) => filled($name))
+                            ->implode(', ')
+                    )
+                    ?? ''
+                ),
+            ],
             'references' => $resume->reference?->map(fn ($r) => [
                 'name' => $r->name,
                 'reference' => $r->reference,

@@ -8,6 +8,41 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Skills;
 
 class EloquentSkillsRepository extends EloquentBaseRepository implements SkillsRepository
 {
+	public function upsertBody(int $resumeId, string $body): Skills
+	{
+		$existing = $this->model
+			->where('resume_id', $resumeId)
+			->orderBy('id')
+			->first();
+
+		$data = [
+			'resume_id' => $resumeId,
+			'name' => 'Skills',
+			'level' => null,
+			'body' => $body,
+			'sort_order' => 0,
+		];
+
+		if ($existing) {
+			$existing->fill($data)->save();
+			$skill = $existing;
+		} else {
+			$skill = $this->model->create($data);
+		}
+
+		$this->model
+			->where('resume_id', $resumeId)
+			->where('id', '!=', $skill->id)
+			->delete();
+
+		return $skill->refresh();
+	}
+
+	public function clearByResumeId(int $resumeId): void
+	{
+		$this->model->where('resume_id', $resumeId)->delete();
+	}
+
 	public function create(array $data): \Illuminate\Database\Eloquent\Model|array
 	{
 		return $this->model->create($data);

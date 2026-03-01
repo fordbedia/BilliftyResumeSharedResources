@@ -304,22 +304,41 @@ class Resume implements ResumeBuilder
 	{
 		['skills' => $skillsPayload] = $payload;
 		return $this->transaction->run(function () use ($skillsPayload, $resumeId, $userId) {
-			$keepSkillsIds = [];
-			foreach ($skillsPayload as $i => $item) {
-					$data = [
-						'level' 		=> $item['level'],
-						'resume_id' 	=> $resumeId,
-						'name' 			=> $item['name'],
-						'sort_order' 	=> $i
-					];
-					if (!empty($item['id'])) {
-						$savedSkills = $this->skills->updateById($resumeId, (int) $item['id'], $data);
-					} else {
-						$savedSkills = $this->skills->create($data);
-					}
-					$keepSkillsIds[] = $savedSkills->id;
-				}
-				$this->skills->deleteMissing($resumeId, $keepSkillsIds);
+			$body = '';
+
+			if (is_array($skillsPayload) && array_key_exists('body', $skillsPayload)) {
+				$body = trim((string) ($skillsPayload['body'] ?? ''));
+			} elseif (is_array($skillsPayload)) {
+				$legacySkills = collect($skillsPayload)
+					->map(function ($item) {
+						if (is_string($item)) {
+							return trim($item);
+						}
+						if (!is_array($item)) {
+							return '';
+						}
+						$name = trim((string) ($item['name'] ?? ''));
+						$level = trim((string) ($item['level'] ?? ''));
+						if ($name === '') {
+							return '';
+						}
+						return $level !== '' ? "{$name} ({$level})" : $name;
+					})
+					->filter(fn ($item) => $item !== '')
+					->values()
+					->toArray();
+
+				$body = !empty($legacySkills) ? '<ul><li>' . implode('</li><li>', $legacySkills) . '</li></ul>' : '';
+			} else {
+				$body = trim((string) $skillsPayload);
+			}
+
+			if ($body === '') {
+				$this->skills->clearByResumeId($resumeId);
+				return null;
+			}
+
+			return $this->skills->upsertBody($resumeId, $body);
 		});
 	}
 

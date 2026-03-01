@@ -145,23 +145,64 @@ class OpenAiResumeDataStructure implements ResumeBuilderAiResponseDataStructure
 
 	private function adaptSkills(mixed $skills): array
 	{
+		if (is_array($skills) && array_key_exists('body', $skills)) {
+			return [
+				'body' => $this->string($skills['body'] ?? null),
+			];
+		}
+
+		if (is_string($skills)) {
+			return [
+				'body' => $this->string($skills),
+			];
+		}
+
 		if (!is_array($skills)) {
-			return [];
+			return ['body' => ''];
 		}
 
 		$rows = [];
 		foreach ($skills as $item) {
+			if (is_string($item)) {
+				$value = $this->string($item);
+				if ($value !== '') {
+					$rows[] = $value;
+				}
+				continue;
+			}
+
 			if (!is_array($item)) {
 				continue;
 			}
 
-			$rows[] = [
-				'name' => $this->string($item['name'] ?? null),
-				'level' => $this->string($item['level'] ?? null),
-			];
+			$name = $this->string($item['name'] ?? null);
+			$level = $this->string($item['level'] ?? null);
+			$keywords = collect((array) ($item['keywords'] ?? []))
+				->map(fn ($keyword) => $this->string($keyword))
+				->filter(fn ($keyword) => $keyword !== '')
+				->values()
+				->toArray();
+
+			$segments = [];
+			if ($name !== '') {
+				$segments[] = $name;
+			}
+			if ($level !== '') {
+				$segments[] = "Level: {$level}";
+			}
+			if (!empty($keywords)) {
+				$segments[] = implode(', ', $keywords);
+			}
+
+			$line = trim(implode(' - ', $segments));
+			if ($line !== '') {
+				$rows[] = $line;
+			}
 		}
 
-		return $rows;
+		return [
+			'body' => !empty($rows) ? '<ul><li>' . implode('</li><li>', $rows) . '</li></ul>' : '',
+		];
 	}
 
 	private function adaptReferences(mixed $references): array

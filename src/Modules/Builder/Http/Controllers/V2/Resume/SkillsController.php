@@ -14,6 +14,9 @@ class SkillsController extends Controller
 	public function handleSteps(int $resumeId, string $type, ResumeSkillsRequest $request, ResumeRepository $resumes)
 	{
 		$payload = $request->validated();
+		$payload['skills'] = is_array($payload['skills'] ?? null)
+			? $payload['skills']
+			: ['body' => (string) ($payload['skills'] ?? '')];
 
 		Resume::make()->upsert('skills', Auth::user()->id ??  1, $payload, $resumeId);
 		$resume = $resumes->find($resumeId);

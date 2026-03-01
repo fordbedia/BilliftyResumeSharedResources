@@ -10,8 +10,7 @@ class SkillsJsonResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'name' => (string) ($this->resource->name ?? ''),
-            'level' => (string) ($this->resource->level ?? ''),
+            'body' => (string) ($this->resource->body ?? ''),
         ];
     }
 }

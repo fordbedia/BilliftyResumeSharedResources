@@ -105,6 +105,7 @@ return new class extends Migration
 		Schema::create('skills', function (Blueprint $table) {
             $table->id();
 			$table->unsignedBigInteger('resume_id');
+			$table->text('body')->nullable();
 			$table->string('name');
 			$table->string('level')->nullable();
 			$table->unsignedInteger('sort_order')->default(0)->index();
