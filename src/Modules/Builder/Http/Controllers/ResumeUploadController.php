@@ -4,13 +4,14 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Resume\V2\OpenAiResumeDataStructure;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Concerns\InteractsWithAiHttpClient;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Throwable;
 
 class ResumeUploadController extends Controller
 {
+    use InteractsWithAiHttpClient;
+
     public function analyze(Request $request)
     {
         $validated = $request->validate([
@@ -32,12 +33,9 @@ class ResumeUploadController extends Controller
 		// ----------------------------------------------------------------------------
 
         $file = $validated['resume_file'];
-        $url = rtrim(
-            (string) config('services.resume_analyzer.structured_data_url'),
-            '/'
-        );
-        $verifySsl = (bool) config('services.resume_analyzer.verify_ssl', true);
-        $hostHeader = trim((string) config('services.resume_analyzer.host', ''));
+        $url = $this->resumeAnalyzerStructuredDataUrl();
+        $verifySsl = (bool) config('services.ai.verify_ssl', true);
+        $hostHeader = trim((string) config('services.ai.host', ''));
 
         $contents = $file->get();
         $filename = $file->getClientOriginalName();
@@ -58,6 +56,7 @@ class ResumeUploadController extends Controller
         if (!$response || !$response->successful()) {
             return response()->json([
                 'message' => 'Unable to analyze the uploaded resume at this time.',
+                'upstream_url' => $url,
                 'upstream_status' => $response?->status(),
                 'upstream_body' => $response ? ($response->json() ?? $response->body()) : null,
                 'upstream_error' => $lastError,
@@ -82,28 +81,15 @@ class ResumeUploadController extends Controller
         string $hostHeader,
         ?string &$error = null
     ): ?Response {
-        try {
-            $request = Http::timeout(120)
-                ->retry(1, 200, throw: false)
-                ->acceptJson()
-                ->withOptions([
-                    'verify' => $verifySsl,
-                ]);
-
-            if ($hostHeader !== '') {
-                $request = $request->withHeaders([
-                    'Host' => $hostHeader,
-                ]);
-            }
-
-            return $request
-                ->attach($field, $contents, $filename, [
-                    'Content-Type' => $mimeType,
-                ])
-                ->post($url);
-        } catch (Throwable $e) {
-            $error = $e->getMessage();
-            return null;
-        }
+        return $this->aiHttpPost(
+            url: $url,
+            contents: $contents,
+            mimeType: $mimeType,
+            field: $field,
+            verifySsl: $verifySsl,
+            hostHeader: $hostHeader,
+            filename: $filename,
+            error: $error
+        );
     }
 }

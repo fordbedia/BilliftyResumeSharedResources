@@ -5,6 +5,7 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\DevAutoLogin;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Middleware\EnsureAdmin;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\EloquentResumeRepositoryProvider;
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Providers\OutboundProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
@@ -13,6 +14,7 @@ class BuilderProvider extends ServiceProvider
 {
 	protected array $providers = [
 		EloquentResumeRepositoryProvider::class,
+		OutboundProvider::class,
 	];
 
 	protected array $policies = [

@@ -1,5 +1,6 @@
 <?php
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Ai\EnhanceResumeController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeBasicController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeEducationController;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Controllers\Resume\ResumeReferencesController;
@@ -23,6 +24,9 @@ Route::get('/resume/export', [ResumePdfController::class, 'exportJson']);
 Route::get('/resume/build', [ResumePdfController::class, 'buildFromStrings']);
 
 Route::prefix('v1')->group(function () {
+	Route::prefix('ai/agent')->group(function () {
+		Route::post('/enhance-resume', [EnhanceResumeController::class, 'run']);
+	})->middleware(['auth.cookie', 'auth:api']);
 	Route::prefix('resume')
 		->middleware(['auth.cookie', 'auth:api'])
 		->group(function () {
