@@ -230,9 +230,9 @@
     }
 
     .sheet{
-        width: 100%;
+        width: 210mm;
 		height: auto;
-        margin: 0;
+        margin: 0 auto;
         border: 0;
         border-radius: 0;
         overflow: visible;
@@ -241,9 +241,9 @@
     }
 	.sheet{
 	  position: relative; /* for stacking context */
-	  width: 100%;
+	  width: 210mm;
 	  height: auto;
-	  margin: 0;
+	  margin: 0 auto;
 	  border: 0;
 	  border-radius: 0;
 	  overflow: visible;
@@ -277,10 +277,10 @@
     /* UPDATED: remove gradient, use solid background color (primary) */
     .side{
         background: {{$colorScheme}};
-        color: #FFFFFF; /* base text */
         padding: 26px 22px;
 		align-items: stretch;
 		height: 100%;
+		color: {{ $dynamicTextColor ?? '#FFFFFF' }};
     }
 
     .avatar{
@@ -644,7 +644,6 @@
 
     .refs{
         display: grid;
-        grid-template-columns: 1fr 1fr;
         gap: 14px;
     }
 
@@ -665,7 +664,7 @@
         margin-top: 10px;
         display: grid;
         gap: 8px;
-        color: var(--muted2);
+        color: var(--primary);
         font-size: 14px;
     }
 
@@ -784,37 +783,17 @@
             </div>
 
             {{-- Skills --}}
-            @if(!empty($resume['skills']) && is_array($resume['skills']))
+            @if(!empty($resume['skills']))
                 <div class="block">
                     <div class="block-title"><span class="barline"></span>Skills</div>
                     <div class="divider"></div>
 
                     <div class="skills">
-                        @foreach($resume['skills'] as $skill)
-                            @php
-                                $skillName  = '';
-                                $skillLevel = '';
-
-                                if (is_array($skill)) {
-                                    $skillName  = $safeText(data_get($skill, 'name'));
-                                    $skillLevel = $safeText(data_get($skill, 'level'));
-                                } else {
-                                    $skillName = $safeText($skill);
-                                }
-
-                                $pct = $skillPercent($skillLevel);
-                            @endphp
-
-                            @if($skillName !== '')
-                                <div>
-                                    <div class="skill">
-                                        <div class="label">{{ $skillName }}</div>
-                                        <div class="level">{{ $skillLevel !== '' ? $skillLevel : '' }}</div>
-                                        <div class="bar"><span style="width: {{ $pct }}%;"></span></div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
+                       	<div>
+							<div class="skill">
+								{!! $resume['skills']['body'] !!}
+							</div>
+						</div>
                     </div>
                 </div>
             @endif
@@ -1160,7 +1139,7 @@
                                             @endif
 
                                             @if(trim(strip_tags($refBody)) !== '')
-                                                <div class="rich" style="color: var(--muted2);">{!! $refBody !!}</div>
+                                                <div class="rich">{!! $refBody !!}</div>
                                             @endif
                                         </div>
                                     </div>

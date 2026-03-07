@@ -34,9 +34,9 @@ class PdfPreviewController extends Controller
 		}
 		// 2 For Preview Color scheme
 		$previewColorScheme = null;
-		$colorSchemeId = $request->query('colorScheme', '');
+		$colorSchemeId = $this->resolveColorSchemeId($request->query('colorScheme'));
 		if ($colorSchemeId) {
-			$previewColorScheme = $colorSchemeRepo->getPrimary($colorSchemeId);
+			$previewColorScheme = $colorSchemeRepo->getPrimary($colorSchemeId, $resumeModel->color_scheme_id);
 		}
 
         // 3) Build resume array payload for the Blade template
@@ -80,4 +80,37 @@ class PdfPreviewController extends Controller
 
         throw new \RuntimeException('Implement loadResume()');
     }
+
+	private function resolveColorSchemeId(mixed $colorScheme): ?int
+	{
+		if (is_numeric($colorScheme)) {
+			return (int) $colorScheme;
+		}
+
+		if (!is_string($colorScheme) || trim($colorScheme) === '') {
+			return null;
+		}
+
+		return match (strtolower(trim($colorScheme))) {
+			'teal' => 1,
+			'blue' => 2,
+			'indigo' => 3,
+			'purple' => 4,
+			'pink' => 5,
+			'rose' => 6,
+			'red' => 7,
+			'orange' => 8,
+			'amber' => 9,
+			'yellow' => 10,
+			'lime' => 11,
+			'green' => 12,
+			'emerald' => 13,
+			'cyan' => 14,
+			'slate' => 15,
+			'gray' => 16,
+			'zinc' => 17,
+			'stone' => 18,
+			default => null,
+		};
+	}
 }

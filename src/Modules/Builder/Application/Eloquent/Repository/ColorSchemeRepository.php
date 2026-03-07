@@ -4,5 +4,5 @@ namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent
 
 interface ColorSchemeRepository
 {
-
+	public function getPrimary(?int $id, ?int $resumeColorSchemeId = null): ?string;
 }

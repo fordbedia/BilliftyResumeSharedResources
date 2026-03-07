@@ -40,13 +40,26 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
     color: #111827;
     line-height: 1.35;
-    font-size: 12px;
+    font-size: 14px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  /* Repeat divider on every printed page, independent of right column height */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 72%;
+    border-left: 7px solid {{$colorScheme ?? '#111827'}};
+    pointer-events: none;
+    z-index: 0;
+	width: 20px;
+  }
 
   /* Layout */
-  .page { width: 100%; min-height: 100%; }
+  .page { width: 100%; min-height: 100%; position: relative; z-index: 1;
+	  margin-top: 12px; }
 
   /* Use table layout for maximum PDF stability */
   .layout {
@@ -60,7 +73,7 @@
   .right {
     width: 28%;
     padding-left: 12mm;
-    border-left: 2px solid #111827;
+    border-left: 0;
   }
 
   /* Header */
@@ -143,7 +156,7 @@
     color: #6b7280;
     white-space: nowrap;
     width: 80px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .role {
     font-weight: 800;
@@ -181,10 +194,10 @@
     color: #6b7280;
     white-space: nowrap;
     width: 80px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .degree { font-weight: 800; margin: 0; }
-  .school { margin: 1px 0 0 0; color: #6b7280; font-size: 11px; }
+  .school { margin: 1px 0 0 0; color: #6b7280; font-size: 14px; }
 
   /* References */
   .ref-grid {
@@ -199,8 +212,8 @@
     vertical-align: top;
   }
   .ref-name { font-weight: 800; margin: 0 0 2px 0; }
-  .ref-meta { color: #6b7280; font-size: 11px; margin: 0; }
-  .ref-contact { color: #6b7280; font-size: 11px; margin: 2px 0 0 0; }
+  .ref-meta { color: #6b7280; font-size: 14px; margin: 0; }
+  .ref-contact { color: #6b7280; font-size: 14px; margin: 2px 0 0 0; }
 
   /* Right sidebar */
   .avatar-wrap {
@@ -223,7 +236,7 @@
   .side-section { margin-bottom: 14px; }
   .side-title {
     font-weight: 800;
-    font-size: 12px;
+    font-size: 20px;
     margin: 0 0 8px 0;
   }
 
@@ -238,9 +251,9 @@
     display: table-cell;
     vertical-align: top;
   }
-  .skill-name { font-size: 11px; color: #111827; }
+  .skill-name { font-size: 14px; color: #111827; }
   .skill-level {
-    font-size: 10px;
+    font-size: 14px;
     color: #6b7280;
     text-align: right;
     width: 72px;
@@ -268,7 +281,7 @@
     margin: 0 6px 6px 0;
     border: 1px solid {{ $colorScheme ?? '#e5e7eb' }};
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 14px;
     color: #374151;
     background: #ffffff;
     white-space: nowrap;
@@ -282,9 +295,9 @@
     margin-bottom: 6px;
   }
   .lang-name, .lang-level { display: table-cell; }
-  .lang-name { font-size: 11px; color: #374151; }
+  .lang-name { font-size: 14px; color: #374151; }
   .lang-level {
-    font-size: 10px;
+    font-size: 14px;
     color: #6b7280;
     text-align: right;
     width: 72px;
@@ -294,13 +307,13 @@
   /* Websites (sidebar) */
   .web-row { margin: 0 0 8px 0; }
   .web-label {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 800;
     color: #111827;
     margin: 0 0 1px 0;
   }
   .web-url {
-    font-size: 10px;
+    font-size: 14px;
     color: #6b7280;
     margin: 0;
     word-break: break-word;
@@ -310,7 +323,7 @@
   .interest {
     display: inline-block;
     margin: 0 10px 8px 0;
-    font-size: 10px;
+    font-size: 14px;
     color: #374151;
     white-space: nowrap;
   }
@@ -416,7 +429,6 @@
         {{-- About --}}
         @if(!empty($basics['summary']))
           <div class="section">
-            <div class="section-title">About</div>
             <div class="about">{!! $basics['summary'] !!}</div>
           </div>
         @endif
@@ -424,7 +436,7 @@
         {{-- Experience --}}
         @if(!empty($work))
           <div class="section">
-            <div class="section-title">Experience</div>
+            <div class="section-title">Work Experience</div>
 
             @foreach($work as $job)
               @php
@@ -591,25 +603,16 @@
           <div class="side-section">
             <div class="side-title">Skills</div>
 
-            @foreach($skills as $s)
-              @php
-                $sname = $s['name'] ?? 'Skill';
-                $slevel = $s['level'] ?? '';
-                $pct = $levelToPct($slevel);
-              @endphp
-
               <div style="margin-bottom: 10px;">
                 <div class="skill-row">
-                  <div class="skill-name">{{ $sname }}</div>
-                  <div class="skill-level">{{ $slevel }}</div>
+                  {!! $resume['skills']['body'] !!}
                 </div>
-                <div class="bar"><span style="width: {{ $pct }}%;"></span></div>
+                <div class="bar"></div>
               </div>
-            @endforeach
           </div>
         @endif
 
-        {{-- ✅ Languages (new sidebar section) — after Skills --}}
+        {{-- Languages (new sidebar section) — after Skills --}}
         @if($languagesActive && !empty($effectiveLanguages))
           <div class="side-section">
             <div class="side-title">Languages</div>

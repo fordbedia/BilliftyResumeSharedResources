@@ -19,18 +19,17 @@ class TemplatePreviewController extends Controller
         TemplatesRepository $templates,
 		ColorSchemeRepository $colorSchemes
     ) {
-        $templateSlug = $request->string('template', 'echelon')->toString();
-        $colorSchemeId  = $request->input('colorScheme', '1');
-		$colorSchemeId = $colorSchemeId === 'teal' ? 1 : $colorSchemeId;
+        $templateSlug = trim((string) $request->query('template', ''));
+        $colorSchemeId  = $this->resolveColorSchemeId($request->query('colorScheme'));
 
         // 1) Get resume model using repository
         // choose find() or getByKey() depending on your auth needs for preview
         $resumeModel = $resumes->getByKey($resume); // returns Resume
 
         // 2) Get template record from DB (active templates)
-        $templateModel = $templates->all()->firstWhere('slug', $templateSlug);
-		// Color Scheme
-		$colorSchemePrimary = $colorSchemes->getPrimary($colorSchemeId);
+        $templateModel = $templates->findTemplateBySlug($templateSlug, $resumeModel->template_id);
+
+		$colorSchemePrimary = $colorSchemes->getPrimary($colorSchemeId, $resumeModel->color_scheme_id);
 
         // fallback if slug not found or inactive
         if (!$templateModel) {
@@ -57,4 +56,37 @@ class TemplatePreviewController extends Controller
             ])
             ->header('Content-Type', 'text/html; charset=UTF-8');
     }
+
+	private function resolveColorSchemeId(mixed $colorScheme): ?int
+	{
+		if (is_numeric($colorScheme)) {
+			return (int) $colorScheme;
+		}
+
+		if (!is_string($colorScheme) || trim($colorScheme) === '') {
+			return null;
+		}
+
+		return match (strtolower(trim($colorScheme))) {
+			'teal' => 1,
+			'blue' => 2,
+			'indigo' => 3,
+			'purple' => 4,
+			'pink' => 5,
+			'rose' => 6,
+			'red' => 7,
+			'orange' => 8,
+			'amber' => 9,
+			'yellow' => 10,
+			'lime' => 11,
+			'green' => 12,
+			'emerald' => 13,
+			'cyan' => 14,
+			'slate' => 15,
+			'gray' => 16,
+			'zinc' => 17,
+			'stone' => 18,
+			default => null,
+		};
+	}
 }

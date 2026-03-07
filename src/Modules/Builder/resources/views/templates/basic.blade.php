@@ -37,121 +37,289 @@
 
     $hasLanguages = $languagesActive && !empty($sidebarLanguages);
     $hasWebsites  = $websitesActive && !empty($websites);
+    $hasSidebar   = $hasLanguages || $hasWebsites;
 
-    $hasSidebar = $hasLanguages || $hasWebsites;
+    $basics = (array) ($resume['basics'] ?? []);
 
-    $basics = $resume['basics'] ?? [];
+    // =========================
+    // Small helpers (safe)
+    // =========================
+    $safeText = function ($v) {
+        if (is_null($v)) return '';
+        if (is_string($v) || is_numeric($v)) return trim((string) $v);
+        return '';
+    };
+
+    $fmtDateRange = function ($start, $end) use ($safeText) {
+        $start = $safeText($start);
+        $end   = $safeText($end);
+
+        if ($start === '' && $end === '') return '';
+        if ($start !== '' && $end === '') return $start . ' - Present';
+        if ($start === '' && $end !== '') return $end;
+        return $start . ' - ' . $end;
+    };
+
+    $normalizeWebsite = function ($site) use ($safeText) {
+        $label = 'Website';
+        $url   = '';
+
+        if (is_array($site)) {
+            $label = $safeText(data_get($site, 'label'))
+                ?: $safeText(data_get($site, 'name'))
+                ?: $safeText(data_get($site, 'title'))
+                ?: 'Website';
+
+            $url = $safeText(data_get($site, 'url'))
+                ?: $safeText(data_get($site, 'value'))
+                ?: $safeText(data_get($site, 'link'))
+                ?: '';
+        } else {
+            $url = $safeText($site);
+        }
+
+        return ['label' => $label, 'url' => $url];
+    };
+
+    $normalizeLanguage = function ($lang) use ($safeText) {
+        $name = '';
+        $meta = '';
+
+        if (is_array($lang)) {
+            $name = $safeText(data_get($lang, 'language')) ?: $safeText(data_get($lang, 'name')) ?: '';
+            $meta = $safeText(data_get($lang, 'fluency')) ?: $safeText(data_get($lang, 'level')) ?: '';
+        } else {
+            $name = $safeText($lang);
+        }
+
+        return ['name' => $name, 'meta' => $meta];
+    };
+
+    // Header bits
+    $name   = $safeText($basics['name'] ?? '');
+    $label  = $safeText($basics['label'] ?? '');
+    $city   = $safeText(data_get($basics, 'location.city'));
+    $region = $safeText(data_get($basics, 'location.region'));
+    $email  = $safeText($basics['email'] ?? '');
+    $phone  = $safeText($basics['phone'] ?? '');
+    $url    = $safeText($basics['url'] ?? '');
+
+    $locationInline = '';
+    if ($city !== '' || $region !== '') {
+        $locationInline = $city !== '' && $region !== '' ? ($city . ', ' . $region) : ($city !== '' ? $city : $region);
+    }
+
+    $hasEducation = !empty($resume['education']) && is_array($resume['education']);
+    $hasRefs      = !empty($resume['references']) && is_array($resume['references']);
+    $hasWork      = !empty($resume['work']) && is_array($resume['work']);
+
+    $skillsBody = '';
+    if (is_array($resume['skills'] ?? null)) {
+        $skillsBody = $safeText(data_get($resume, 'skills.body'));
+        if ($skillsBody === '' && isset($resume['skills'][0]) && is_array($resume['skills'][0])) {
+            $skillsBody = $safeText(data_get($resume, 'skills.0.body'));
+        }
+    }
+
+    $skillItems = [];
+    if ($skillsBody === '' && is_array($resume['skills'] ?? null)) {
+        foreach ((array) $resume['skills'] as $skill) {
+            if (is_string($skill) && trim($skill) !== '') {
+                $skillItems[] = trim($skill);
+                continue;
+            }
+
+            if (!is_array($skill)) {
+                continue;
+            }
+
+            $skillName = $safeText(data_get($skill, 'name'));
+            $skillLevel = $safeText(data_get($skill, 'level'));
+            if ($skillName === '') {
+                continue;
+            }
+
+            $skillItems[] = $skillLevel !== '' ? ($skillName . ' (' . $skillLevel . ')') : $skillName;
+        }
+    }
+
+    $hasSkills    = ($skillsBody !== '') || !empty($skillItems);
+    $hasRightRail = $hasSidebar || $hasEducation || $hasSkills || $hasRefs;
+
+    $previewColorScheme = $previewColorScheme ?? null;
+    $colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme', '#111827');
 @endphp
 
 <style>
-    /* Minimal + Dompdf-friendly */
+    @page { margin: 14mm; }
+
     * { box-sizing: border-box; }
+
     body {
+        margin: 0;
         font-family: DejaVu Sans, Arial, sans-serif;
-        font-size: 11px;
-        line-height: 1.35;
+        font-size: 11.2px;
+        line-height: 1.42;
         color: #111;
+        background: #fff;
     }
 
     .container { width: 100%; }
     .muted { color: #666; }
     .tiny { font-size: 10px; }
-    .sp-4 { height: 4px; }
-    .sp-8 { height: 8px; }
-    .sp-12 { height: 12px; }
-    .sp-16 { height: 16px; }
+    .sp-6 { height: 6px; }
+    .sp-10 { height: 10px; }
+    .sp-14 { height: 14px; }
 
     h1 {
-        font-size: 22px;
+        font-size: 24px;
         line-height: 1.15;
         margin: 0;
-        padding: 0;
         letter-spacing: 0.2px;
+        font-weight: 700;
+        color: #111;
     }
 
     h2 {
-        font-size: 12px;
+        font-size: 11px;
         margin: 0;
-        padding: 0 0 6px 0;
-        letter-spacing: 0.8px;
+        padding: 0 0 5px 0;
+        letter-spacing: 1px;
         text-transform: uppercase;
-        border-bottom: 1px solid #E6E6E6;
+        border-bottom: 1px solid #e9e9e9;
     }
 
-    .section { padding-top: 12px; }
+    .section { padding-top: 13px; }
     .row { padding-top: 6px; }
+    .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+
+    .contact-line {
+        color: #666;
+        font-size: 11px;
+        line-height: 1.45;
+        word-break: break-word;
+    }
+
+    .contact-line a {
+        color: #111;
+        text-decoration: none;
+        word-break: break-word;
+    }
+
+    .inline-dot {
+        color: #aaa;
+        margin: 0 5px;
+    }
 
     .pill {
         display: inline-block;
-        border: 1px solid #E6E6E6;
+        border: 1px solid #e4e4e4;
         padding: 3px 7px;
         border-radius: 999px;
         margin: 0 6px 6px 0;
         font-size: 10px;
         color: #222;
-        background: #FAFAFA;
+        background: #fafafa;
         vertical-align: top;
         max-width: 100%;
         word-wrap: break-word;
     }
 
-    .divider { border-top: 1px solid #EEE; margin: 10px 0; }
+    .divider { border-top: 1px solid #eee; margin: 10px 0; }
 
-    /* Content styling for rich text bodies */
+    .rich { color: #1c1c1c; }
     .rich p { margin: 0 0 6px 0; }
     .rich ul { margin: 6px 0 0 16px; padding: 0; }
+    .rich ol { margin: 6px 0 0 16px; padding: 0; }
     .rich li { margin: 0 0 4px 0; }
 
-    /* Work highlights */
     ul.clean { margin: 6px 0 0 16px; padding: 0; }
     ul.clean li { margin: 0 0 4px 0; }
 
-    /* Sidebar */
-    .sidebar-card {
-        border: 1px solid #EEE;
-        padding: 10px;
-        border-radius: 8px;
-        background: #FCFCFC;
+    .meta-line {
+        color: #666;
+        font-size: 10.8px;
+        line-height: 1.45;
+        margin-top: 2px;
     }
+
+    .sidebar-card {
+        border: 1px solid #efefef;
+        padding: 10px 10px 8px 10px;
+        border-radius: 6px;
+        background: #fcfcfc;
+    }
+
     .sidebar-title {
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.8px;
         margin: 0 0 6px 0;
         padding: 0 0 6px 0;
-        border-bottom: 1px solid #EEE;
+        border-bottom: 1px solid #eee;
     }
+
     .sidebar-item { padding-top: 6px; }
-    a { color: #111; text-decoration: none; }
+
+    .accent {
+        color: {{ $colorScheme }};
+    }
+
+    a {
+        color: #111;
+        text-decoration: none;
+        word-break: break-word;
+    }
 </style>
 
 <div class="container">
-    {{-- ================= HEADER ================= --}}
+    {{-- Header --}}
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
         <tr>
             <td valign="top">
-                <h1>{{ $basics['name'] ?? 'Your Name' }}</h1>
+                <h1>{{ $name !== '' ? $name : 'Your Name' }}</h1>
 
-                <div class="row muted">
-                    {{ $basics['label'] ?? '' }}
-                    @if(!empty(data_get($basics, 'location.city'))) • {{ data_get($basics, 'location.city') }} @endif
-                    @if(!empty(data_get($basics, 'location.region'))) , {{ data_get($basics, 'location.region') }} @endif
-                </div>
+                @if($label !== '')
+                    <div class="row muted">{{ $label }}</div>
+                @endif
 
-                <div class="row">
-                    @if(!empty($basics['email'])) <span class="pill">{{ $basics['email'] }}</span> @endif
-                    @if(!empty($basics['url'])) <span class="pill">{{ $basics['url'] }}</span> @endif
-                </div>
+                @if($email !== '' || $phone !== '' || $locationInline !== '' || $url !== '')
+                    <div class="row contact-line">
+                        @php $printed = false; @endphp
 
-                @if(!empty($basics['profiles']))
+                        @if($email !== '')
+                            {{ $email }}
+                            @php $printed = true; @endphp
+                        @endif
+
+                        @if($phone !== '')
+                            @if($printed)<span class="inline-dot">-</span>@endif
+                            {{ $phone }}
+                            @php $printed = true; @endphp
+                        @endif
+
+                        @if($locationInline !== '')
+                            @if($printed)<span class="inline-dot">-</span>@endif
+                            {{ $locationInline }}
+                            @php $printed = true; @endphp
+                        @endif
+
+                        @if($url !== '')
+                            @if($printed)<span class="inline-dot">-</span>@endif
+                            <a href="{{ $url }}">{{ $url }}</a>
+                        @endif
+                    </div>
+                @endif
+
+                @if(!empty($basics['profiles']) && is_array($basics['profiles']))
                     <div class="row">
                         @foreach($basics['profiles'] as $profile)
                             @php
-                                $network = $profile['network'] ?? 'Profile';
-                                $value = $profile['url'] ?? ($profile['username'] ?? '');
+                                $network = $safeText(data_get($profile, 'network'));
+                                $value = $safeText(data_get($profile, 'url')) ?: $safeText(data_get($profile, 'username'));
                             @endphp
-                            @if(trim((string)$value) !== '')
-                                <span class="pill">{{ $network }}: {{ $value }}</span>
+                            @if($network !== '' || $value !== '')
+                                <span class="pill">{{ $network !== '' ? $network : 'Profile' }}@if($value !== ''): {{ $value }}@endif</span>
                             @endif
                         @endforeach
                     </div>
@@ -160,95 +328,60 @@
         </tr>
     </table>
 
-    @if(!empty($basics['summary']))
-        <div class="sp-8"></div>
-        <div class="rich">{!! $basics['summary'] !!}</div>
+    @if(trim(strip_tags((string) data_get($basics, 'summary', ''))) !== '')
+        <div class="sp-10"></div>
+        <div class="rich">{!! data_get($basics, 'summary', '') !!}</div>
     @endif
 
-    <div class="sp-12"></div>
+    <div class="sp-14"></div>
 
-    {{-- ================= LAYOUT: MAIN + OPTIONAL SIDEBAR ================= --}}
+    {{-- Main layout --}}
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
         <tr>
-            {{-- MAIN --}}
-            <td valign="top" style="{{ $hasSidebar ? 'width: 70%; padding-right: 14px;' : 'width: 100%;' }}">
-
-                {{-- ================= SKILLS ================= --}}
-                @if(!empty($resume['skills']))
-                    <div class="section">
-                        <h2>Skills</h2>
-                        <div class="row">
-                            @foreach($resume['skills'] as $skill)
-                                <span class="pill">
-                                    {{ is_array($skill) ? ($skill['name'] ?? '') : $skill }}
-                                    @if(is_array($skill) && !empty($skill['level']))
-                                        <span class="muted"> ({{ $skill['level'] }})</span>
-                                    @endif
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                {{-- ================= EDUCATION ================= --}}
-                @if(!empty($resume['education']))
-                    <div class="section">
-                        <h2>Education</h2>
-
-                        @foreach($resume['education'] as $edu)
-                            <div class="row">
-                                <strong>{{ $edu['institution'] ?? '' }}</strong>
-                                @if(!empty($edu['studyType']) || !empty($edu['area']))
-                                    — {{ trim(($edu['studyType'] ?? '') . ' ' . ($edu['area'] ?? '')) }}
-                                @endif
-
-                                <div class="muted">
-                                    {{ $edu['startDate'] ?? '' }}
-                                    @if(!empty($edu['endDate'])) – {{ $edu['endDate'] }} @endif
-                                </div>
-
-                                @if(!empty($edu['score']))
-                                    <div class="muted">Score: {{ $edu['score'] }}</div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-
-                {{-- ================= EXPERIENCE ================= --}}
-                @if(!empty($resume['work']))
+            <td valign="top" style="{{ $hasRightRail ? 'width: 66%; padding-right: 14px;' : 'width: 100%;' }}">
+                @if($hasWork)
                     <div class="section">
                         <h2>Experience</h2>
 
                         @foreach($resume['work'] as $work)
-                            <div class="row">
-                                <strong>{{ $work['position'] ?? '' }}</strong>
-                                @if(!empty($work['name'])) — {{ $work['name'] }} @endif
+                            @if(is_array($work))
+                                @php
+                                    $position = $safeText(data_get($work, 'position'));
+                                    $company  = $safeText(data_get($work, 'name'));
+                                    $range    = $fmtDateRange(data_get($work, 'startDate'), data_get($work, 'endDate'));
+                                    $summary  = (string) data_get($work, 'summary', '');
+                                    $highs    = (array) data_get($work, 'highlights', []);
+                                @endphp
 
-                                <div class="muted">
-                                    {{ $work['startDate'] ?? '' }}
-                                    @if(!empty($work['endDate'])) – {{ $work['endDate'] }} @else – Present @endif
-                                </div>
+                                @if($position !== '' || $company !== '' || $range !== '' || trim(strip_tags($summary)) !== '' || !empty($highs))
+                                    <div class="row avoid-break">
+                                        <strong>{{ $position !== '' ? $position : 'Role' }}</strong>
+                                        @if($company !== '') - {{ $company }} @endif
 
-                                @if(!empty($work['summary']))
-                                    <div class="rich">{!! $work['summary'] !!}</div>
+                                        @if($range !== '')
+                                            <div class="meta-line accent">{{ $range }}</div>
+                                        @endif
+
+                                        @if(trim(strip_tags($summary)) !== '')
+                                            <div class="rich">{!! $summary !!}</div>
+                                        @endif
+
+                                        @if(!empty($highs))
+                                            <ul class="clean">
+                                                @foreach($highs as $h)
+                                                    @if(is_string($h) && trim($h) !== '')
+                                                        <li>{{ $h }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
                                 @endif
-
-                                @if(!empty($work['highlights']))
-                                    <ul class="clean">
-                                        @foreach($work['highlights'] as $h)
-                                            @if(trim((string)$h) !== '')
-                                                <li>{{ $h }}</li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </div>
+                            @endif
                         @endforeach
                     </div>
                 @endif
 
-                {{-- ================= NEW RICH TEXT SECTIONS ================= --}}
                 @if($hasProject)
                     <div class="section">
                         <h2>Projects</h2>
@@ -290,82 +423,112 @@
                         <div class="row rich">{!! $interestBody !!}</div>
                     </div>
                 @endif
-
-                {{-- ================= REFERENCES ================= --}}
-                @if(!empty($resume['references']))
-                    <div class="section">
-                        <h2>References</h2>
-
-                        @foreach($resume['references'] as $r)
-                            <div class="row">
-                                <strong>{{ $r['name'] ?? '' }}</strong>
-                                @if(!empty($r['reference']))
-                                    <div class="rich" style="padding-top: 6px;">
-                                        {!! $r['reference'] !!}
-                                    </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-
             </td>
 
-            {{-- SIDEBAR --}}
-            @if($hasSidebar)
-                <td valign="top" style="width: 30%;">
+            @if($hasRightRail)
+                <td valign="top" style="width: 34%;">
                     <div class="sidebar-card">
+                        @if($hasEducation)
+                            <div class="sidebar-title">Education</div>
+                            @foreach($resume['education'] as $edu)
+                                @if(is_array($edu))
+                                    @php
+                                        $institution = $safeText(data_get($edu, 'institution'));
+                                        $studyType   = $safeText(data_get($edu, 'studyType'));
+                                        $area        = $safeText(data_get($edu, 'area'));
+                                        $range       = $fmtDateRange(data_get($edu, 'startDate'), data_get($edu, 'endDate'));
+                                        $score       = $safeText(data_get($edu, 'score'));
+                                    @endphp
 
-                        @if($hasWebsites)
-                            <div class="sidebar-title">Websites</div>
-
-                            @foreach($websites as $site)
-                                @php
-                                    // Accept either string or array formats
-                                    $label = is_array($site) ? (data_get($site, 'label') ?? data_get($site, 'name') ?? 'Website') : 'Website';
-                                    $url   = is_array($site) ? (data_get($site, 'url') ?? data_get($site, 'value') ?? '') : (string) $site;
-                                    $url   = trim((string) $url);
-                                @endphp
-
-                                @if($url !== '')
-                                    <div class="sidebar-item tiny">
-                                        <strong>{{ $label }}:</strong>
-                                        <div class="muted" style="padding-top: 2px;">
-                                            <a href="{{ $url }}">{{ $url }}</a>
+                                    @if($institution !== '' || $studyType !== '' || $area !== '' || $range !== '' || $score !== '')
+                                        <div class="sidebar-item avoid-break">
+                                            @if($institution !== '')<strong>{{ $institution }}</strong>@endif
+                                            @if(trim($studyType . ' ' . $area) !== '')
+                                                <div class="meta-line accent">{{ trim($studyType . ' ' . $area) }}</div>
+                                            @endif
+                                            @if($range !== '')<div class="meta-line">{{ $range }}</div>@endif
+                                            @if($score !== '')<div class="meta-line">Score: {{ $score }}</div>@endif
                                         </div>
-                                    </div>
+                                    @endif
                                 @endif
                             @endforeach
 
-                            @if($hasLanguages)
+                            @if($hasSkills || $hasLanguages || $hasWebsites || $hasRefs)
                                 <div class="divider"></div>
-                            @else
-                                <div class="sp-8"></div>
+                            @endif
+                        @endif
+
+                        @if($hasSkills)
+                            <div class="sidebar-title">Skills</div>
+                            <div class="sidebar-item">
+                                @if($skillsBody !== '')
+                                    <div class="rich">{!! $skillsBody !!}</div>
+                                @else
+                                    @foreach($skillItems as $skill)
+                                        <span class="pill">{{ $skill }}</span>
+                                    @endforeach
+                                @endif
+                            </div>
+
+                            @if($hasLanguages || $hasWebsites || $hasRefs)
+                                <div class="divider"></div>
                             @endif
                         @endif
 
                         @if($hasLanguages)
-							<div class="sidebar-title">Languages</div>
-							<div class="row">
-								@foreach($sidebarLanguages as $lang)
-									@php
-										$label = '';
+                            <div class="sidebar-title">Languages</div>
+                            @foreach($sidebarLanguages as $lang)
+                                @php $l = $normalizeLanguage($lang); @endphp
+                                @if($l['name'] !== '')
+                                    <div class="sidebar-item tiny">
+                                        <strong>{{ $l['name'] }}</strong>
+                                        @if($l['meta'] !== '') <span class="muted">({{ $l['meta'] }})</span> @endif
+                                    </div>
+                                @endif
+                            @endforeach
 
-										if (is_array($lang)) {
-											$name = data_get($lang, 'language') ?? data_get($lang, 'name') ?? '';
-											$fluency = data_get($lang, 'fluency') ?? '';
-											$label = trim($name . ($fluency ? ' (' . $fluency . ')' : ''));
-										} else {
-											$label = trim((string) $lang);
-										}
-									@endphp
+                            @if($hasWebsites || $hasRefs)
+                                <div class="divider"></div>
+                            @endif
+                        @endif
 
-									@if($label !== '')
-										<span class="pill">{{ $label }}</span>
-									@endif
-								@endforeach
-							</div>
-						@endif
+                        @if($hasWebsites)
+                            <div class="sidebar-title">Websites</div>
+                            @foreach($websites as $site)
+                                @php $w = $normalizeWebsite($site); @endphp
+                                @if($w['url'] !== '')
+                                    <div class="sidebar-item tiny">
+                                        <strong>{{ $w['label'] }}:</strong>
+                                        <div class="meta-line"><a href="{{ $w['url'] }}">{{ $w['url'] }}</a></div>
+                                    </div>
+                                @endif
+                            @endforeach
+
+                            @if($hasRefs)
+                                <div class="divider"></div>
+                            @endif
+                        @endif
+
+                        @if($hasRefs)
+                            <div class="sidebar-title">References</div>
+                            @foreach($resume['references'] as $r)
+                                @if(is_array($r))
+                                    @php
+                                        $refName = $safeText(data_get($r, 'name'));
+                                        $refBody = (string) data_get($r, 'reference', '');
+                                    @endphp
+
+                                    @if($refName !== '' || trim(strip_tags($refBody)) !== '')
+                                        <div class="sidebar-item avoid-break">
+                                            @if($refName !== '')<strong>{{ $refName }}</strong>@endif
+                                            @if(trim(strip_tags($refBody)) !== '')
+                                                <div class="rich" style="padding-top: 4px;">{!! $refBody !!}</div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endif
+                            @endforeach
+                        @endif
                     </div>
                 </td>
             @endif

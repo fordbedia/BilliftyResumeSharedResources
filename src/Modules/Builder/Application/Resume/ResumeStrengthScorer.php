@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Http;
 
 class ResumeStrengthScorer
 {
-    public const PASSING_SCORE = 75;
-    public const VERSION = 'v2.0';
+    public const PASSING_SCORE = 70;
+    public const VERSION = 'v2.4';
 
     private array $actionVerbs = [
         'achieved', 'analyzed', 'architected', 'automated', 'built', 'created', 'defined',
@@ -102,10 +102,10 @@ class ResumeStrengthScorer
 
         $summary = $this->value($basics['summary'] ?? null);
         $summaryLength = mb_strlen($summary);
-        if ($summaryLength >= 60 && $summaryLength <= 700) {
+        if ($summaryLength >= 45 && $summaryLength <= 700) {
             $points += 8;
             $checks['summary'] = $this->ok('Summary length is ATS-friendly.');
-        } elseif ($summaryLength >= 25) {
+        } elseif ($summaryLength >= 20) {
             $points += 5;
             $checks['summary'] = $this->warn('Summary exists but can be stronger with quantified impact and keywords.');
             $notes[] = 'Strengthen summary with measurable impact and relevant keywords.';
@@ -192,7 +192,7 @@ class ResumeStrengthScorer
 
         $completenessRatio = count($work) > 0 ? $completeRoles / count($work) : 0;
         $points += (int) round(6 * min(1, $completenessRatio));
-        if ($completenessRatio >= 0.75) {
+        if ($completenessRatio >= 0.65) {
             $checks['roleCompleteness'] = $this->ok('Roles include employer, title, and start date.');
         } else {
             $checks['roleCompleteness'] = $this->warn('Each role should include employer, title, and dates.');
@@ -215,7 +215,7 @@ class ResumeStrengthScorer
         }
         $densityRatio = count($work) > 0 ? $idealRoles / count($work) : 0;
         $points += (int) round(4 * min(1, $densityRatio));
-        if ($densityRatio >= 0.5) {
+        if ($densityRatio >= 0.4) {
             $checks['bulletDensity'] = $this->ok('Most roles use 3-6 bullets.');
         } else {
             $checks['bulletDensity'] = $this->warn('Aim for 3-6 concise bullets per role.');
@@ -241,7 +241,7 @@ class ResumeStrengthScorer
 
         $actionRatio = $actionVerbBullets / $totalBullets;
         $points += (int) round(8 * min(1, $actionRatio));
-        if ($actionRatio >= 0.45) {
+        if ($actionRatio >= 0.35) {
             $checks['actionVerbs'] = $this->ok('Action verbs are used effectively.');
         } else {
             $checks['actionVerbs'] = $this->warn('Start more bullets with strong action verbs.');
@@ -249,8 +249,14 @@ class ResumeStrengthScorer
         }
 
         $metricRatio = $metricBullets / $totalBullets;
-        $points += (int) round(10 * min(1, $metricRatio));
-        $metricTargetRatio = $totalBullets >= 8 ? 0.15 : 0.08;
+        $metricPoints = (int) round(10 * min(1, $metricRatio));
+        // Keep metrics as a core signal, but avoid zeroing this dimension for strong action-oriented bullets.
+        if ($metricBullets === 0 && $totalBullets >= 4 && $actionRatio >= 0.5) {
+            $metricPoints = 4;
+        }
+        $points += $metricPoints;
+        // Loosen metrics requirement by ~35% so high-quality AI rewrites are not over-penalized.
+        $metricTargetRatio = $totalBullets >= 8 ? 0.08 : 0.04;
         $hasReasonableMetricCoverage = $metricRatio >= $metricTargetRatio || ($metricBullets >= 1 && $totalBullets <= 6);
         if ($hasReasonableMetricCoverage) {
             $checks['metrics'] = $this->ok('Impact metrics are present.');
@@ -428,7 +434,7 @@ class ResumeStrengthScorer
         }
 
         if ($invalidDates > 0) {
-            $points -= min(4, $invalidDates);
+            $points -= min(2, $invalidDates);
             $checks['dates'] = $this->warn('Normalize dates (YYYY-MM or YYYY-MM-DD) for better ATS parsing.');
             $notes[] = 'Normalize date formats for ATS parsing.';
         } else {
@@ -443,7 +449,7 @@ class ResumeStrengthScorer
         if (count($bullets) > 0) {
             $avgLen = (int) round(array_sum(array_map(fn ($b) => mb_strlen(trim((string) $b)), $bullets)) / count($bullets));
             if ($avgLen > 240) {
-                $points -= 3;
+                $points -= 1;
                 $checks['readability'] = $this->warn('Bullets are long. Keep most bullets to 1-2 lines.');
                 $notes[] = 'Shorten long bullets to improve scanability.';
             } else {
@@ -452,14 +458,14 @@ class ResumeStrengthScorer
 
             $repeated = $this->findOverusedWords(mb_strtolower(implode(' ', $bullets)));
             if (!empty($repeated)) {
-                $points -= 2;
+                $points -= 1;
                 $checks['repetition'] = $this->warn('Reduce repeated terms: ' . implode(', ', array_slice($repeated, 0, 5)) . '.');
                 $notes[] = 'Reduce repeated words in work bullets.';
             } else {
                 $checks['repetition'] = $this->ok('Word variety is good.');
             }
         } else {
-            $points -= 3;
+            $points -= 1;
             $checks['readability'] = $this->warn('Add concise bullets under work history for ATS readability.');
             $notes[] = 'Add bullet-based achievements under work history.';
         }
@@ -512,6 +518,18 @@ class ResumeStrengthScorer
         $parts = array_values(array_filter(array_map(fn ($b) => trim((string) $b), (array) $parts)));
         if (count($parts) > 1) {
             return $parts;
+        }
+
+        // AI rewrites often return sentence-style paragraphs without bullet/newline separators.
+        // If multiple clear sentences exist, treat them as bullet-like entries for scoring.
+        $sentences = preg_split('/(?<=[.!?])\s+(?=\p{L}|\d)/u', $summary, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $sentences = array_values(array_filter(array_map(
+            fn ($s) => trim((string) $s),
+            $sentences
+        )));
+
+        if (count($sentences) >= 2) {
+            return $sentences;
         }
 
         return [$summary];
@@ -669,19 +687,22 @@ class ResumeStrengthScorer
 
         $ratio = $misspelledWords / $checkedWords;
         $penalty = match (true) {
-            $ratio <= 0.03 => 1,
-            $ratio <= 0.06 => 2,
-            $ratio <= 0.10 => 3,
-            $ratio <= 0.15 => 4,
+            $ratio <= 0.05 => 1,
+            $ratio <= 0.10 => 2,
+            $ratio <= 0.15 => 3,
+            $ratio <= 0.22 => 4,
             default => 5,
         };
+        if ($checkedWords < 60) {
+            $penalty = min($penalty, 2);
+        }
         if ($checkedWords < 25) {
             $penalty = min($penalty, 2);
         }
         if ($checkedWords < 12) {
             $penalty = min($penalty, 1);
         }
-        $penalty = min(4, $penalty);
+        $penalty = min(2, $penalty);
 
         $sample = array_values(array_unique(array_slice($allMisspelled, 0, 8)));
         $note = 'Spell check found possible misspellings. Review words like: ' . implode(', ', $sample) . '.';

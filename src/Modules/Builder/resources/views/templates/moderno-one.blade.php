@@ -79,7 +79,7 @@
     body {
         font-family: DejaVu Sans, Arial, sans-serif;
         color: #2b2b2b;
-        font-size: 12px;
+        font-size: 14px;
         line-height: 1.45;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -116,7 +116,7 @@
 
     /* Right contact */
     .contact {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.5;
         text-align: left;
         color: var(--accent);
@@ -133,7 +133,7 @@
         box-shadow: 0 10px 22px rgba(0,0,0,0.05);
     }
     .summary-text {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.55;
         margin: 0;
         color: #2b2b2b;
@@ -237,7 +237,7 @@
     .sb-card .sb-item {
         margin: 0 0 8px 0;
         padding: 0;
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.35;
         color: rgba(255,255,255,0.95);
         word-break: break-word;
@@ -272,7 +272,7 @@
 
     .job-dates {
         width: 26%;
-        font-size: 13px;
+        font-size: 14px;
         color: #6b6b6b;
         padding-right: 10px;
         font-weight: 600;
@@ -285,7 +285,7 @@
         color: #222;
     }
     .job-company {
-        font-size: 13px;
+        font-size: 14px;
         font-style: italic;
         color: #6b6b6b;
         margin: 0 0 10px 0;
@@ -462,14 +462,9 @@
 
             @if(!empty($skills))
                 <div class="skills">
-                    <ul class="skills-ul">
-                        @foreach($skills as $s)
-                            @php $skillName = (string) data_get($s, 'name'); @endphp
-                            @if($skillName !== '')
-                                <li>{{ $skillName }}</li>
-                            @endif
-                        @endforeach
-                    </ul>
+                    <div class="skills-ul">
+						{!! $resume['skills']['body'] !!}
+                    </div>
                 </div>
             @endif
 
@@ -522,7 +517,7 @@
             {{-- Websites/Portfolio (enhanced card list) --}}
             @if (!empty($websites) && $websitesActive)
                 <div class="divider"></div>
-                <p class="section-title-sidebar">Websites/Portfolio</p>
+                <p class="section-title-sidebar">Websites</p>
 
                 <div class="sb-card">
                     @foreach ($websites as $website)

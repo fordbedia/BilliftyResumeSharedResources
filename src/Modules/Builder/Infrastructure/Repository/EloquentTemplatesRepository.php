@@ -6,6 +6,7 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Authorization\
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\TemplatesRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Infrastructure\EloquentBaseRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Templates;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class EloquentTemplatesRepository extends EloquentBaseRepository implements TemplatesRepository
@@ -26,6 +27,17 @@ class EloquentTemplatesRepository extends EloquentBaseRepository implements Temp
 			->whereIsActive(1)
 			->allowedPlans($allowedPlans)
 			->get();
+	}
+
+	public function findTemplateBySlug(string $templateSlug, int $resumeTemplateId)
+	{
+		return $this->model->newQuery()
+			->when($templateSlug, function($q) use ($templateSlug) {
+				$q->where('slug', $templateSlug);
+			}, function($q) use($resumeTemplateId) {
+				$q->where('id', $resumeTemplateId);
+			})
+			->first();
 	}
 
 	public function makeModel(): string

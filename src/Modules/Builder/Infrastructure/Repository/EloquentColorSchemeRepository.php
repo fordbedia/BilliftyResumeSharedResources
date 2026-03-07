@@ -8,9 +8,17 @@ use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\ColorScheme;
 
 class EloquentColorSchemeRepository extends EloquentBaseRepository implements ColorSchemeRepository
 {
-	public function getPrimary(int $id): string
+	public function getPrimary(?int $id, ?int $resumeColorSchemeId = null): ?string
 	{
-		return $this->model->whereId($id)->pluck('primary')->first();
+		$targetColorSchemeId = $id ?? $resumeColorSchemeId;
+		if (!$targetColorSchemeId) {
+			return null;
+		}
+
+		return $this->model
+			->newQuery()
+			->whereId($targetColorSchemeId)
+			->value('primary');
 	}
 
 	public function makeModel(): string

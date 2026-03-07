@@ -41,7 +41,7 @@ class Resume extends Model
 
 	public function skills()
 	{
-		return $this->hasMany(Skills::class);
+		return $this->hasOne(Skills::class);
 	}
 
 	public function reference()

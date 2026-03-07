@@ -58,10 +58,7 @@ class ResumeJsonResource extends JsonResource
                 'score' => $e->score,
             ])->values()->all() ?? [],
 
-            'skills' => $resume->skills?->map(fn ($s) => [
-                'name' => $s->name,
-                'level' => $s->level,
-            ])->values()->all() ?? [],
+            'skills' => $resume->skills,
 
             // IMPORTANT: your relation is `reference` (singular)
             'references' => $resume->reference?->map(fn ($r) => [

@@ -22,13 +22,14 @@
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
 	}
-
 	/* A4/Letter preview container (optional; harmless for print) */
 	.page {
 		width: 6.5in;
 		min-height: 11in;
 		margin: 0 auto;
 		box-sizing: border-box;
+		position: relative;
+		z-index: 1;
 	}
 
 	/* -----------------------------
@@ -84,7 +85,7 @@
 	.summary {
 		font-size: 15px;
 		line-height: 1.55;
-		color: var(--muted);
+		color: var(--primary);
 		margin: 14px 0 14px 0;
 	}
 
@@ -128,6 +129,16 @@
 		display: flex;
 		align-items: flex-start;
 		gap: 24px;
+		position: relative;
+	}
+	.body::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(100% - 200px);
+		border-left: 2px solid var(--line);
+		pointer-events: none;
 	}
 
 	.left {
@@ -137,7 +148,7 @@
 
 	.right {
 		width: 260px;
-		border-left: 2px solid var(--line);
+		border-left: 0;
 		padding-left: 22px;
 		box-sizing: border-box;
 	}
@@ -177,21 +188,10 @@
 
 	.skills li {
 		position: relative;
-		padding-left: 26px;
 		margin: 0 0 10px 0;
-		color: var(--muted);
+		color: var(--primary);
 		font-size: 15px;
 		line-height: 1.45;
-	}
-
-	.skills li:before {
-		content: "•";
-		position: absolute;
-		left: 6px;
-		top: -1px;
-		font-size: 22px;
-		color: #111827;
-		line-height: 1;
 	}
 
 	/* Education blocks */
@@ -219,7 +219,7 @@
 	}
 	.ref-lines {
 		font-size: 14px;
-		color: var(--muted);
+		color: var(--primary);
 		line-height: 1.6;
 	}
 
@@ -488,17 +488,9 @@
 			<h2 class="section-title">SKILLS</h2>
 
 			@if(!empty($skills))
-				<ul class="skills">
-					@foreach($skills as $skill)
-						@php
-							$skillText = is_array($skill) ? ($skill['name'] ?? '') : (string)$skill;
-							$skillText = trim((string)$skillText);
-						@endphp
-						@if($skillText !== '')
-							<li>{{ $skillText }}</li>
-						@endif
-					@endforeach
-				</ul>
+				<div class="skills">
+					{!! $resume['skills']['body'] !!}
+				</div>
 			@endif
 
 			<div class="hr" style="margin: 18px 0;"></div>

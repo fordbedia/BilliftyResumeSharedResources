@@ -101,207 +101,546 @@
     $region = $safeText(data_get($basics, 'location.region'));
     $email  = $safeText($basics['email'] ?? '');
     $url    = $safeText($basics['url'] ?? '');
+
+    $hasEducation = !empty($resume['education']) && is_array($resume['education']);
+    $hasSkills    = !empty($resume['skills']);
+    $hasRefs      = !empty($resume['references']) && is_array($resume['references']);
+    $hasWork      = !empty($resume['work']) && is_array($resume['work']);
+    $hasRightRail = $hasSidebar || $hasEducation || $hasSkills || $hasRefs;
+
+	$previewColorScheme = $previewColorScheme ?? null;
+    $colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme');
+
+    $primaryColor = $colorScheme;
+
+    // NOTE: assumes you have this helper available globally (as you already use it)
+    $dynamicTextColor = contrastTextFromHsl($primaryColor);
 @endphp
 
 <style>
-    /* ===== Modern Minimal (PDF-safe: tables + inline-block) ===== */
     * { box-sizing: border-box; }
 
     body {
+        margin: 0;
+        padding: 0;
         font-family: DejaVu Sans, Arial, sans-serif;
-        font-size: 11px;
-        line-height: 1.45;
-        color: #0F172A;
+        color: #2B2D42;
+        background: #ECEDEF;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
-    .muted { color: #64748B; }
-    .tiny  { font-size: 10px; }
-    .micro { font-size: 9px; }
-
-    .wrap { width: 100%; }
-
-    /* Header card */
-    .header {
-        border: 1px solid #E7ECF3;
-        background: #FBFCFE;
-        border-radius: 12px;
-        padding: 14px;
+    .page-shell {
+        background: #FFFFFF;
+        border-radius: 8px;
+        border: 1px solid #E4E6EC;
+        padding: 24px;
+        width: 100%;
     }
 
     .name {
+        margin: 0;
+        font-size: 42px;
+        line-height: 1;
+        color: #2D3160;
+        letter-spacing: -0.3px;
+    }
+
+    .label {
+        margin-top: 5px;
+        color: #7D8095;
         font-size: 22px;
-        line-height: 1.1;
+		font-weight: bold;
+    }
+
+    .summary {
+        margin-top: 12px;
+        color: #5C6078;
+        max-width: 84%;
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    .summary p { margin: 0 0 6px 0; }
+
+    .contact-line {
+        margin-top: 8px;
+        color: #80849C;
+        font-size: 14px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .contact-line a {
+        color: #80849C;
+        text-decoration: none;
+    }
+
+    .contact-inline {
+        margin-top: 8px;
+        color: #14181f;
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .contact-inline a {
+        color: #80849C;
+        text-decoration: none;
+    }
+
+    .inline-dot {
+        color: #A6A9BB;
+        margin: 0 5px;
+    }
+
+    .socials {
+        margin-top: 10px;
+        color: #A0A3B5;
+        font-size: 14px;
+    }
+
+    .socials span { margin-right: 8px; }
+
+    .divider-space { height: 18px; }
+
+    .section-head {
+        font-size: 28px;
+        line-height: 1;
+        color: #2D3160;
         margin: 0;
+        letter-spacing: -0.2px;
+    }
+
+    .section-accent {
+        margin-top: 5px;
+        width: 44px;
+        border-top: 3px solid {{$colorScheme ?? '#FF4A78'}};
+    }
+
+    .right-title {
+        font-size: 22px;
+        line-height: 1;
+        color: #2D3160;
+        margin: 0;
+    }
+
+    .right-block { padding-bottom: 16px; }
+
+    .timeline {
+        border-left: 1px solid #E4E6EC;
+        margin-left: 5px;
+    }
+
+    .job-item {
+        position: relative;
+        padding-left: 16px;
+        padding-bottom: 14px;
+    }
+
+    .job-dot {
+        position: absolute;
+        left: -4px;
+        top: 4px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #BBC0D4;
+    }
+
+    .job-item.current .job-dot { background: {{$colorScheme ?? '#FF4A78'}}; }
+
+    .job-title {
+        color: #2F3365;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.3;
+    }
+
+    .job-date {
+        float: right;
+        color: {{ $colorScheme ?? '#FF4A78' }};
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 8px;
+    }
+
+    .job-meta {
+        color: #9195AA;
+        font-size: 14px;
+        margin-top: 1px;
+    }
+
+    .job-summary,
+    .job-summary p {
+        margin: 7px 0 0 0;
+        color: #14181f;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .job-highlights {
+        margin: 6px 0 0 12px;
         padding: 0;
-        letter-spacing: 0.2px;
+        color: #14181f;
+        font-size: 14px;
+        line-height: 1.45;
     }
 
-    .headline { padding-top: 4px; }
+    .job-highlights li { margin-bottom: 3px; }
 
-    .chip {
-        display: inline-block;
-        border: 1px solid #E6EAF0;
-        background: #FFFFFF;
-        padding: 4px 9px;
-        border-radius: 999px;
-        margin: 0 6px 6px 0;
-        font-size: 10px;
-        color: #0F172A;
-        vertical-align: top;
-        word-wrap: break-word;
+    .skill-group {
+        margin-top: 9px;
+        border-top: 1px solid #F0F1F5;
+        padding-top: 8px;
     }
 
-    .chip-soft {
-        background: #F5F7FB;
-        border-color: #E7ECF3;
-        color: #334155;
-    }
-
-    .dot { color: #CBD5E1; padding: 0 6px; }
-
-    .sp-8  { height: 8px; }
-    .sp-12 { height: 12px; }
-
-    /* Layout cards */
-    .card {
-        border: 1px solid #E7ECF3;
-        background: #FFFFFF;
-        border-radius: 12px;
-        padding: 12px;
-    }
-
-    .card-subtle { background: #FBFCFE; }
-
-    /* Section titles */
-    .section { padding-top: 12px; }
-    .section:first-child { padding-top: 0; }
-
-    .title {
-        font-size: 10px;
+    .skill-text {
+        color: #7F8498;
+        font-size: 14px;
+        margin-bottom: 4px;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        margin: 0;
-        padding: 0;
-        color: #0F172A;
+        letter-spacing: 0.35px;
     }
 
-    .rule { border-top: 1px solid #EEF2F7; margin-top: 8px; }
+    .skill-chip {
+        display: inline-block;
+        margin: 0 8px 4px 0;
+        color: #2F3365;
+        font-size: 14px;
+        font-weight: bold;
+    }
 
-    .row { padding-top: 8px; }
+    .edu-item { margin-top: 9px; }
 
-    /* Items */
-    .item { padding-top: 10px; }
-    .item:first-child { padding-top: 8px; }
+    .edu-school {
+        color: #2F3365;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.35;
+    }
 
-    .item-title { font-weight: bold; color: #0F172A; }
-    .item-meta  { padding-top: 2px; color: #64748B; font-size: 10px; }
+    .edu-program {
+        color: {{ $colorScheme ?? '#FF4A78' }};
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 1px;
+    }
 
-    /* Rich content */
-    .rich p { margin: 0 0 6px 0; }
-    .rich ul { margin: 6px 0 0 16px; padding: 0; }
-    .rich li { margin: 0 0 4px 0; }
+    .edu-meta {
+        color: #9094A9;
+        font-size: 14px;
+        line-height: 1.45;
+        margin-top: 2px;
+    }
 
-    ul.clean { margin: 6px 0 0 16px; padding: 0; }
-    ul.clean li { margin: 0 0 4px 0; }
+    .project-card {
+        margin-top: 10px;
+        border: 1px solid #ECEEF3;
+        background: #F8F9FC;
+        border-radius: 4px;
+        padding: 10px;
+    }
 
-    a { color: #0F172A; text-decoration: none; }
+    .project-title {
+        color: #2F3365;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .project-rich,
+    .project-rich p,
+    .project-rich li {
+        color: #61657F;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .project-rich p { margin: 6px 0 4px 0; }
+    .project-rich ul { margin: 4px 0 0 12px; padding: 0; }
+
+    .lang-row,
+    .web-row,
+    .ref-row {
+        margin-top: 7px;
+        color: #575B73;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .lang-meta,
+    .web-url {
+        color: #9AA0B4;
+        margin-left: 6px;
+    }
+
+    .ref-quote {
+        margin-top: 7px;
+        padding: 10px;
+        border: 1px solid #F1E6E9;
+        background: #FCF7F8;
+        border-radius: 4px;
+        color: #8A8EA2;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .foot {
+        margin-top: 14px;
+        border-top: 1px solid #F0F1F5;
+        padding-top: 10px;
+        color: #A5A9BA;
+        font-size: 14px;
+    }
+
+    .rich-inline p { margin: 0 0 5px 0; }
+    .rich-inline ul { margin: 4px 0 0 12px; padding: 0; }
+
+    .header-flex {
+        display: flex;
+        align-items: flex-start;
+    }
+	.header-full {
+		width: 100%;
+	}
+    .header-left {
+        width: 62%;
+        padding-right: 14px;
+    }
+
+    .header-right {
+        width: 38%;
+    }
+
+    .content-flex {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .main-col {
+        width: 100%;
+    }
+
+    .main-col.with-right {
+        width: 63%;
+        padding-right: 14px;
+    }
+
+    .side-col {
+        width: 37%;
+    }
+	.height-separator {
+		height: 10px;
+	}
 </style>
 
-<div class="wrap">
+<div class="page-shell">
+    <div class="header-flex">
+        <div class="header-full">
+                <h1 class="name">{{ $basics['name'] ?? 'Your Name' }}</h1>
 
-    {{-- ========================= HEADER ========================= --}}
-    <div class="header">
-        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-            <tr>
-                <td valign="top">
-                    <h1 class="name">{{ $basics['name'] ?? 'Your Name' }}</h1>
+                @if($label !== '')
+                    <div class="label">{{ $label }}</div>
+                @endif
 
-                    @if($label !== '' || $city !== '' || $region !== '')
-                        <div class="headline muted">
-                            @if($label !== '') {{ $label }} @endif
-                            @if($city !== '')
-                                <span class="dot">•</span>{{ $city }}
-                            @endif
-                            @if($region !== '')
-                                @if($city !== '') , @endif {{ $region }}
-                            @endif
-                        </div>
+                @php
+                    $locationInline = '';
+                    if ($city !== '' || $region !== '') {
+                        $locationInline = $city !== '' && $region !== '' ? ($city . ', ' . $region) : ($city !== '' ? $city : $region);
+                    }
+                    $phoneInline = !empty($basics['phone']) ? $safeText($basics['phone']) : '';
+                    $summaryInline = trim(strip_tags((string) data_get($basics, 'summary', ''))) !== ''
+                        ? trim(preg_replace('/\\s+/u', ' ', strip_tags((string) data_get($basics, 'summary', ''))))
+                        : '';
+                @endphp
+
+
+                <div class="contact-inline">
+                    @php $printed = false; @endphp
+
+                    @if($email !== '')
+                        {{ $email }}
+                        @php $printed = true; @endphp
                     @endif
 
-                    <div class="sp-8"></div>
+                    @if($locationInline !== '')
+                        @if($printed)<span class="inline-dot">•</span>@endif
+                        {{ $locationInline }}
+                        @php $printed = true; @endphp
+                    @endif
 
-                    {{-- contact chips --}}
-                    @if($email !== '') <span class="chip">{{ $email }}</span> @endif
-                    @if($url !== '') <span class="chip">{{ $url }}</span> @endif
+                    @if($url !== '')
+                        @if($printed)<span class="inline-dot">•</span>@endif
+                        <a href="{{ $url }}">{{ $url }}</a>
+                        @php $printed = true; @endphp
+                    @endif
 
+                    @if($phoneInline !== '')
+                        @if($printed)<span class="inline-dot">•</span>@endif
+                        {{ $phoneInline }}
+                        @php $printed = true; @endphp
+                    @endif
+
+					<div class="height-separator"></div>
+
+                    @if($summaryInline !== '')
+                        {{ $summaryInline }}
+                    @endif
+                </div>
+
+                <div class="socials">
                     @if(!empty($basics['profiles']) && is_array($basics['profiles']))
                         @foreach($basics['profiles'] as $profile)
-                            @php
-                                $network = $safeText(data_get($profile, 'network')) ?: 'Profile';
-                                $value   = $safeText(data_get($profile, 'url')) ?: $safeText(data_get($profile, 'username'));
-                            @endphp
-                            @if($value !== '')
-                                <span class="chip chip-soft">{{ $network }}: {{ $value }}</span>
-                            @endif
+                            @php $net = $safeText(data_get($profile, 'network')); @endphp
+                            @if($net !== '') <span>{{ $net }}</span> @endif
                         @endforeach
                     @endif
+                </div>
+        </div>
 
-                    @if(!empty($basics['summary']))
-                        <div class="sp-8"></div>
-                        <div class="rich">{!! $basics['summary'] !!}</div>
-                    @endif
-                </td>
-            </tr>
-        </table>
+{{--        <div class="header-right">--}}
+{{--                @if($email !== '')--}}
+{{--                    <div class="contact-line">{{ $email }}</div>--}}
+{{--                @endif--}}
+
+{{--                @if($city !== '' || $region !== '')--}}
+{{--                    <div class="contact-line">--}}
+{{--                        @if($city !== ''){{ $city }}@endif--}}
+{{--                        @if($region !== '')@if($city !== ''), @endif{{ $region }}@endif--}}
+{{--                    </div>--}}
+{{--                @endif--}}
+
+{{--                @if($url !== '')--}}
+{{--                    <div class="contact-line"><a href="{{ $url }}">{{ $url }}</a></div>--}}
+{{--                @endif--}}
+
+{{--                @if(!empty($basics['phone']))--}}
+{{--                    <div class="contact-line">{{ $safeText($basics['phone']) }}</div>--}}
+{{--                @endif--}}
+{{--        </div>--}}
     </div>
 
-    <div class="sp-12"></div>
+    <div class="divider-space"></div>
 
-    {{-- ========================= MAIN + SIDEBAR ========================= --}}
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-        <tr>
-            {{-- MAIN --}}
-            <td valign="top" style="{{ $hasSidebar ? 'width: 68%; padding-right: 12px;' : 'width: 100%;' }}">
-                <div class="card">
+    <div class="content-flex">
+        <div class="main-col {{ $hasRightRail ? 'with-right' : '' }}">
+                @if($hasWork)
+                    <h2 class="section-head">Experience</h2>
+                    <div class="section-accent"></div>
 
-                    {{-- Skills --}}
-                    @if(!empty($resume['skills']) && is_array($resume['skills']))
-                        <div class="section">
-                            <div class="title">Skills</div>
-                            <div class="rule"></div>
+                    <div style="height: 7px;"></div>
 
-                            <div class="row">
-                                @foreach($resume['skills'] as $skill)
-                                    @php
-                                        $skillName  = '';
-                                        $skillLevel = '';
+                    <div class="timeline">
+                        @foreach($resume['work'] as $index => $work)
+                            @if(is_array($work))
+                                @php
+                                    $position = $safeText(data_get($work, 'position'));
+                                    $company  = $safeText(data_get($work, 'name'));
+                                    $range    = $fmtDateRange(data_get($work, 'startDate'), data_get($work, 'endDate'));
+                                    $workLocation = $safeText(data_get($work, 'location'));
+                                    $summary  = (string) data_get($work, 'summary', '');
+                                    $highs    = (array) data_get($work, 'highlights', []);
 
-                                        if (is_array($skill)) {
-                                            $skillName  = $safeText(data_get($skill, 'name'));
-                                            $skillLevel = $safeText(data_get($skill, 'level'));
-                                        } else {
-                                            $skillName = $safeText($skill);
-                                        }
-                                    @endphp
+                                    $hasHighs = false;
+                                    foreach ($highs as $h) {
+                                        if (is_string($h) && trim($h) !== '') { $hasHighs = true; break; }
+                                    }
 
-                                    @if($skillName !== '')
-                                        <span class="chip">
-                                            {{ $skillName }}
-                                            @if($skillLevel !== '')
-                                                <span class="muted"> ({{ $skillLevel }})</span>
-                                            @endif
-                                        </span>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
+                                    $showItem = $position !== '' || $company !== '' || $range !== '' || $workLocation !== '' || trim(strip_tags($summary)) !== '' || $hasHighs;
+                                @endphp
 
-                    {{-- Education --}}
-                    @if(!empty($resume['education']) && is_array($resume['education']))
-                        <div class="section">
-                            <div class="title">Education</div>
-                            <div class="rule"></div>
+                                @if($showItem)
+                                    <div class="job-item {{ $index === 0 ? 'current' : '' }}">
+                                        <span class="job-dot"></span>
+
+                                        @if($range !== '')
+                                            <span class="job-date">{{ $range }}</span>
+                                        @endif
+
+                                        <div class="job-title">
+                                            {{ $position !== '' ? $position : 'Role' }}
+                                        </div>
+
+                                        @if($company !== '' || $workLocation !== '')
+                                            <div class="job-meta">
+                                                @if($company !== ''){{ $company }}@endif
+                                                @if($workLocation !== '') @if($company !== '') • @endif{{ $workLocation }}@endif
+                                            </div>
+                                        @endif
+
+                                        @if(trim(strip_tags($summary)) !== '')
+                                            <div class="job-summary rich-inline">{!! $summary !!}</div>
+                                        @endif
+
+                                        @if($hasHighs)
+                                            <ul class="job-highlights">
+                                                @foreach($highs as $h)
+                                                    @if(is_string($h) && trim($h) !== '')
+                                                        <li>{{ $h }}</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
+                                @endif
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+
+                @if($hasProject)
+                    <div style="height: 8px;"></div>
+                    <h2 class="section-head">Projects</h2>
+                    <div class="section-accent"></div>
+
+                    <div class="project-card">
+                        <div class="project-title">Selected Projects</div>
+                        <div class="project-rich rich-inline">{!! $projectBody !!}</div>
+                    </div>
+                @endif
+
+                @if($hasAccomplishment)
+                    <div class="project-card">
+                        <div class="project-title">Accomplishments</div>
+                        <div class="project-rich rich-inline">{!! $accomplishmentBody !!}</div>
+                    </div>
+                @endif
+
+                @if($hasVolunteer)
+                    <div class="project-card">
+                        <div class="project-title">Volunteer</div>
+                        <div class="project-rich rich-inline">{!! $volunteerBody !!}</div>
+                    </div>
+                @endif
+
+                @if($hasAffiliation)
+                    <div class="project-card">
+                        <div class="project-title">Affiliations</div>
+                        <div class="project-rich rich-inline">{!! $affiliationBody !!}</div>
+                    </div>
+                @endif
+
+                @if($hasCertificate)
+                    <div class="project-card">
+                        <div class="project-title">Certifications</div>
+                        <div class="project-rich rich-inline">{!! $certificateBody !!}</div>
+                    </div>
+                @endif
+
+                @if($hasInterest)
+                    <div class="project-card">
+                        <div class="project-title">Interests</div>
+                        <div class="project-rich rich-inline">{!! $interestBody !!}</div>
+                    </div>
+                @endif
+        </div>
+
+        @if($hasRightRail)
+                <div class="side-col">
+                    @if($hasEducation)
+                        <div class="right-block">
+                            <h3 class="right-title">Education</h3>
+                            <div class="section-accent"></div>
 
                             @foreach($resume['education'] as $edu)
                                 @if(is_array($edu))
@@ -311,70 +650,21 @@
                                         $area        = $safeText(data_get($edu, 'area'));
                                         $score       = $safeText(data_get($edu, 'score'));
                                         $range       = $fmtDateRange(data_get($edu, 'startDate'), data_get($edu, 'endDate'));
-                                        $sub         = trim($studyType . ' ' . $area);
                                     @endphp
 
-                                    @if($institution !== '' || $sub !== '' || $range !== '' || $score !== '')
-                                        <div class="item">
-                                            <div class="item-title">
-                                                {{ $institution }}
-                                                @if($sub !== '')
-                                                    <span class="muted"> — {{ $sub }}</span>
-                                                @endif
-                                            </div>
-                                            @if($range !== '') <div class="item-meta">{{ $range }}</div> @endif
-                                            @if($score !== '') <div class="item-meta">Score: {{ $score }}</div> @endif
-                                        </div>
-                                    @endif
-                                @endif
-                            @endforeach
-                        </div>
-                    @endif
-
-                    {{-- Experience --}}
-                    @if(!empty($resume['work']) && is_array($resume['work']))
-                        <div class="section">
-                            <div class="title">Experience</div>
-                            <div class="rule"></div>
-
-                            @foreach($resume['work'] as $work)
-                                @if(is_array($work))
-                                    @php
-                                        $position = $safeText(data_get($work, 'position'));
-                                        $company  = $safeText(data_get($work, 'name'));
-                                        $range    = $fmtDateRange(data_get($work, 'startDate'), data_get($work, 'endDate'));
-                                        $summary  = (string) data_get($work, 'summary', '');
-                                        $highs    = (array) data_get($work, 'highlights', []);
-
-                                        $hasHighs = false;
-                                        foreach ($highs as $h) {
-                                            if (is_string($h) && trim($h) !== '') { $hasHighs = true; break; }
-                                        }
-                                    @endphp
-
-                                    @if($position !== '' || $company !== '' || $range !== '' || trim(strip_tags($summary)) !== '' || $hasHighs)
-                                        <div class="item">
-                                            <div class="item-title">
-                                                {{ $position }}
-                                                @if($company !== '')
-                                                    <span class="muted"> — {{ $company }}</span>
-                                                @endif
-                                            </div>
-
-                                            @if($range !== '') <div class="item-meta">{{ $range }}</div> @endif
-
-                                            @if(trim(strip_tags($summary)) !== '')
-                                                <div class="row rich">{!! $summary !!}</div>
+                                    @if($institution !== '' || $studyType !== '' || $area !== '' || $range !== '' || $score !== '')
+                                        <div class="edu-item">
+                                            @if($institution !== '')
+                                                <div class="edu-school">{{ $institution }}</div>
                                             @endif
-
-                                            @if($hasHighs)
-                                                <ul class="clean">
-                                                    @foreach($highs as $h)
-                                                        @if(is_string($h) && trim($h) !== '')
-                                                            <li>{{ $h }}</li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
+                                            @if(trim($studyType . ' ' . $area) !== '')
+                                                <div class="edu-program">{{ trim($studyType . ' ' . $area) }}</div>
+                                            @endif
+                                            @if($range !== '')
+                                                <div class="edu-meta">{{ $range }}</div>
+                                            @endif
+                                            @if($score !== '')
+                                                <div class="edu-meta">Score: {{ $score }}</div>
                                             @endif
                                         </div>
                                     @endif
@@ -383,60 +673,60 @@
                         </div>
                     @endif
 
-                    {{-- New Rich Sections --}}
-                    @if($hasProject)
-                        <div class="section">
-                            <div class="title">Projects</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $projectBody !!}</div>
+                    @if($hasSkills)
+                        <div class="right-block">
+                            <h3 class="right-title">Skills</h3>
+                            <div class="section-accent"></div>
+
+                            <div class="skill-group">
+                                {!! $resume['skills']['body'] !!}
+                            </div>
                         </div>
                     @endif
 
-                    @if($hasAccomplishment)
-                        <div class="section">
-                            <div class="title">Accomplishments</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $accomplishmentBody !!}</div>
+                    @if($hasLanguages)
+                        <div class="right-block">
+                            <h3 class="right-title">Languages</h3>
+                            <div class="section-accent"></div>
+
+                            @foreach($sidebarLanguages as $lang)
+                                @php
+                                    $l = $normalizeLanguage($lang);
+                                @endphp
+
+                                @if($l['name'] !== '')
+                                    <div class="lang-row">
+                                        <strong>{{ $l['name'] }}</strong>
+                                        @if($l['meta'] !== '')
+                                            <span class="lang-meta">{{ $l['meta'] }}</span>
+                                        @endif
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     @endif
 
-                    @if($hasVolunteer)
-                        <div class="section">
-                            <div class="title">Volunteer</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $volunteerBody !!}</div>
+                    @if($hasWebsites)
+                        <div class="right-block">
+                            <h3 class="right-title">Websites</h3>
+                            <div class="section-accent"></div>
+
+                            @foreach($websites as $site)
+                                @php $w = $normalizeWebsite($site); @endphp
+
+                                @if($w['url'] !== '')
+                                    <div class="web-row">
+                                        <span class="web-url"><a href="{{ $w['url'] }}">{{ $w['url'] }}</a></span>
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     @endif
 
-                    @if($hasAffiliation)
-                        <div class="section">
-                            <div class="title">Affiliations</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $affiliationBody !!}</div>
-                        </div>
-                    @endif
-
-                    @if($hasCertificate)
-                        <div class="section">
-                            <div class="title">Certifications</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $certificateBody !!}</div>
-                        </div>
-                    @endif
-
-                    @if($hasInterest)
-                        <div class="section">
-                            <div class="title">Interests</div>
-                            <div class="rule"></div>
-                            <div class="row rich">{!! $interestBody !!}</div>
-                        </div>
-                    @endif
-
-                    {{-- References --}}
-                    @if(!empty($resume['references']) && is_array($resume['references']))
-                        <div class="section">
-                            <div class="title">References</div>
-                            <div class="rule"></div>
+                    @if($hasRefs)
+                        <div class="right-block">
+                            <h3 class="right-title">References</h3>
+                            <div class="section-accent"></div>
 
                             @foreach($resume['references'] as $r)
                                 @if(is_array($r))
@@ -446,12 +736,10 @@
                                     @endphp
 
                                     @if($refName !== '' || trim(strip_tags($refBody)) !== '')
-                                        <div class="item">
-                                            @if($refName !== '')
-                                                <div class="item-title">{{ $refName }}</div>
-                                            @endif
+                                        <div class="ref-row">
+                                            @if($refName !== '')<strong>{{ $refName }}</strong>@endif
                                             @if(trim(strip_tags($refBody)) !== '')
-                                                <div class="row rich">{!! $refBody !!}</div>
+                                                <div class="ref-quote rich-inline">{!! $refBody !!}</div>
                                             @endif
                                         </div>
                                     @endif
@@ -459,65 +747,9 @@
                             @endforeach
                         </div>
                     @endif
-
                 </div>
-            </td>
+        @endif
+    </div>
 
-            {{-- SIDEBAR --}}
-            @if($hasSidebar)
-                <td valign="top" style="width: 32%;">
-                    <div class="card card-subtle">
-
-                        {{-- Websites --}}
-                        @if($hasWebsites)
-                            <div class="section">
-                                <div class="title">Websites</div>
-                                <div class="rule"></div>
-
-                                @foreach($websites as $site)
-                                    @php
-                                        $w = $normalizeWebsite($site);
-                                    @endphp
-
-                                    @if($w['url'] !== '')
-                                        <div class="row tiny" style="padding-top: 8px;">
-                                            <div style="font-weight: bold;">{{ $w['label'] }}</div>
-                                            <div class="muted" style="padding-top: 2px; word-wrap: break-word;">
-                                                <a href="{{ $w['url'] }}">{{ $w['url'] }}</a>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-
-                        {{-- Languages --}}
-                        @if($hasLanguages)
-                            <div class="section">
-                                <div class="title">Languages</div>
-                                <div class="rule"></div>
-
-                                <div class="row">
-                                    @foreach($sidebarLanguages as $lang)
-                                        @php
-                                            $l = $normalizeLanguage($lang);
-                                            $langLabel = $l['name'];
-                                            if ($langLabel !== '' && $l['meta'] !== '') {
-                                                $langLabel .= ' (' . $l['meta'] . ')';
-                                            }
-                                        @endphp
-
-                                        @if($langLabel !== '')
-                                            <span class="chip chip-soft">{{ $langLabel }}</span>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
-                    </div>
-                </td>
-            @endif
-        </tr>
-    </table>
+    <div class="foot">Generated from JSON Resume Standard</div>
 </div>
