@@ -181,7 +181,7 @@
     }
 
     h2 {
-        font-size: 11px;
+        font-size: 14px;
         margin: 0;
         padding: 0 0 5px 0;
         letter-spacing: 1px;
@@ -195,7 +195,7 @@
 
     .contact-line {
         color: #666;
-        font-size: 11px;
+        font-size: 14px;
         line-height: 1.45;
         word-break: break-word;
     }
@@ -217,7 +217,7 @@
         padding: 3px 7px;
         border-radius: 999px;
         margin: 0 6px 6px 0;
-        font-size: 10px;
+        font-size: 14px;
         color: #222;
         background: #fafafa;
         vertical-align: top;
@@ -238,7 +238,7 @@
 
     .meta-line {
         color: #666;
-        font-size: 10.8px;
+        font-size: 14px;
         line-height: 1.45;
         margin-top: 2px;
     }
@@ -251,7 +251,7 @@
     }
 
     .sidebar-title {
-        font-size: 11px;
+        font-size: 14px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         margin: 0 0 6px 0;

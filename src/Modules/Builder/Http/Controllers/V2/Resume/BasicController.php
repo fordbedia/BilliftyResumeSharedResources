@@ -43,7 +43,7 @@ class BasicController extends Controller
 			$payload['basics']['image'] = $storedPath;
 		} else {
 			$basicImage = $basicModel->image ?? null;
-			if (!$entitlements->userCan($request->user(), UserAbility::UPLOAD_RESUME_PHOTO) && $basicImage) {
+			if ((!$entitlements->userCan($request->user(), UserAbility::UPLOAD_RESUME_PHOTO) || !$request->basics['image']) && $basicImage) {
 				ImageFileUploadProcessor::deleteFile($basicImage, $basicModel->image_disk);
 				$basicImage = null;
 			}

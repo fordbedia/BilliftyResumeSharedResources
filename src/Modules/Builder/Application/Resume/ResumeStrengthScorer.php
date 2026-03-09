@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class ResumeStrengthScorer
 {
     public const PASSING_SCORE = 70;
-    public const VERSION = 'v2.4';
+    public const VERSION = 'v1.4';
 
     private array $actionVerbs = [
         'achieved', 'analyzed', 'architected', 'automated', 'built', 'created', 'defined',
@@ -84,7 +84,7 @@ class ResumeStrengthScorer
 
         $name = $this->value($basics['name'] ?? null);
         if ($name !== '') {
-            $points += 4;
+            $points += 10;
             $checks['name'] = $this->ok('Name is present.');
         } else {
             $checks['name'] = $this->missing('Add your full name in Basics.');
@@ -93,7 +93,7 @@ class ResumeStrengthScorer
 
         $label = $this->value($basics['label'] ?? null);
         if ($label !== '') {
-            $points += 3;
+            $points += 7;
             $checks['label'] = $this->ok('Professional title is present.');
         } else {
             $checks['label'] = $this->warn('Add a clear target title (for example: Senior Frontend Engineer).');
@@ -103,10 +103,10 @@ class ResumeStrengthScorer
         $summary = $this->value($basics['summary'] ?? null);
         $summaryLength = mb_strlen($summary);
         if ($summaryLength >= 45 && $summaryLength <= 700) {
-            $points += 8;
+            $points += 15;
             $checks['summary'] = $this->ok('Summary length is ATS-friendly.');
         } elseif ($summaryLength >= 20) {
-            $points += 5;
+            $points += 8;
             $checks['summary'] = $this->warn('Summary exists but can be stronger with quantified impact and keywords.');
             $notes[] = 'Strengthen summary with measurable impact and relevant keywords.';
         } else {
@@ -175,7 +175,7 @@ class ResumeStrengthScorer
             return [0, $this->sectionFeedback(0, 40, $checks), ['Add at least one work experience entry.']];
         }
 
-        $points += 8;
+        $points += 12;
         $checks['presence'] = $this->ok('Work history is present.');
 
         $completeRoles = 0;
@@ -292,7 +292,7 @@ class ResumeStrengthScorer
             return [0, $this->sectionFeedback(0, 10, $checks), $notes];
         }
 
-        $points += 4;
+        $points += 7;
         $checks['presence'] = $this->ok('Education section is present.');
 
         $complete = 0;
@@ -366,7 +366,7 @@ class ResumeStrengthScorer
             return [0, $this->sectionFeedback(0, 10, $checks), $notes];
         }
 
-        $points += 4;
+        $points += 10;
         $checks['presence'] = $this->ok('Skills section is present.');
 
         $count = count($skillNames);

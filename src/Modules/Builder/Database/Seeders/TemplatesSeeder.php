@@ -82,6 +82,71 @@ class TemplatesSeeder extends MakeSeeder
 			'slug' => 'echelon',
 			'path' => 'templates.echelon',
 			'plan' => 'pro'
+		],
+		[
+			'name' => 'Minimal',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'minimal',
+			'path' => 'templates.minimal',
+			'plan' => 'free'
+		],
+		[
+			'name' => 'Minimal Pro',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'minimal-pro',
+			'path' => 'templates.minimal-pro',
+			'plan' => 'pro'
+		],
+		[
+			'name' => 'Summit',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'summit',
+			'path' => 'templates.summit',
+			'plan' => 'free'
+		],
+		[
+			'name' => 'Summit Pro',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'summit-pro',
+			'path' => 'templates.summit-pro',
+			'plan' => 'pro'
+		],
+		[
+			'name' => 'Apex',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'Layers',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'apex',
+			'path' => 'templates.apex',
+			'plan' => 'free'
 		]
 	];
     /**
