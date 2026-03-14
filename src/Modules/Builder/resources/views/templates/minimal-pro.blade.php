@@ -201,8 +201,8 @@
         padding: 0;
         background: #ffffff;
         color: #1f2937;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -226,7 +226,7 @@
 
     .name {
         margin: 0;
-        font-size: 46px;
+        font-size: 24pt;
         line-height: 1.02;
         color: #111827;
         letter-spacing: -0.02em;
@@ -236,14 +236,14 @@
     .role {
         margin-top: 4px;
         color: #4b5563;
-        font-size: 22px;
+        font-size: 14pt;
         font-weight: 500;
     }
 
     .contacts {
         margin-top: 8px;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .contacts span { white-space: nowrap; }
@@ -256,13 +256,13 @@
     .summary {
         margin-top: 10px;
         color: #374151;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .section-title {
         margin: 0 0 8px 0;
         color: #111827;
-        font-size: 28px;
+        font-size: 16pt;
         line-height: 1.1;
         font-weight: 700;
         letter-spacing: -0.01em;
@@ -279,20 +279,20 @@
     .entry-title {
         margin: 0;
         color: #111827;
-        font-size: 15px;
+        font-size: 11pt;
         font-weight: 700;
     }
 
     .entry-sub {
         margin-top: 2px;
         color: #374151;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .entry-meta {
         margin-top: 2px;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .entry-summary {
@@ -331,28 +331,28 @@
     .rich p { margin: 0 0 7px 0; }
     .rich ul, .rich ol { margin: 7px 0 0 16px; }
     .rich li { margin: 0 0 5px 0; }
-	.bg-head .sheet {
-		padding-bottom: 0;
-		background-color: {{$colorScheme}};
-	}
-	.head h1 {
-		color: {{$dynamicTextColor}};
-	}
-	.head .role {
-		font-weight: bold;
-		color: {{$dynamicTextColor}};
-	}
-	.head .contacts,
-	.head .contacts a,
-	.head .summary.rich
-	{
-		color: {{$dynamicTextColor}};
-	}
+    .head-row {
+        background-color: {{$colorScheme}};
+        margin: -7mm -13mm 0 -13mm;
+        padding: 7mm 13mm 11px 13mm;
+    }
+    .head-row .name,
+    .head-row .role,
+    .head-row .contacts,
+    .head-row .contacts a,
+    .head-row .summary.rich {
+        color: {{$dynamicTextColor}};
+    }
+    .head-row .role {
+        font-weight: 700;
+    }
+    .head-row + .row {
+        margin-top: 11px;
+    }
 </style>
 
-<div class="head bg-head">
-	<div class="sheet">
-		<section class="row" style="{{ $sectionOrderStyle('basics') }}">
+<div class="sheet">
+		<section class="row head-row" style="{{ $sectionOrderStyle('basics') }}">
 			<h1 class="name">{{ $safeText(data_get($basics, 'name')) !== '' ? $safeText(data_get($basics, 'name')) : 'Your Name' }}</h1>
 			@if($label !== '')
 				<div class="role">{{ $label }}</div>
@@ -393,10 +393,8 @@
 			@if(!empty($basics['summary']))
 				<div class="summary rich">{!! $basics['summary'] !!}</div>
 			@endif
-		</div>
-    </section>
-</div>
-<div class="sheet">
+		</section>
+
     @if(!empty($workItems))
         <section class="row" style="{{ $sectionOrderStyle('work') }}">
             <h2 class="section-title">Work Experience</h2>
@@ -450,28 +448,17 @@
         </section>
     @endif
 
-    @if(!empty(data_get($resume, 'skills.body')) || $hasLanguages)
+    @if(!empty(data_get($resume, 'skills.body')))
         <section class="row" style="{{ $sectionOrderStyle('skills') }}">
             <h2 class="section-title">Skills</h2>
 
             @if(!empty(data_get($resume, 'skills.body')))
                 <div class="rich">{!! data_get($resume, 'skills.body') !!}</div>
             @endif
-
-            @if($hasLanguages)
-                <ul class="skills-list" style="margin-top: 6px;">
-                    @foreach($sidebarLanguages as $lang)
-                        @php $l = $normalizeLanguage($lang); @endphp
-                        @if($l['name'] !== '')
-                            <li><span class="skills-label">{{ $l['name'] }}</span>@if($l['meta'] !== ''): {{ $l['meta'] }}@endif</li>
-                        @endif
-                    @endforeach
-                </ul>
-            @endif
         </section>
     @endif
 
-    @if(!empty($eduItems) || !empty($certItems) || $hasCertificate)
+    @if(!empty($eduItems))
         <section class="row" style="{{ $sectionOrderStyle('education') }}">
             <h2 class="section-title">Education</h2>
 
@@ -501,7 +488,12 @@
                     @endif
                 @endif
             @endforeach
+        </section>
+    @endif
 
+    @if(!empty($certItems) || $hasCertificate)
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
+            <h2 class="section-title">Certificates</h2>
             @if(!empty($certItems))
                 @foreach($certItems as $cert)
                     @if(is_array($cert))
@@ -522,6 +514,20 @@
             @elseif($hasCertificate)
                 <div class="rich">{!! $certificateBody !!}</div>
             @endif
+        </section>
+    @endif
+
+    @if($hasLanguages)
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
+            <h2 class="section-title">Languages</h2>
+            <ul class="simple-list">
+                @foreach($sidebarLanguages as $lang)
+                    @php $l = $normalizeLanguage($lang); @endphp
+                    @if($l['name'] !== '')
+                        <li><span class="skills-label">{{ $l['name'] }}</span>@if($l['meta'] !== ''): {{ $l['meta'] }}@endif</li>
+                    @endif
+                @endforeach
+            </ul>
         </section>
     @endif
 

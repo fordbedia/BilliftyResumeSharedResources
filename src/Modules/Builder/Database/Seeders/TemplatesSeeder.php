@@ -23,6 +23,19 @@ class TemplatesSeeder extends MakeSeeder
 			'plan' => 'free'
 		],
 		[
+			'name' => 'Executive',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'FileText',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'executive',
+			'path' => 'templates.executive',
+			'plan' => 'free'
+		],
+		[
 			'name' => 'Basic One',
 			'slug' => 'basic',
 			'description' => 'Clean, minimalist design with a contemporary feel',

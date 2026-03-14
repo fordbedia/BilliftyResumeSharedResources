@@ -37,10 +37,10 @@
   * { box-sizing: border-box; }
   html, body { padding: 0; margin: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+    font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
     color: #111827;
     line-height: 1.35;
-    font-size: 14px;
+    font-size: 11pt;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -78,14 +78,14 @@
 
   /* Header */
   .name {
-    font-size: 40px;
+    font-size: 24pt;
     font-weight: 800;
     letter-spacing: -0.02em;
     margin: 0;
     color: {{ $colorScheme }};
   }
   .title {
-    font-size: 18px;
+    font-size: 12pt;
     color: #6b7280;
     margin: 2px 0 10px 0;
     font-weight: 500;
@@ -94,7 +94,7 @@
   .contact-row {
     margin-top: 6px;
     color: #6b7280;
-    font-size: 14px;
+    font-size: 11pt;
   }
   .contact-item {
     display: inline-block;
@@ -115,7 +115,7 @@
   /* Sections */
   .section { margin-top: 14px; }
   .section-title {
-    font-size: 20px;
+    font-size: 14pt;
     font-weight: 800;
     letter-spacing: 0.02em;
     text-transform: none;
@@ -125,12 +125,12 @@
   .muted { color: #6b7280; }
 
   /* About */
-  .about { color: #374151; font-size: 15px; }
+  .about { color: #374151; font-size: 11pt; }
 
   /* Rich text body (new sections) */
   .rt {
     color: #374151;
-    font-size: 14px;
+    font-size: 11pt;
     line-height: 1.35;
   }
   .rt p { margin: 0 0 6px 0; }
@@ -156,20 +156,20 @@
     color: #6b7280;
     white-space: nowrap;
     width: 80px;
-    font-size: 14px;
+    font-size: 11pt;
   }
   .role {
     font-weight: 800;
-    font-size: 14px;
+    font-size: 11pt;
     margin: 0;
   }
   .company {
     margin: 1px 0 6px 0;
     color: #6b7280;
-    font-size: 14px;
+    font-size: 11pt;
   }
   .experience-summary { margin: 1px 0 6px 0; }
-  .experience-summary li { font-size: 14px; line-height: 1.2rem; }
+  .experience-summary li { font-size: 11pt; line-height: 1.2rem; }
   .experience-summary li strong { font-weight: 800; }
 
   ul.bullets {
@@ -194,10 +194,10 @@
     color: #6b7280;
     white-space: nowrap;
     width: 80px;
-    font-size: 14px;
+    font-size: 11pt;
   }
   .degree { font-weight: 800; margin: 0; }
-  .school { margin: 1px 0 0 0; color: #6b7280; font-size: 14px; }
+  .school { margin: 1px 0 0 0; color: #6b7280; font-size: 11pt; }
 
   /* References */
   .ref-grid {
@@ -212,8 +212,8 @@
     vertical-align: top;
   }
   .ref-name { font-weight: 800; margin: 0 0 2px 0; }
-  .ref-meta { color: #6b7280; font-size: 14px; margin: 0; }
-  .ref-contact { color: #6b7280; font-size: 14px; margin: 2px 0 0 0; }
+  .ref-meta { color: #6b7280; font-size: 11pt; margin: 0; }
+  .ref-contact { color: #6b7280; font-size: 11pt; margin: 2px 0 0 0; }
 
   /* Right sidebar */
   .avatar-wrap {
@@ -236,7 +236,7 @@
   .side-section { margin-bottom: 14px; }
   .side-title {
     font-weight: 800;
-    font-size: 20px;
+    font-size: 14pt;
     margin: 0 0 8px 0;
   }
 
@@ -251,9 +251,9 @@
     display: table-cell;
     vertical-align: top;
   }
-  .skill-name { font-size: 14px; color: #111827; }
+  .skill-name { font-size: 11pt; color: #111827; }
   .skill-level {
-    font-size: 14px;
+    font-size: 11pt;
     color: #6b7280;
     text-align: right;
     width: 72px;
@@ -281,7 +281,7 @@
     margin: 0 6px 6px 0;
     border: 1px solid {{ $colorScheme ?? '#e5e7eb' }};
     border-radius: 999px;
-    font-size: 14px;
+    font-size: 11pt;
     color: #374151;
     background: #ffffff;
     white-space: nowrap;
@@ -295,9 +295,9 @@
     margin-bottom: 6px;
   }
   .lang-name, .lang-level { display: table-cell; }
-  .lang-name { font-size: 14px; color: #374151; }
+  .lang-name { font-size: 11pt; color: #374151; }
   .lang-level {
-    font-size: 14px;
+    font-size: 11pt;
     color: #6b7280;
     text-align: right;
     width: 72px;
@@ -307,13 +307,13 @@
   /* Websites (sidebar) */
   .web-row { margin: 0 0 8px 0; }
   .web-label {
-    font-size: 14px;
+    font-size: 11pt;
     font-weight: 800;
     color: #111827;
     margin: 0 0 1px 0;
   }
   .web-url {
-    font-size: 14px;
+    font-size: 11pt;
     color: #6b7280;
     margin: 0;
     word-break: break-word;
@@ -323,7 +323,7 @@
   .interest {
     display: inline-block;
     margin: 0 10px 8px 0;
-    font-size: 14px;
+    font-size: 11pt;
     color: #374151;
     white-space: nowrap;
   }

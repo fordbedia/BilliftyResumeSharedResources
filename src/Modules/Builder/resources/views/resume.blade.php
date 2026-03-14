@@ -13,15 +13,37 @@
 	];
 
 	$incomingSectionOrder = (array) data_get($resume, 'sectionOrder', data_get($resume, 'section_order', []));
+	$sectionOrderAliases = [
+		'basic' => 'basics',
+		'basic_info' => 'basics',
+		'personal_info' => 'basics',
+		'experience' => 'work',
+		'certificate' => 'additional_information',
+		'certificates' => 'additional_information',
+		'accomplishment' => 'additional_information',
+		'accomplishments' => 'additional_information',
+		'project' => 'for_us_candidates',
+		'projects' => 'for_us_candidates',
+		'affiliation' => 'for_us_candidates',
+		'affiliations' => 'for_us_candidates',
+		'interest' => 'for_us_candidates',
+		'interests' => 'for_us_candidates',
+		'website' => 'for_us_candidates',
+		'websites' => 'for_us_candidates',
+	];
 	$sectionOrder = [];
 	foreach ($incomingSectionOrder as $sectionKey) {
 		if (!is_string($sectionKey)) {
 			continue;
 		}
-		if (!in_array($sectionKey, $sectionOrderDefaults, true) || in_array($sectionKey, $sectionOrder, true)) {
+		$normalizedKey = strtolower(trim($sectionKey));
+		$normalizedKey = str_replace(['-', ' '], '_', $normalizedKey);
+		$normalizedKey = $sectionOrderAliases[$normalizedKey] ?? $normalizedKey;
+
+		if (!in_array($normalizedKey, $sectionOrderDefaults, true) || in_array($normalizedKey, $sectionOrder, true)) {
 			continue;
 		}
-		$sectionOrder[] = $sectionKey;
+		$sectionOrder[] = $normalizedKey;
 	}
 	foreach ($sectionOrderDefaults as $defaultKey) {
 		if (!in_array($defaultKey, $sectionOrder, true)) {

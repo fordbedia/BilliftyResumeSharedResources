@@ -201,8 +201,8 @@
         padding: 0;
         background: #f3f4f6;
         color: #374151;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.42;
     }
 
@@ -231,7 +231,7 @@
 
     .hero-right {
         flex: 0 0 210px;
-        font-size: 14px;
+        font-size: 11pt;
         color: #6b7280;
         padding-top: 3px;
     }
@@ -239,7 +239,7 @@
     .name {
         margin: 0;
         color: #1f2937;
-        font-size: 48px;
+        font-size: 24pt;
         line-height: 0.95;
         font-weight: 800;
         letter-spacing: -0.02em;
@@ -247,14 +247,14 @@
 
     .role {
         margin-top: 8px;
-        font-size: 20px;
+        font-size: 14pt;
         color: {{ $colorScheme }};
         font-weight: 700;
     }
 
     .summary {
         margin-top: 10px;
-        font-size: 14px;
+        font-size: 11pt;
         color: #4b5563;
         max-width: 520px;
     }
@@ -276,7 +276,7 @@
 
     .section-title {
         margin: 0 0 8px 0;
-        font-size: 24px;
+        font-size: 14pt;
         line-height: 1.1;
         color: #374151;
         font-weight: 700;
@@ -300,21 +300,21 @@
 
     .entry-title {
         margin: 0;
-        font-size: 14px;
+        font-size: 11pt;
         color: #1f2937;
         font-weight: 700;
     }
 
     .entry-date {
         white-space: nowrap;
-        font-size: 14px;
+        font-size: 11pt;
         color: #6b7280;
         font-weight: 700;
     }
 
     .entry-sub {
         margin-top: 2px;
-        font-size: 14px;
+        font-size: 11pt;
         color: {{ $colorScheme }};
         font-weight: 700;
     }
@@ -322,7 +322,7 @@
     .entry-loc {
         margin-top: 2px;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .entry-summary {
@@ -334,14 +334,14 @@
         margin: 6px 0 0 14px;
         padding: 0;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .highlights li { margin: 0 0 4px 0; }
 
     .skills-line {
         margin: 0 0 6px 0;
-        font-size: 14px;
+        font-size: 11pt;
         color: #4b5563;
     }
 
@@ -368,14 +368,14 @@
 
     .ref-name {
         margin: 0;
-        font-size: 14px;
+        font-size: 11pt;
         color: #1f2937;
         font-weight: 700;
     }
 
     .ref-meta {
         margin-top: 2px;
-        font-size: 14px;
+        font-size: 11pt;
         color: #6b7280;
     }
 	.head {
@@ -507,24 +507,16 @@
         </section>
     @endif
 
-    @if(!empty(data_get($resume, 'skills.body')) || $hasLanguages)
+    @if(!empty(data_get($resume, 'skills.body')))
         <section class="section" style="{{ $sectionOrderStyle('skills') }}">
             <h2 class="section-title">Skills</h2>
             @if(!empty(data_get($resume, 'skills.body')))
                 <div class="rich">{!! data_get($resume, 'skills.body') !!}</div>
             @endif
-            @if($hasLanguages)
-                @foreach($sidebarLanguages as $lang)
-                    @php $l = $normalizeLanguage($lang); @endphp
-                    @if($l['name'] !== '')
-                        <div class="skills-line"><span class="label">{{ $l['name'] }}</span>@if($l['meta'] !== ''): {{ $l['meta'] }}@endif</div>
-                    @endif
-                @endforeach
-            @endif
         </section>
     @endif
 
-    @if(!empty($eduItems) || !empty($certItems) || $hasCertificate)
+    @if(!empty($eduItems))
         <section class="section" style="{{ $sectionOrderStyle('education') }}">
             <h2 class="section-title">Education</h2>
             @foreach($eduItems as $edu)
@@ -552,7 +544,12 @@
                     @endif
                 @endif
             @endforeach
+        </section>
+    @endif
 
+    @if(!empty($certItems) || $hasCertificate)
+        <section class="section" style="{{ $sectionOrderStyle('additional_information') }}">
+            <h2 class="section-title">Certificates</h2>
             @if(!empty($certItems))
                 @foreach($certItems as $cert)
                     @if(is_array($cert))
@@ -575,6 +572,18 @@
             @elseif($hasCertificate)
                 <div class="rich">{!! $certificateBody !!}</div>
             @endif
+        </section>
+    @endif
+
+    @if($hasLanguages)
+        <section class="section" style="{{ $sectionOrderStyle('additional_information') }}">
+            <h2 class="section-title">Languages</h2>
+            @foreach($sidebarLanguages as $lang)
+                @php $l = $normalizeLanguage($lang); @endphp
+                @if($l['name'] !== '')
+                    <div class="skills-line"><span class="label">{{ $l['name'] }}</span>@if($l['meta'] !== ''): {{ $l['meta'] }}@endif</div>
+                @endif
+            @endforeach
         </section>
     @endif
 

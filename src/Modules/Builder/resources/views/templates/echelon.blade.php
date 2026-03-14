@@ -221,8 +221,8 @@
     }
 
     body{
-        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "DejaVu Sans", sans-serif;
-        font-size: 14px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.45;
         color: var(--ink);
         margin: 0;
@@ -303,14 +303,14 @@
 		object-position: center 0;
     }
     .avatar .initials{
-        font-size: 24px;
+        font-size: 14pt;
         font-weight: 800;
         letter-spacing: 1px;
         color: {{ $dynamicTextColor ?? '#FFFFFF' }};
     }
 
     .side-name{
-        font-size: 32px;
+        font-size: 22pt;
         line-height: 1.05;
         font-weight: 800;
         margin: 0;
@@ -320,7 +320,7 @@
 
     .side-role{
         margin-top: 6px;
-        font-size: 16px;
+        font-size: 12pt;
         font-weight: 500;
         color: {{ $dynamicTextColor ?? '#FFFFFF' }};
         opacity: 0.92;
@@ -329,7 +329,7 @@
     .side-summary{
         margin-top: 16px;
         max-width: 260px;
-        font-size: 14px;
+        font-size: 11pt;
         color: {{ $dynamicTextColor ?? 'rgba(255,255,255,0.92)' }};
         opacity: 0.92;
     }
@@ -345,7 +345,7 @@
         gap: 10px;
         font-weight: 700;
         letter-spacing: 0.3px;
-        font-size: 14px;
+        font-size: 11pt;
         margin-bottom: 10px;
         color: {{ $dynamicTextColor ?? 'rgba(255,255,255,0.90)' }};
     }
@@ -383,7 +383,7 @@
     }
     .contact-item .meta{
         color: {{ $dynamicTextColor ?? 'rgba(255,255,255,0.85)' }};
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     /* Skills bars */
@@ -404,7 +404,7 @@
     }
     .skill .level{
         color: {{ $dynamicTextColor ?? 'rgba(255,255,255,0.75)' }};
-        font-size: 14px;
+        font-size: 11pt;
     }
     .bar{
         grid-column: 1 / -1;
@@ -438,7 +438,7 @@
     }
     .lang-row .meta{
         color: {{ $dynamicTextColor ?? 'rgba(255,255,255,0.75)' }};
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     /* ===== Main ===== */
@@ -471,7 +471,7 @@
 
     .section-header h2{
         margin: 0;
-        font-size: 22px;
+        font-size: 14pt;
         font-weight: 800;
         letter-spacing: -0.2px;
         color: var(--ink);
@@ -517,7 +517,7 @@
         white-space: nowrap;
         color: var(--muted2);
         font-weight: 600;
-        font-size: 14px;
+        font-size: 11pt;
         margin-top: 2px;
     }
 
@@ -566,7 +566,7 @@
     }
 
     .t-role{
-        font-size: 15px;
+        font-size: 11pt;
         font-weight: 800;
         color: var(--ink);
         margin-bottom: 2px;
@@ -580,14 +580,14 @@
 
     .t-loc{
         color: var(--muted2);
-        font-size: 14px;
+        font-size: 11pt;
         margin-bottom: 8px;
     }
 
     .t-range{
         color: var(--muted2);
         font-weight: 600;
-        font-size: 14px;
+        font-size: 11pt;
         margin-top: 2px;
         white-space: nowrap;
     }
@@ -624,7 +624,7 @@
     }
 
     .card .title{
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 800;
         margin: 0;
         color: var(--ink);
@@ -639,7 +639,7 @@
     .card .meta{
         margin-top: 6px;
         color: var(--muted2);
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .refs{
@@ -649,7 +649,7 @@
 
     .ref-name{
         font-weight: 800;
-        font-size: 14px;
+        font-size: 11pt;
         margin: 0;
     }
 
@@ -657,7 +657,7 @@
         color: var(--primary);
         font-weight: 700;
         margin-top: 4px;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .ref-lines{
@@ -665,7 +665,7 @@
         display: grid;
         gap: 8px;
         color: var(--primary);
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .ref-line{

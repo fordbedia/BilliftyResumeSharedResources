@@ -157,8 +157,8 @@
 
     body {
         margin: 0;
-        font-family: DejaVu Sans, Arial, sans-serif;
-        font-size: 11.2px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.42;
         color: #111;
         background: #fff;
@@ -166,13 +166,13 @@
 
     .container { width: 100%; }
     .muted { color: #666; }
-    .tiny { font-size: 10px; }
+    .tiny { font-size: 10pt; }
     .sp-6 { height: 6px; }
     .sp-10 { height: 10px; }
     .sp-14 { height: 14px; }
 
     h1 {
-        font-size: 24px;
+        font-size: 14pt;
         line-height: 1.15;
         margin: 0;
         letter-spacing: 0.2px;
@@ -181,7 +181,7 @@
     }
 
     h2 {
-        font-size: 14px;
+        font-size: 11pt;
         margin: 0;
         padding: 0 0 5px 0;
         letter-spacing: 1px;
@@ -195,7 +195,7 @@
 
     .contact-line {
         color: #666;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
         word-break: break-word;
     }
@@ -217,7 +217,7 @@
         padding: 3px 7px;
         border-radius: 999px;
         margin: 0 6px 6px 0;
-        font-size: 14px;
+        font-size: 11pt;
         color: #222;
         background: #fafafa;
         vertical-align: top;
@@ -238,7 +238,7 @@
 
     .meta-line {
         color: #666;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
         margin-top: 2px;
     }
@@ -251,7 +251,7 @@
     }
 
     .sidebar-title {
-        font-size: 14px;
+        font-size: 11pt;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         margin: 0 0 6px 0;
@@ -274,7 +274,7 @@
 
 <div class="container">
     {{-- Header --}}
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; {{ $sectionOrderStyle('basics') }}">
         <tr>
             <td valign="top">
                 <h1>{{ $name !== '' ? $name : 'Your Name' }}</h1>
@@ -329,8 +329,10 @@
     </table>
 
     @if(trim(strip_tags((string) data_get($basics, 'summary', ''))) !== '')
-        <div class="sp-10"></div>
-        <div class="rich">{!! data_get($basics, 'summary', '') !!}</div>
+        <div style="{{ $sectionOrderStyle('basics') }}">
+            <div class="sp-10"></div>
+            <div class="rich">{!! data_get($basics, 'summary', '') !!}</div>
+        </div>
     @endif
 
     <div class="sp-14"></div>

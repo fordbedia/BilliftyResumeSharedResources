@@ -123,10 +123,10 @@
     body {
         margin: 0;
         padding: 0;
-        font-family: DejaVu Sans, Arial, sans-serif;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
         color: #2B2D42;
         background: #ECEDEF;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.5;
     }
 
@@ -140,7 +140,7 @@
 
     .name {
         margin: 0;
-        font-size: 42px;
+        font-size: 24pt;
         line-height: 1;
         color: #2D3160;
         letter-spacing: -0.3px;
@@ -149,7 +149,7 @@
     .label {
         margin-top: 5px;
         color: #7D8095;
-        font-size: 22px;
+        font-size: 14pt;
 		font-weight: bold;
     }
 
@@ -157,7 +157,7 @@
         margin-top: 12px;
         color: #5C6078;
         max-width: 84%;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.55;
     }
 
@@ -166,7 +166,7 @@
     .contact-line {
         margin-top: 8px;
         color: #80849C;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.4;
         word-break: break-word;
     }
@@ -179,7 +179,7 @@
     .contact-inline {
         margin-top: 8px;
         color: #14181f;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.5;
         word-break: break-word;
     }
@@ -197,7 +197,7 @@
     .socials {
         margin-top: 10px;
         color: #A0A3B5;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .socials span { margin-right: 8px; }
@@ -205,7 +205,7 @@
     .divider-space { height: 18px; }
 
     .section-head {
-        font-size: 28px;
+        font-size: 16pt;
         line-height: 1;
         color: #2D3160;
         margin: 0;
@@ -219,7 +219,7 @@
     }
 
     .right-title {
-        font-size: 22px;
+        font-size: 14pt;
         line-height: 1;
         color: #2D3160;
         margin: 0;
@@ -253,21 +253,21 @@
     .job-title {
         color: #2F3365;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.3;
     }
 
     .job-date {
         float: right;
         color: {{ $colorScheme ?? '#FF4A78' }};
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: bold;
         margin-left: 8px;
     }
 
     .job-meta {
         color: #9195AA;
-        font-size: 14px;
+        font-size: 11pt;
         margin-top: 1px;
     }
 
@@ -275,7 +275,7 @@
     .job-summary p {
         margin: 7px 0 0 0;
         color: #14181f;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -283,7 +283,7 @@
         margin: 6px 0 0 12px;
         padding: 0;
         color: #14181f;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -297,7 +297,7 @@
 
     .skill-text {
         color: #7F8498;
-        font-size: 14px;
+        font-size: 11pt;
         margin-bottom: 4px;
         text-transform: uppercase;
         letter-spacing: 0.35px;
@@ -307,7 +307,7 @@
         display: inline-block;
         margin: 0 8px 4px 0;
         color: #2F3365;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: bold;
     }
 
@@ -315,21 +315,21 @@
 
     .edu-school {
         color: #2F3365;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: bold;
         line-height: 1.35;
     }
 
     .edu-program {
         color: {{ $colorScheme ?? '#FF4A78' }};
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: bold;
         margin-top: 1px;
     }
 
     .edu-meta {
         color: #9094A9;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
         margin-top: 2px;
     }
@@ -344,7 +344,7 @@
 
     .project-title {
         color: #2F3365;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: bold;
     }
 
@@ -352,7 +352,7 @@
     .project-rich p,
     .project-rich li {
         color: #61657F;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -364,7 +364,7 @@
     .ref-row {
         margin-top: 7px;
         color: #575B73;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -381,7 +381,7 @@
         background: #FCF7F8;
         border-radius: 4px;
         color: #8A8EA2;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -390,7 +390,7 @@
         border-top: 1px solid #F0F1F5;
         padding-top: 10px;
         color: #A5A9BA;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .rich-inline p { margin: 0 0 5px 0; }
@@ -436,7 +436,7 @@
 
 <div class="page-shell">
     <div class="header-flex">
-        <div class="header-full">
+        <div class="header-full" style="{{ $sectionOrderStyle('basics') }}">
                 <h1 class="name">{{ $basics['name'] ?? 'Your Name' }}</h1>
 
                 @if($label !== '')

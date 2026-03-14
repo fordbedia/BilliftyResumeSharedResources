@@ -189,6 +189,64 @@
     $eduItems  = (array) data_get($resume, 'education', []);
     $certItems = (array) data_get($resume, 'certificates', []);
     $refItems  = (array) data_get($resume, 'references', []);
+
+    // Local order resolution keeps this template stable even when incoming keys use aliases.
+    $sectionOrderDefaults = [
+        'basics',
+        'work',
+        'education',
+        'skills',
+        'references',
+        'additional_information',
+        'for_us_candidates',
+    ];
+    $sectionOrderAliases = [
+        'basic' => 'basics',
+        'basic_info' => 'basics',
+        'personal_info' => 'basics',
+        'profile' => 'basics',
+        'experience' => 'work',
+        'certificate' => 'additional_information',
+        'certificates' => 'additional_information',
+        'accomplishment' => 'additional_information',
+        'accomplishments' => 'additional_information',
+        'project' => 'for_us_candidates',
+        'projects' => 'for_us_candidates',
+        'volunteer' => 'for_us_candidates',
+        'affiliation' => 'for_us_candidates',
+        'affiliations' => 'for_us_candidates',
+        'interest' => 'for_us_candidates',
+        'interests' => 'for_us_candidates',
+        'website' => 'for_us_candidates',
+        'websites' => 'for_us_candidates',
+    ];
+    $incomingSectionOrder = (array) data_get($resume, 'sectionOrder', data_get($resume, 'section_order', []));
+    $sectionOrder = [];
+    foreach ($incomingSectionOrder as $sectionKey) {
+        if (!is_string($sectionKey)) {
+            continue;
+        }
+        $normalizedKey = strtolower(trim($sectionKey));
+        $normalizedKey = str_replace(['-', ' '], '_', $normalizedKey);
+        $normalizedKey = $sectionOrderAliases[$normalizedKey] ?? $normalizedKey;
+
+        if (!in_array($normalizedKey, $sectionOrderDefaults, true) || in_array($normalizedKey, $sectionOrder, true)) {
+            continue;
+        }
+        $sectionOrder[] = $normalizedKey;
+    }
+    foreach ($sectionOrderDefaults as $defaultKey) {
+        if (!in_array($defaultKey, $sectionOrder, true)) {
+            $sectionOrder[] = $defaultKey;
+        }
+    }
+    $sectionOrderPriority = array_flip($sectionOrder);
+    $sectionOrderFor = function (string $key) use ($sectionOrderPriority): int {
+        return ((int) ($sectionOrderPriority[$key] ?? 999)) + 1;
+    };
+    $sectionOrderStyle = function (string $key) use ($sectionOrderFor): string {
+        return 'order: ' . $sectionOrderFor($key) . ';';
+    };
 ?>
 
 <style>
@@ -201,8 +259,8 @@
         padding: 0;
         color: #111827;
         background: #ffffff;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 14px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -229,7 +287,7 @@
 
     .name {
         margin: 0;
-        font-size: 30px;
+        font-size: 22pt;
         line-height: 1.1;
         font-weight: 700;
         color: #111827;
@@ -237,7 +295,7 @@
 
     .headline {
         margin-top: 4px;
-        font-size: 14px;
+        font-size: 11pt;
         color: {{ $colorScheme }};
         font-weight: 600;
     }
@@ -256,7 +314,7 @@
 
     .section-title {
         margin: 0 0 8px 0;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -273,7 +331,7 @@
 
     .item-title {
         margin: 0;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         color: #111827;
     }
@@ -285,7 +343,7 @@
 
     .item-meta {
         margin-top: 2px;
-        font-size: 14px;
+        font-size: 11pt;
         color: #6b7280;
     }
 
@@ -532,14 +590,14 @@
     @endif
 
     @if($hasInterest)
-        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
+        <section class="row" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <h2 class="section-title">Interests</h2>
             <div class="rich">{!! $interestBody !!}</div>
         </section>
     @endif
 
     @if($hasLanguages)
-        <section class="row" style="{{ $sectionOrderStyle('references') }}">
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
             <h2 class="section-title">Languages</h2>
             <ul class="list">
                 @foreach($sidebarLanguages as $lang)
@@ -555,7 +613,7 @@
     @endif
 
     @if(!empty($refItems))
-        <section class="row">
+        <section class="row" style="border-bottom: 0; padding-bottom: 0; {{ $sectionOrderStyle('references') }}">
             <h2 class="section-title">References</h2>
             @foreach($refItems as $r)
                 @if(is_array($r))

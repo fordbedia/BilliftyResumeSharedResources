@@ -203,8 +203,8 @@
         padding: 0;
         background: #1f2329;
         color: #344251;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -272,14 +272,14 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 17px;
+        font-size: 12pt;
         font-weight: 700;
     }
 
     .name {
         margin: 0;
         color: #1e293b;
-        font-size: 40px;
+        font-size: 24pt;
         line-height: .94;
         font-weight: 700;
         letter-spacing: -0.02em;
@@ -288,14 +288,14 @@
     .role {
         margin-top: 5px;
         color: #0f766e;
-        font-size: 20px;
+        font-size: 14pt;
         font-weight: 700;
     }
 
     .summary {
         margin-top: 9px;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.5;
         max-width: 95%;
     }
@@ -315,7 +315,7 @@
         align-items: center;
         gap: 8px;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         margin: 0 0 7px 0;
         word-break: break-word;
     }
@@ -332,7 +332,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 11pt;
         flex: 0 0 17px;
     }
 
@@ -359,7 +359,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         border: 1px solid #99f6e4;
         flex: 0 0 30px;
@@ -368,7 +368,7 @@
     .section-title h2 {
         margin: 0;
         color: #1f2937;
-        font-size: 38px;
+        font-size: 24pt;
         line-height: 1;
         font-weight: 700;
         letter-spacing: -0.02em;
@@ -428,14 +428,14 @@
     .entry-title {
         margin: 0;
         color: #111827;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         line-height: 1.25;
     }
 
     .entry-right {
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 600;
         white-space: nowrap;
         text-align: right;
@@ -444,14 +444,14 @@
     .entry-sub {
         margin-top: 2px;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 600;
     }
 
     .entry-copy {
         margin-top: 4px;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -460,7 +460,7 @@
         padding: 0;
         list-style: none;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .bullets li {
@@ -476,7 +476,7 @@
         left: 0;
         top: 0;
         color: #14b8a6;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
     }
 
@@ -499,7 +499,7 @@
         align-items: center;
         gap: 6px;
         color: #1f2937;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
     }
 
@@ -514,7 +514,7 @@
     .skill-tags {
         margin-top: 6px;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -531,7 +531,7 @@
         border-radius: 8px;
         padding: 8px;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .bottom-grid {
@@ -570,7 +570,7 @@
     .edu-title {
         margin: 0;
         color: #1f2937;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         line-height: 1.25;
     }
@@ -578,14 +578,14 @@
     .edu-sub {
         margin-top: 1px;
         color: #0f766e;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
     }
 
     .edu-meta {
         margin-top: 1px;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .ref-card {
@@ -601,7 +601,7 @@
     .ref-quote {
         margin: 0;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
     }
 
@@ -618,7 +618,7 @@
         border-radius: 999px;
         background: #d1d5db;
         color: #4b5563;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
@@ -628,14 +628,14 @@
 
     .ref-name {
         color: #1f2937;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         line-height: 1.2;
     }
 
     .ref-meta {
         color: #6b7280;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.2;
     }
 
@@ -657,7 +657,7 @@
         left: 0;
         top: 0;
         color: #14b8a6;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
     }
 </style>
@@ -828,17 +828,8 @@
                     }
                 }
 
-                $languageTags = [];
-                if ($hasLanguages) {
-                    foreach ($sidebarLanguages as $lang) {
-                        $l = $normalizeLanguage($lang);
-                        if ($l['name'] !== '') {
-                            $languageTags[] = $l['name'] . ($l['meta'] !== '' ? ' (' . $l['meta'] . ')' : '');
-                        }
-                    }
-                }
             @endphp
-            @if($skillsBody !== '' || !empty($skillRows) || !empty($languageTags))
+            @if($skillsBody !== '' || !empty($skillRows))
                 <section class="section-block" style="{{ $sectionOrderStyle('skills') }}">
                     <div class="section-title">
                         <span class="section-icon">&#60;/&#62;</span>
@@ -850,7 +841,7 @@
                         <div class="skills-body rich">{!! $skillsBody !!}</div>
                     @endif
 
-                    @if(!empty($skillRows) || !empty($languageTags))
+                    @if(!empty($skillRows))
                         <div class="skills-grid">
                             @foreach($skillRows as $skill)
                                 @if(is_array($skill) || is_object($skill))
@@ -884,24 +875,13 @@
                                     </article>
                                 @endif
                             @endforeach
-
-                            @if(!empty($languageTags))
-                                <article class="skill-card">
-                                    <div class="skill-head"><span class="skill-head-dot"></span><span>Languages</span></div>
-                                    <div class="skill-tags">
-                                        @foreach($languageTags as $tag)
-                                            <span class="skill-tag">{{ $tag }}</span>
-                                        @endforeach
-                                    </div>
-                                </article>
-                            @endif
                         </div>
                     @endif
                 </section>
             @endif
 
             <div class="bottom-grid">
-                @if(!empty($eduItems) || !empty($certItems) || $hasCertificate)
+                @if(!empty($eduItems))
                     <section class="section-block" style="{{ $sectionOrderStyle('education') }}">
                         <div class="section-title">
                             <span class="section-icon">&#127891;</span>
@@ -946,27 +926,6 @@
                                     @endif
                                 @endif
                             @endforeach
-
-                            @foreach($certItems as $cert)
-                                @if(is_array($cert))
-                                    @php
-                                        $cname  = $safeText(data_get($cert, 'name'));
-                                        $issuer = $safeText(data_get($cert, 'issuer'));
-                                        $date   = $safeText(data_get($cert, 'date'));
-                                    @endphp
-                                    @if($cname !== '' || $issuer !== '' || $date !== '')
-                                        <article class="edu-item">
-                                            <p class="edu-title">{{ $cname !== '' ? $cname : 'Certificate' }}</p>
-                                            @if($issuer !== '')<div class="edu-sub">{{ $issuer }}</div>@endif
-                                            @if($date !== '')<div class="edu-meta">{{ $date }}</div>@endif
-                                        </article>
-                                    @endif
-                                @endif
-                            @endforeach
-
-                            @if(empty($eduItems) && empty($certItems) && $hasCertificate)
-                                <div class="skills-body rich">{!! $certificateBody !!}</div>
-                            @endif
                         </div>
                     </section>
                 @endif
@@ -1035,6 +994,57 @@
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Accomplishments</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $accomplishmentBody !!}</div>
+                </section>
+            @endif
+
+            @if(!empty($certItems) || $hasCertificate)
+                <section class="section-block" style="{{ $sectionOrderStyle('additional_information') }}">
+                    <div class="section-title"><span class="section-icon">&#9679;</span><h2>Certificates</h2></div>
+                    <div class="section-divider"></div>
+                    <div style="margin-top: 8px;">
+                        @if(!empty($certItems))
+                            @foreach($certItems as $cert)
+                                @if(is_array($cert))
+                                    @php
+                                        $cname  = $safeText(data_get($cert, 'name'));
+                                        $issuer = $safeText(data_get($cert, 'issuer'));
+                                        $date   = $safeText(data_get($cert, 'date'));
+                                    @endphp
+                                    @if($cname !== '' || $issuer !== '' || $date !== '')
+                                        <article class="edu-item">
+                                            <p class="edu-title">{{ $cname !== '' ? $cname : 'Certificate' }}</p>
+                                            @if($issuer !== '')<div class="edu-sub">{{ $issuer }}</div>@endif
+                                            @if($date !== '')<div class="edu-meta">{{ $date }}</div>@endif
+                                        </article>
+                                    @endif
+                                @endif
+                            @endforeach
+                        @elseif($hasCertificate)
+                            <div class="entry-copy rich">{!! $certificateBody !!}</div>
+                        @endif
+                    </div>
+                </section>
+            @endif
+
+            @if($hasLanguages)
+                <section class="section-block" style="{{ $sectionOrderStyle('additional_information') }}">
+                    <div class="section-title"><span class="section-icon">&#9679;</span><h2>Languages</h2></div>
+                    <div class="section-divider"></div>
+                    <div class="skills-grid" style="margin-top: 8px;">
+                        @foreach($sidebarLanguages as $lang)
+                            @php $l = $normalizeLanguage($lang); @endphp
+                            @if($l['name'] !== '')
+                                <article class="skill-card">
+                                    <div class="skill-head"><span class="skill-head-dot"></span><span>{{ $l['name'] }}</span></div>
+                                    @if($l['meta'] !== '')
+                                        <div class="skill-tags">
+                                            <span class="skill-tag">{{ $l['meta'] }}</span>
+                                        </div>
+                                    @endif
+                                </article>
+                            @endif
+                        @endforeach
+                    </div>
                 </section>
             @endif
 

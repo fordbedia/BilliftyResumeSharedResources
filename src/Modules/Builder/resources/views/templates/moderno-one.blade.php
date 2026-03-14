@@ -88,9 +88,9 @@
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-        font-family: DejaVu Sans, Arial, sans-serif;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
         color: #2b2b2b;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.45;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -112,12 +112,12 @@
     .green { color: var(--accent); }
     .muted { color: var(--muted); }
 
-    .name-font { font-family: DejaVu Serif, Georgia, serif; color: var(--accent); }
-    .title-font { font-family: DejaVu Serif, Georgia, serif; }
+    .name-font { font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif; color: var(--accent); }
+    .title-font { font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif; }
 
     .h-name-1,
     .h-name-2 {
-        font-size: 58px;
+        font-size: 24pt;
         line-height: 0.92;
         font-weight: 700;
         letter-spacing: 1px;
@@ -128,7 +128,7 @@
 
     /* Right contact */
     .contact {
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.5;
         text-align: left;
         color: var(--accent);
@@ -145,7 +145,7 @@
         box-shadow: 0 10px 22px rgba(0,0,0,0.05);
     }
     .summary-text {
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.55;
         margin: 0;
         color: #2b2b2b;
@@ -184,8 +184,8 @@
     .sidebar > * { position: relative; z-index: 1; }
 
     .section-title-sidebar {
-        font-family: DejaVu Serif, Georgia, serif;
-        font-size: 26px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 16pt;
         font-weight: 700;
         margin: 0 0 10px 0;
         padding: 0;
@@ -193,8 +193,8 @@
     }
 
     .section-title-main {
-        font-family: DejaVu Serif, Georgia, serif;
-        font-size: 26px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 16pt;
         font-weight: 700;
         color: var(--accent);
         margin: 0 0 10px 0;
@@ -232,9 +232,9 @@
 
     /* Education in sidebar (keep original typography) */
     .edu-item { margin: 0 0 18px 0; }
-    .edu-line1 { font-size: 16px; font-weight: 700; margin: 0 0 4px 0; }
-    .edu-line2 { font-size: 15px; font-weight: 700; text-transform: uppercase; margin: 0 0 6px 0; }
-    .edu-line3 { font-size: 13px; margin: 0; opacity: 0.95; }
+    .edu-line1 { font-size: 12pt; font-weight: 700; margin: 0 0 4px 0; }
+    .edu-line2 { font-size: 11pt; font-weight: 700; text-transform: uppercase; margin: 0 0 6px 0; }
+    .edu-line3 { font-size: 11pt; margin: 0; opacity: 0.95; }
 
     /* NEW: Sidebar "cards" for Websites / Languages to stand out */
     .sb-card {
@@ -249,7 +249,7 @@
     .sb-card .sb-item {
         margin: 0 0 8px 0;
         padding: 0;
-        font-size: 14px;
+        font-size: 11pt;
         line-height: 1.35;
         color: var(--accent-contrast);
         word-break: break-word;
@@ -284,20 +284,20 @@
 
     .job-dates {
         width: 26%;
-        font-size: 14px;
+        font-size: 11pt;
         color: #6b6b6b;
         padding-right: 10px;
         font-weight: 600;
     }
 
     .job-title {
-        font-size: 16px;
+        font-size: 12pt;
         font-weight: 700;
         margin: 0 0 2px 0;
         color: #222;
     }
     .job-company {
-        font-size: 14px;
+        font-size: 11pt;
         font-style: italic;
         color: #6b6b6b;
         margin: 0 0 10px 0;
@@ -326,8 +326,8 @@
         margin: 0 0 8px 0;
     }
     .mini-section .mini-title {
-        font-family: DejaVu Serif, Georgia, serif;
-        font-size: 20px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 14pt;
         font-weight: 800;
         color: var(--accent);
         margin: 0;
@@ -361,7 +361,7 @@
         padding: 0;
     }
     .ref-name {
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
         margin: 0 0 4px 0;
     }
@@ -373,7 +373,7 @@
 </style>
 
 {{-- HEADER (name left, contact right) --}}
-<table class="layout">
+<table class="layout" style="{{ $sectionOrderStyle('basics') }}">
     <tr>
         <td style="width: 70%; padding-right: 16px;">
             <div class="name-font">
@@ -404,7 +404,7 @@
 </table>
 
 {{-- SUMMARY BAND --}}
-<div class="summary-band">
+<div class="summary-band" style="{{ $sectionOrderStyle('basics') }}">
     <p class="summary-text">
         @if($label)
             <span style="font-weight:700;">{{ $label }}</span>

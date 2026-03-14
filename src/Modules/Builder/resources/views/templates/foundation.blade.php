@@ -68,6 +68,23 @@
     $workItems = (array) data_get($resume, 'work', []);
     $eduItems  = (array) data_get($resume, 'education', []);
     $jsonProjects = (array) data_get($resume, 'projects', []);
+    $refItems = (array) data_get($resume, 'references', []);
+    if (empty($refItems)) {
+        $refItems = (array) data_get($resume, 'reference', []);
+    }
+
+    $certificateActive = (bool) data_get($resume, 'certificate.is_active');
+    $accomplishmentActive = (bool) data_get($resume, 'accomplishment.is_active');
+    $languagesActive = (bool) data_get($resume, 'languages.is_active');
+
+    $certificateBody = (string) data_get($resume, 'certificate.body', '');
+    $accomplishmentBody = (string) data_get($resume, 'accomplishment.body', '');
+    $sidebarLanguages = (array) data_get($resume, 'languages.languages', []);
+
+    $hasCertificate = $certificateActive && trim(strip_tags($certificateBody)) !== '';
+    $hasAccomplishment = $accomplishmentActive && trim(strip_tags($accomplishmentBody)) !== '';
+    $hasLanguages = $languagesActive && !empty($sidebarLanguages);
+    $hasAdditionalInformationSection = $hasCertificate || $hasAccomplishment || $hasLanguages;
 
     $projectActive = (bool) data_get($resume, 'project.is_active');
     $projectBody   = (string) data_get($resume, 'project.body', '');
@@ -88,8 +105,8 @@
     * { box-sizing: border-box; }
 
     body{
-        font-family: Arial, "Helvetica Neue", Helvetica, "DejaVu Sans", sans-serif;
-        font-size: 13px;
+        font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
+        font-size: 11pt;
         line-height: 1.42;
         color: #374151;
         background: #E5E7EB;
@@ -107,7 +124,7 @@
 
     .name{
         margin: 0;
-        font-size: 46px;
+        font-size: 24pt;
         line-height: 1.05;
         color: #111827;
         font-weight: 700;
@@ -116,10 +133,10 @@
 
     .title{
         margin-top: 6px;
-        font-size: 28px;
+        font-size: 16pt;
         line-height: 1.1;
         font-weight: 700;
-        color: {{ $colorScheme }};
+        color: #000000;
     }
 
     .contact-row{
@@ -129,7 +146,7 @@
         gap: 14px 18px;
         align-items: center;
         color: #6B7280;
-        font-size: 13px;
+        font-size: 11pt;
     }
 
     .contact-item{
@@ -154,7 +171,7 @@
 
     .rule{
         margin-top: 13px;
-        border-top: 1px solid {{ $colorScheme }};
+        border-top: 1px solid #000000;
     }
 
     .section{
@@ -163,7 +180,7 @@
 
     .section-title{
         margin: 0;
-        font-size: 32px;
+        font-size: 22pt;
         line-height: 1.08;
         font-weight: 700;
         color: #111827;
@@ -171,13 +188,13 @@
 
     .section-rule{
         margin-top: 7px;
-        border-top: 1px solid {{ $colorScheme }};
+        border-top: 1px solid #000000;
     }
 
     .section-body{
         margin-top: 8px;
         color: #374151;
-        font-size: 13px;
+        font-size: 11pt;
     }
 
     .section-body p{
@@ -200,7 +217,7 @@
     }
 
     .job-role{
-        font-size: 26px;
+        font-size: 16pt;
         line-height: 1.1;
         color: #111827;
         font-weight: 700;
@@ -208,17 +225,17 @@
 
     .job-meta{
         white-space: nowrap;
-        color: {{ $colorScheme }};
+        color: #000000;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 11pt;
         margin-top: 2px;
     }
 
     .job-company{
         margin-top: 2px;
-        font-size: 15px;
+        font-size: 11pt;
         line-height: 1.2;
-        color: {{ $colorScheme }};
+        color: #000000;
         font-weight: 700;
     }
 
@@ -244,7 +261,7 @@
     }
 
     .edu-degree{
-        font-size: 28px;
+        font-size: 16pt;
         line-height: 1.1;
         color: #111827;
         font-weight: 700;
@@ -253,14 +270,14 @@
     .edu-school{
         margin-top: 3px;
         color: #374151;
-        font-size: 14px;
+        font-size: 11pt;
         font-weight: 700;
     }
 
     .edu-score{
         margin-top: 2px;
         color: #6B7280;
-        font-size: 13px;
+        font-size: 11pt;
     }
 
     .project-item{
@@ -275,16 +292,16 @@
     }
 
     .project-title{
-        font-size: 27px;
+        font-size: 16pt;
         line-height: 1.1;
         color: #111827;
         font-weight: 700;
     }
 
     .project-link{
-        color: {{ $colorScheme }};
+        color: #000000;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 11pt;
     }
 
     .rich ul { margin: 7px 0 0 18px; padding: 0; }
@@ -301,52 +318,30 @@
     <div class="contact-row" style="{{ $sectionOrderStyle('basics') }}">
         @if($email !== '')
             <div class="contact-item">
-                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8"/>
-                </svg>
                 <a href="mailto:{{ $email }}">{{ $email }}</a>
             </div>
         @endif
 
         @if($phone !== '')
             <div class="contact-item">
-                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 4h3l1 5-2 1c1 3 3 5 6 6l1-2 5 1v3c0 1-1 2-2 2-8 0-15-7-15-15 0-1 1-2 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                </svg>
                 <span>{{ $phone }}</span>
             </div>
         @endif
 
         @if($displayLocation !== '')
             <div class="contact-item">
-                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 21s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M12 11.5A2.5 2.5 0 1 0 12 6.5a2.5 2.5 0 0 0 0 5Z" stroke="currentColor" stroke-width="1.8"/>
-                </svg>
                 <span>{{ $displayLocation }}</span>
             </div>
         @endif
 
         @if($profileUrl !== '')
             <div class="contact-item">
-                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 4h16v16H4V4Z" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M8 11v7" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M8 8.5v.5" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M12 18v-4c0-2 3-2 3 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
                 <a href="{{ $profileUrl }}">{{ $profileUrl }}</a>
             </div>
         @endif
 
         @if($profileUrl === '' && $url !== '')
             <div class="contact-item">
-                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M2 12h20" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M12 2c3.5 3 3.5 17 0 20" stroke="currentColor" stroke-width="1.8"/>
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
-                </svg>
                 <a href="{{ $url }}">{{ $url }}</a>
             </div>
         @endif
@@ -496,7 +491,7 @@
                                     <div class="project-title">
                                         {{ $pname !== '' ? $pname : 'Project' }}
                                         @if($keywordText !== '')
-                                            <span style="font-size:14px; font-weight:700; color:#6B7280;"> ({{ $keywordText }})</span>
+                                            <span style="font-size: 11pt; font-weight:700; color:#6B7280;"> ({{ $keywordText }})</span>
                                         @endif
                                     </div>
                                     @if($purl !== '')
@@ -524,6 +519,83 @@
             @elseif($hasProjectBody)
                 <div class="section-body rich">{!! $projectBody !!}</div>
             @endif
+        </section>
+    @endif
+
+    @if($hasAdditionalInformationSection)
+        <section class="section" style="{{ $sectionOrderStyle('additional_information') }}">
+            <h2 class="section-title">Additional Information</h2>
+            <div class="section-rule"></div>
+
+            @if($hasCertificate)
+                <div class="section-body">
+                    <strong>Certificates</strong>
+                    <div class="rich" style="margin-top: 6px;">{!! $certificateBody !!}</div>
+                </div>
+            @endif
+
+            @if($hasAccomplishment)
+                <div class="section-body">
+                    <strong>Accomplishments</strong>
+                    <div class="rich" style="margin-top: 6px;">{!! $accomplishmentBody !!}</div>
+                </div>
+            @endif
+
+            @if($hasLanguages)
+                <div class="section-body">
+                    <strong>Languages</strong>
+                    <ul class="job-highlights" style="margin-top: 6px;">
+                        @foreach($sidebarLanguages as $lang)
+                            @php
+                                $languageName = $safeText(data_get($lang, 'language')) ?: $safeText(data_get($lang, 'name'));
+                                $languageLevel = $safeText(data_get($lang, 'fluency')) ?: $safeText(data_get($lang, 'level'));
+                            @endphp
+                            @if($languageName !== '')
+                                <li>
+                                    {{ $languageName }}@if($languageLevel !== '') ({{ $languageLevel }})@endif
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </section>
+    @endif
+
+    @if(!empty($refItems))
+        <section class="section" style="{{ $sectionOrderStyle('references') }}">
+            <h2 class="section-title">References</h2>
+            <div class="section-rule"></div>
+
+            @foreach($refItems as $r)
+                @if(is_array($r))
+                    @php
+                        $refName = $safeText(data_get($r, 'name'));
+                        $refBody = (string) data_get($r, 'reference', '');
+                        $refTitle = $safeText(data_get($r, 'title')) ?: $safeText(data_get($r, 'position'));
+                        $refCompany = $safeText(data_get($r, 'company')) ?: $safeText(data_get($r, 'organization'));
+                        $refEmail = $safeText(data_get($r, 'email'));
+                        $refPhone = $safeText(data_get($r, 'phone'));
+                    @endphp
+
+                    @if($refName !== '' || trim(strip_tags($refBody)) !== '' || $refTitle !== '' || $refCompany !== '' || $refEmail !== '' || $refPhone !== '')
+                        <article class="project-item">
+                            <div class="project-head">
+                                <div class="project-title">{{ $refName !== '' ? $refName : 'Reference' }}</div>
+                            </div>
+
+                            @if($refTitle !== '' || $refCompany !== '')
+                                <div class="job-meta">{{ trim($refTitle . ($refTitle !== '' && $refCompany !== '' ? ', ' : '') . $refCompany) }}</div>
+                            @endif
+                            @if($refEmail !== '')<div class="job-meta">{{ $refEmail }}</div>@endif
+                            @if($refPhone !== '')<div class="job-meta">{{ $refPhone }}</div>@endif
+                            @if(trim(strip_tags($refBody)) !== '')
+                                <div class="section-body rich">{!! $refBody !!}</div>
+                            @endif
+                        </article>
+                    @endif
+                @endif
+            @endforeach
         </section>
     @endif
 </div>

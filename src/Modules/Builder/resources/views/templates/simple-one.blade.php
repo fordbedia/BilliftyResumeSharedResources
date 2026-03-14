@@ -18,7 +18,7 @@
 		padding: 0;
 		background: #ffffff;
 		color: #111827;
-		font-family: Arial, Helvetica, sans-serif;
+		font-family: Calibri, Arial, Helvetica, Tahoma, Verdana, sans-serif;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
 	}
@@ -45,7 +45,7 @@
 	}
 
 	.name {
-		font-size: 65px;
+		font-size: 24pt;
 		line-height: 0.95;
 		font-weight: 800;
 		letter-spacing: -1px;
@@ -54,7 +54,7 @@
 	}
 
 	.section-title {
-		font-size: 28px;
+		font-size: 16pt;
 		font-weight: 800;
 		letter-spacing: 0.5px;
 		color: var(--ink);
@@ -63,7 +63,7 @@
 
 	/* NEW: label/title for injected sections (Accomplishments, Certifications, etc.) */
 	.subsection-title {
-		font-size: 22px;
+		font-size: 14pt;
 		font-weight: 800;
 		letter-spacing: 0.2px;
 		color: var(--ink);
@@ -71,21 +71,21 @@
 	}
 
 	.job-title {
-		font-size: 22px;
+		font-size: 14pt;
 		font-weight: 800;
 		margin: 0 0 6px 0;
 		color: #111827;
 	}
 
 	.job-meta {
-		font-size: 15px;
+		font-size: 11pt;
 		font-style: italic;
 		color: #111827;
 		margin: 0 0 10px 0;
 	}
 
 	.summary {
-		font-size: 15px;
+		font-size: 11pt;
 		line-height: 1.55;
 		color: var(--primary);
 		margin: 14px 0 14px 0;
@@ -93,7 +93,7 @@
 
 	.contact {
 		text-align: left;
-		font-size: 14px;
+		font-size: 11pt;
 		line-height: 1.6;
 		color: var(--muted);
 	}
@@ -168,7 +168,7 @@
 		margin: 0 0 10px 0;
 		color: var(--muted);
 		line-height: 1.55;
-		font-size: 15px;
+		font-size: 11pt;
 	}
 
 	.bullets li:before {
@@ -176,7 +176,7 @@
 		position: absolute;
 		left: 6px;
 		top: -1px;
-		font-size: 22px;
+		font-size: 14pt;
 		color: #111827;
 		line-height: 1;
 	}
@@ -192,21 +192,21 @@
 		position: relative;
 		margin: 0 0 10px 0;
 		color: var(--primary);
-		font-size: 15px;
+		font-size: 11pt;
 		line-height: 1.45;
 	}
 
 	/* Education blocks */
 	.edu-block { margin-top: 10px; }
 	.edu-degree {
-		font-size: 18px;
+		font-size: 12pt;
 		font-weight: 800;
 		color: #111827;
 		margin: 0 0 6px 0;
 		line-height: 1.25;
 	}
 	.edu-meta {
-		font-size: 14px;
+		font-size: 11pt;
 		color: var(--muted);
 		margin: 0 0 18px 0;
 		line-height: 1.55;
@@ -214,13 +214,13 @@
 
 	/* References */
 	.ref-name {
-		font-size: 16px;
+		font-size: 12pt;
 		font-weight: bold;
 		color: var(--muted);
 		margin: 8px 0 2px 0;
 	}
 	.ref-lines {
-		font-size: 14px;
+		font-size: 11pt;
 		color: var(--primary);
 		line-height: 1.6;
 	}
@@ -261,7 +261,7 @@
 	   - avoid "double HRs" and awkward top HR
 	   - make Languages/Websites match right-column typography
 	----------------------------- */
-	.rich-block { color: var(--muted); font-size: 15px; line-height: 1.55; }
+	.rich-block { color: var(--muted); font-size: 11pt; line-height: 1.55; }
 	.rich-block p { margin: 10px 0; }
 	.rich-block ul { margin: 10px 0 18px 0; padding-left: 18px; }
 	.rich-block li { margin: 0 0 8px 0; }
@@ -270,7 +270,7 @@
 	/* compact items for sidebar-like sections in right column */
 	.side-list { margin: 6px 0 0 0; }
 	.side-item {
-		font-size: 15px;
+		font-size: 11pt;
 		color: var(--muted);
 		line-height: 1.45;
 		margin: 0 0 10px 0;
@@ -430,10 +430,10 @@
 		<div class="body">
 
 		{{-- LEFT: Work History + References --}}
-		<div class="left" style="display: flex; flex-direction: column;">
+			<div class="left" style="display: flex; flex-direction: column;">
 
-			<div style="{{ $sectionOrderStyle('work') }}">
-			<h2 class="section-title">WORK HISTORY</h2>
+				<div style="{{ $sectionOrderStyle('work') }}">
+				<h2 class="section-title">WORK HISTORY</h2>
 
 			@foreach($work as $job)
 				<div class="avoid-break" style="margin-bottom: 22px;">
@@ -467,14 +467,16 @@
 							@endforeach
 						</ul>
 					@endif
+					</div>
+				@endforeach
 				</div>
-			@endforeach
 
-			@if(!empty($references))
-				<div class="avoid-break" style="margin-top: 8px;">
-					<h2 class="section-title" style="margin-top: 8px;">REFERENCES</h2>
+				@if(!empty($references))
+					<div style="{{ $sectionOrderStyle('references') }}">
+					<div class="avoid-break" style="margin-top: 8px;">
+						<h2 class="section-title" style="margin-top: 8px;">REFERENCES</h2>
 
-					@foreach($references as $ref)
+						@foreach($references as $ref)
 						<div style="margin-top: 14px;">
 							<div class="ref-name">{{ $ref['name'] ?? '' }}</div>
 							<div class="ref-lines">
@@ -484,13 +486,13 @@
 									</div>
 								@endif
 							</div>
-						</div>
-					@endforeach
-				</div>
-				@endif
-			</div>
+							</div>
+						@endforeach
+					</div>
+					</div>
+					@endif
 
-		</div>
+			</div>
 
 		{{-- RIGHT: Skills + Education + Languages + Websites --}}
 		<div class="right" style="display: flex; flex-direction: column;">
