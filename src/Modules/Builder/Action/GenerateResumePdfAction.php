@@ -18,10 +18,16 @@ class GenerateResumePdfAction
     public function handle(
         array $resume,
         string $templateView = 'builder::resume',
-        string $disk = 'public'
+        string $disk = 'public',
+		?string $templatePath = null,
+		?string $previewColorScheme = null
     ): array {
         // 1) Render Blade -> HTML
-        $html = view($templateView, ['resume' => $resume])->render();
+        $html = view($templateView, [
+			'resume' => $resume,
+			'templatePath' => $templatePath,
+			'previewColorScheme' => $previewColorScheme,
+		])->render();
 
         // 2) Call pdf-service
         $pdfService = rtrim(config('services.pdf.url', env('PDF_SERVICE_URL', '')), '/');

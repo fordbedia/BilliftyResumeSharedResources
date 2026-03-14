@@ -93,11 +93,83 @@ class ResumeStrengthService
             return false;
         }
 
-        if (!$resume->updated_at) {
+        $latestContentUpdatedAt = $this->latestContentUpdatedAt($resume);
+        if (!$latestContentUpdatedAt) {
             return true;
         }
 
-        return $strength->scored_at->greaterThan($resume->updated_at);
+        return $strength->scored_at->greaterThan($latestContentUpdatedAt);
+    }
+
+    private function latestContentUpdatedAt(Resume $resume)
+    {
+        $resume->loadMissing([
+            'basic',
+            'basic.profile',
+            'work',
+            'education',
+            'skills',
+            'reference',
+            'certificate',
+            'accomplishment',
+            'languages',
+            'languages.language',
+            'affiliation',
+            'interest',
+            'volunteer',
+            'websites',
+            'websites.website',
+            'project',
+        ]);
+
+        $timestamps = [];
+        if ($resume->updated_at) {
+            $timestamps[] = $resume->updated_at;
+        }
+
+        $collect = function (mixed $value) use (&$timestamps): void {
+            if (!$value) {
+                return;
+            }
+
+            if ($value instanceof \Illuminate\Database\Eloquent\Model) {
+                if ($value->updated_at) {
+                    $timestamps[] = $value->updated_at;
+                }
+                return;
+            }
+
+            if ($value instanceof \Illuminate\Support\Collection || is_array($value)) {
+                foreach ($value as $item) {
+                    if ($item instanceof \Illuminate\Database\Eloquent\Model && $item->updated_at) {
+                        $timestamps[] = $item->updated_at;
+                    }
+                }
+            }
+        };
+
+        $collect($resume->basic);
+        $collect($resume->basic?->profile);
+        $collect($resume->work);
+        $collect($resume->education);
+        $collect($resume->skills);
+        $collect($resume->reference);
+        $collect($resume->certificate);
+        $collect($resume->accomplishment);
+        $collect($resume->languages);
+        $collect($resume->languages?->language);
+        $collect($resume->affiliation);
+        $collect($resume->interest);
+        $collect($resume->volunteer);
+        $collect($resume->websites);
+        $collect($resume->websites?->website);
+        $collect($resume->project);
+
+        if (empty($timestamps)) {
+            return null;
+        }
+
+        return collect($timestamps)->max();
     }
 
     private function transform(ResumeStrength $strength): array

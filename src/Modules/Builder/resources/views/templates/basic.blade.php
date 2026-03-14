@@ -338,9 +338,9 @@
     {{-- Main layout --}}
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
         <tr>
-            <td valign="top" style="{{ $hasRightRail ? 'width: 66%; padding-right: 14px;' : 'width: 100%;' }}">
+            <td valign="top" style="{{ $hasRightRail ? 'width: 66%; padding-right: 14px;' : 'width: 100%;' }} display: flex; flex-direction: column;">
                 @if($hasWork)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('work') }}">
                         <h2>Experience</h2>
 
                         @foreach($resume['work'] as $work)
@@ -383,42 +383,42 @@
                 @endif
 
                 @if($hasProject)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <h2>Projects</h2>
                         <div class="row rich">{!! $projectBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasAccomplishment)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('additional_information') }}">
                         <h2>Accomplishments</h2>
                         <div class="row rich">{!! $accomplishmentBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasVolunteer)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <h2>Volunteer</h2>
                         <div class="row rich">{!! $volunteerBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasAffiliation)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <h2>Affiliations</h2>
                         <div class="row rich">{!! $affiliationBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasCertificate)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('additional_information') }}">
                         <h2>Certifications</h2>
                         <div class="row rich">{!! $certificateBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasInterest)
-                    <div class="section">
+                    <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <h2>Interests</h2>
                         <div class="row rich">{!! $interestBody !!}</div>
                     </div>
@@ -427,8 +427,9 @@
 
             @if($hasRightRail)
                 <td valign="top" style="width: 34%;">
-                    <div class="sidebar-card">
+                    <div class="sidebar-card" style="display: flex; flex-direction: column;">
                         @if($hasEducation)
+                            <div style="{{ $sectionOrderStyle('education') }}">
                             <div class="sidebar-title">Education</div>
                             @foreach($resume['education'] as $edu)
                                 @if(is_array($edu))
@@ -456,9 +457,11 @@
                             @if($hasSkills || $hasLanguages || $hasWebsites || $hasRefs)
                                 <div class="divider"></div>
                             @endif
+                            </div>
                         @endif
 
                         @if($hasSkills)
+                            <div style="{{ $sectionOrderStyle('skills') }}">
                             <div class="sidebar-title">Skills</div>
                             <div class="sidebar-item">
                                 @if($skillsBody !== '')
@@ -473,9 +476,11 @@
                             @if($hasLanguages || $hasWebsites || $hasRefs)
                                 <div class="divider"></div>
                             @endif
+                            </div>
                         @endif
 
                         @if($hasLanguages)
+                            <div style="{{ $sectionOrderStyle('additional_information') }}">
                             <div class="sidebar-title">Languages</div>
                             @foreach($sidebarLanguages as $lang)
                                 @php $l = $normalizeLanguage($lang); @endphp
@@ -490,9 +495,11 @@
                             @if($hasWebsites || $hasRefs)
                                 <div class="divider"></div>
                             @endif
+                            </div>
                         @endif
 
                         @if($hasWebsites)
+                            <div style="{{ $sectionOrderStyle('for_us_candidates') }}">
                             <div class="sidebar-title">Websites</div>
                             @foreach($websites as $site)
                                 @php $w = $normalizeWebsite($site); @endphp
@@ -507,9 +514,11 @@
                             @if($hasRefs)
                                 <div class="divider"></div>
                             @endif
+                            </div>
                         @endif
 
                         @if($hasRefs)
+                            <div style="{{ $sectionOrderStyle('references') }}">
                             <div class="sidebar-title">References</div>
                             @foreach($resume['references'] as $r)
                                 @if(is_array($r))
@@ -528,6 +537,7 @@
                                     @endif
                                 @endif
                             @endforeach
+                            </div>
                         @endif
                     </div>
                 </td>

@@ -231,6 +231,8 @@
     .inner {
         padding: 7mm 8mm 8mm 8mm;
         background: #edf1f4;
+        display: flex;
+        flex-direction: column;
     }
 
     .hero {
@@ -664,7 +666,7 @@
     <div class="sheet">
         <div class="top-accent"></div>
         <div class="inner">
-            <header class="hero">
+            <header class="hero" style="{{ $sectionOrderStyle('basics') }}">
                 <div class="hero-main">
                     <div class="identity">
                         @if($photo !== '')
@@ -740,7 +742,7 @@
 			@endif
 
             @if(!empty($workItems))
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('work') }}">
                     <div class="section-title">
                         <span class="section-icon">&#128188;</span>
                         <h2>Professional Experience</h2>
@@ -837,7 +839,7 @@
                 }
             @endphp
             @if($skillsBody !== '' || !empty($skillRows) || !empty($languageTags))
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('skills') }}">
                     <div class="section-title">
                         <span class="section-icon">&#60;/&#62;</span>
                         <h2>Skills</h2>
@@ -900,7 +902,7 @@
 
             <div class="bottom-grid">
                 @if(!empty($eduItems) || !empty($certItems) || $hasCertificate)
-                    <section class="section-block">
+                    <section class="section-block" style="{{ $sectionOrderStyle('education') }}">
                         <div class="section-title">
                             <span class="section-icon">&#127891;</span>
                             <h2>Education</h2>
@@ -969,7 +971,7 @@
                     </section>
                 @endif
 
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('references') }}">
                     <div class="section-title">
                         <span class="section-icon">&#10077;</span>
                         <h2>References</h2>
@@ -1021,7 +1023,7 @@
             </div>
 
             @if($hasProject)
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Selected Projects</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $projectBody !!}</div>
@@ -1029,7 +1031,7 @@
             @endif
 
             @if($hasAccomplishment)
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('additional_information') }}">
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Accomplishments</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $accomplishmentBody !!}</div>
@@ -1037,7 +1039,7 @@
             @endif
 
             @if($hasVolunteer)
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Volunteer</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $volunteerBody !!}</div>
@@ -1045,7 +1047,7 @@
             @endif
 
             @if($hasAffiliation)
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Affiliations</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $affiliationBody !!}</div>
@@ -1053,7 +1055,7 @@
             @endif
 
             @if($hasInterest)
-                <section class="section-block">
+                <section class="section-block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-title"><span class="section-icon">&#9679;</span><h2>Interests</h2></div>
                     <div class="section-divider"></div>
                     <div class="entry-copy rich" style="margin-top: 8px;">{!! $interestBody !!}</div>

@@ -2,6 +2,7 @@
 
 namespace BilliftyResumeSDK\SharedResources\Modules\Builder\Action;
 
+use BilliftyResumeSDK\SharedResources\Modules\Builder\Application\Eloquent\Repository\ColorSchemeRepository;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Http\Resources\ResumeJsonResource;
 use BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume;
 use Illuminate\Support\Facades\Storage;
@@ -31,13 +32,19 @@ class GenerateResumeExportFileAction
 
         // JSON-Resume shaped array for the blade template
         $resume = (new ResumeJsonResource($resumeModel))->toArray(request());
+        $resolvedColorScheme = app(ColorSchemeRepository::class)->getPrimary(null, (int) $resumeModel->color_scheme_id);
+        if (is_string($resolvedColorScheme) && trim($resolvedColorScheme) !== '') {
+            $resume['colorScheme'] = $resolvedColorScheme;
+        }
 
         // Generate the file on the configured disk
         if ($fileFormat === 'pdf') {
             $result = app(GenerateResumePdfAction::class)->handle(
                 resume: $resume,
                 templateView: $templateView,
-                disk: $disk
+                disk: $disk,
+                templatePath: $resumeModel->template?->path,
+                previewColorScheme: $resolvedColorScheme
             );
         } else {
             $result = app(GenerateResumeDocxAction::class)->handle(

@@ -11,6 +11,7 @@ class ResumeJsonResource extends JsonResource
    public function toArray($request): array
     {
         $resume = $this->resource;
+		$sectionOrder = $this->resolveSectionOrder($resume);
 
         $data = [
 			'name' => $resume->name,
@@ -65,11 +66,6 @@ class ResumeJsonResource extends JsonResource
                 'name' => $r->name,
                 'reference' => $r->reference,
             ])->values()->all() ?? [],
-
-            'template' => [
-                'path' => $resume->template->path,
-            ],
-			'colorScheme' => $resume->colorScheme->primary,
 			'certificate' => CertificationJsonResource::make($resume->certificate)->toArray($request),
 			'accomplishment' => AccomplishmentJsonResource::make($resume->accomplishment)->toArray($request),
 			'languages' => LanguagesJsonResource::make($resume->languages)->toArray($request),
@@ -78,10 +74,47 @@ class ResumeJsonResource extends JsonResource
 			'volunteer' => VolunteerJsonResource::make($resume->volunteer)->toArray($request),
 			'websites' => WebsitesJsonResource::make($resume->websites)->toArray($request),
 			'project' => ProjectJsonResource::make($resume->project)->toArray($request),
+			'colorScheme' => data_get($resume, 'colorScheme.primary') ?? data_get($resume, 'color_scheme.primary'),
+			'sectionOrder' => $sectionOrder,
+			'sectionGroups' => [
+				'additional_information' => [
+					'label' => 'Additional Information',
+					'sections' => ['certificate', 'accomplishment', 'languages'],
+				],
+				'for_us_candidates' => [
+					'label' => 'For US Candidates',
+					'sections' => ['affiliation', 'interest', 'volunteer', 'websites', 'project'],
+				],
+			],
         ];
 
 		$data['resumeStrength'] = ResumeStrengthService::make()->forResume($resume, $data);
 
 		return $data;
     }
+
+	protected function resolveSectionOrder($resume): array
+	{
+		$defaults = \BilliftyResumeSDK\SharedResources\Modules\Builder\Models\Resume::DEFAULT_SECTION_ORDER;
+		$incoming = is_array($resume->section_order ?? null) ? $resume->section_order : [];
+		$normalized = [];
+
+		foreach ($incoming as $item) {
+			if (!is_string($item)) {
+				continue;
+			}
+			if (!in_array($item, $defaults, true) || in_array($item, $normalized, true)) {
+				continue;
+			}
+			$normalized[] = $item;
+		}
+
+		foreach ($defaults as $key) {
+			if (!in_array($key, $normalized, true)) {
+				$normalized[] = $key;
+			}
+		}
+
+		return $normalized;
+	}
 }

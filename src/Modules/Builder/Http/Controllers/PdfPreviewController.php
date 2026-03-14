@@ -44,9 +44,13 @@ class PdfPreviewController extends Controller
         $resumeData = (new ResumeJsonResource($resumeModel))->resolve();
         // OR: $resumeData = $resumeModel->payload; etc.
 
-        // 4) Render Blade => HTML
-        $view = "builder::$template";
-        $html = view($view, ['resume' => $resumeData, 'previewColorScheme' => $previewColorScheme])->render();
+        // 4) Render Blade => HTML via wrapper
+        $view = "builder::resume";
+        $html = view($view, [
+			'resume' => $resumeData,
+			'previewColorScheme' => $previewColorScheme,
+			'templatePath' => $template,
+		])->render();
 
         // 5) Call pdf-service
         $pdfService = rtrim(config('services.pdf.url'), '/');

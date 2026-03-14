@@ -29,6 +29,8 @@ class ResumeFinalizeRequest extends FormRequest
            	'finalize.template' 		=> 'required|integer',
 			'finalize.color_scheme_id' 	=> 'required|integer',
 			'finalize.name' 			=> 'required|string',
+			'finalize.section_order' 	=> 'nullable|array',
+			'finalize.section_order.*' 	=> 'string|distinct|in:basics,work,education,skills,references,additional_information,for_us_candidates',
         ];
     }
 }

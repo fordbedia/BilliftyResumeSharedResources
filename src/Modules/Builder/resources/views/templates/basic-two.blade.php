@@ -523,8 +523,9 @@
     <div class="divider-space"></div>
 
     <div class="content-flex">
-        <div class="main-col {{ $hasRightRail ? 'with-right' : '' }}">
+        <div class="main-col {{ $hasRightRail ? 'with-right' : '' }}" style="display: flex; flex-direction: column;">
                 @if($hasWork)
+                    <div style="{{ $sectionOrderStyle('work') }}">
                     <h2 class="section-head">Experience</h2>
                     <div class="section-accent"></div>
 
@@ -586,9 +587,11 @@
                             @endif
                         @endforeach
                     </div>
+                    </div>
                 @endif
 
                 @if($hasProject)
+                    <div style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div style="height: 8px;"></div>
                     <h2 class="section-head">Projects</h2>
                     <div class="section-accent"></div>
@@ -597,38 +600,39 @@
                         <div class="project-title">Selected Projects</div>
                         <div class="project-rich rich-inline">{!! $projectBody !!}</div>
                     </div>
+                    </div>
                 @endif
 
                 @if($hasAccomplishment)
-                    <div class="project-card">
+                    <div class="project-card" style="{{ $sectionOrderStyle('additional_information') }}">
                         <div class="project-title">Accomplishments</div>
                         <div class="project-rich rich-inline">{!! $accomplishmentBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasVolunteer)
-                    <div class="project-card">
+                    <div class="project-card" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <div class="project-title">Volunteer</div>
                         <div class="project-rich rich-inline">{!! $volunteerBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasAffiliation)
-                    <div class="project-card">
+                    <div class="project-card" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <div class="project-title">Affiliations</div>
                         <div class="project-rich rich-inline">{!! $affiliationBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasCertificate)
-                    <div class="project-card">
+                    <div class="project-card" style="{{ $sectionOrderStyle('additional_information') }}">
                         <div class="project-title">Certifications</div>
                         <div class="project-rich rich-inline">{!! $certificateBody !!}</div>
                     </div>
                 @endif
 
                 @if($hasInterest)
-                    <div class="project-card">
+                    <div class="project-card" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                         <div class="project-title">Interests</div>
                         <div class="project-rich rich-inline">{!! $interestBody !!}</div>
                     </div>
@@ -636,9 +640,9 @@
         </div>
 
         @if($hasRightRail)
-                <div class="side-col">
+                <div class="side-col" style="display: flex; flex-direction: column;">
                     @if($hasEducation)
-                        <div class="right-block">
+                        <div class="right-block" style="{{ $sectionOrderStyle('education') }}">
                             <h3 class="right-title">Education</h3>
                             <div class="section-accent"></div>
 
@@ -674,7 +678,7 @@
                     @endif
 
                     @if($hasSkills)
-                        <div class="right-block">
+                        <div class="right-block" style="{{ $sectionOrderStyle('skills') }}">
                             <h3 class="right-title">Skills</h3>
                             <div class="section-accent"></div>
 
@@ -685,7 +689,7 @@
                     @endif
 
                     @if($hasLanguages)
-                        <div class="right-block">
+                        <div class="right-block" style="{{ $sectionOrderStyle('additional_information') }}">
                             <h3 class="right-title">Languages</h3>
                             <div class="section-accent"></div>
 
@@ -707,7 +711,7 @@
                     @endif
 
                     @if($hasWebsites)
-                        <div class="right-block">
+                        <div class="right-block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                             <h3 class="right-title">Websites</h3>
                             <div class="section-accent"></div>
 
@@ -724,7 +728,7 @@
                     @endif
 
                     @if($hasRefs)
-                        <div class="right-block">
+                        <div class="right-block" style="{{ $sectionOrderStyle('references') }}">
                             <h3 class="right-title">References</h3>
                             <div class="section-accent"></div>
 

@@ -20,6 +20,17 @@
 
     $previewColorScheme = $previewColorScheme ?? null;
     $colorScheme = $previewColorScheme ?? data_get($resume, 'colorScheme', '#5f8b70');
+    $primaryColor = '#5f8b70';
+
+    if (is_string($colorScheme)) {
+        $candidate = trim($colorScheme);
+        if (preg_match('/^(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\))$/', $candidate)) {
+            $primaryColor = $candidate;
+        }
+    }
+
+    $colorScheme = $primaryColor;
+    $dynamicTextColor = contrastTextFromHsl($primaryColor);
 
     // Contact lines (match the PDF order)
     $contactLine1 = trim(implode(' ', array_filter([
@@ -87,6 +98,7 @@
 
     :root {
         --accent: {{ $colorScheme ?? '#5f8b70' }};
+        --accent-contrast: {{ $dynamicTextColor ?? '#ffffff' }};
         --ink: #2b2b2b;
         --muted: #6b6b6b;
         --soft: #f2f4f7;
@@ -150,7 +162,7 @@
     /* Sidebar stays green (original concept) but enhanced */
     .sidebar {
         background: var(--accent);
-        color: #ffffff;
+        color: var(--accent-contrast);
         padding: 16px 14px;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
@@ -204,11 +216,11 @@
 
     /* Dividers */
     .divider {
-        border-top: 2px solid rgba(255,255,255,0.9);
+        border-top: 2px solid var(--accent-contrast);
         margin: 14px 0 16px 0;
         height: 0;
         line-height: 0;
-        opacity: 0.95;
+        opacity: 0.8;
     }
     .divider-content {
         border-top: 2px solid var(--accent);
@@ -239,7 +251,7 @@
         padding: 0;
         font-size: 14px;
         line-height: 1.35;
-        color: rgba(255,255,255,0.95);
+        color: var(--accent-contrast);
         word-break: break-word;
     }
     .sb-card .sb-item:last-child { margin-bottom: 0; }
@@ -248,13 +260,13 @@
         width: 6px;
         height: 6px;
         border-radius: 999px;
-        background: rgba(255,255,255,0.9);
+        background: var(--accent-contrast);
         margin-right: 8px;
         transform: translateY(-1px);
     }
     .sb-link {
         text-decoration: underline;
-        color: rgba(255,255,255,0.98);
+        color: var(--accent-contrast);
     }
 
     /* Main content (original concept) */
@@ -404,7 +416,7 @@
 
 {{-- TOP INSERTED SECTIONS (keep original flow; just more "designed") --}}
 @if ($accomplishmentActive && $t($accomplishmentBody) !== '')
-    <div class="mini-section">
+    <div class="mini-section" style="{{ $sectionOrderStyle('additional_information') }}">
         <div class="mini-head">
             <p class="mini-title">Accomplishments</p>
             <span class="mini-line"></span>
@@ -414,7 +426,7 @@
 @endif
 
 @if ($affiliationActive && $t($affiliationBody) !== '')
-    <div class="mini-section">
+    <div class="mini-section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
         <div class="mini-head">
             <p class="mini-title">Affiliations</p>
             <span class="mini-line"></span>
@@ -424,7 +436,7 @@
 @endif
 
 @if ($certificateActive && $t($certificate) !== '')
-    <div class="mini-section">
+    <div class="mini-section" style="{{ $sectionOrderStyle('additional_information') }}">
         <div class="mini-head">
             <p class="mini-title">Certifications</p>
             <span class="mini-line"></span>
@@ -434,7 +446,7 @@
 @endif
 
 @if ($interestActive && $t($interestBody) !== '')
-    <div class="mini-section">
+    <div class="mini-section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
         <div class="mini-head">
             <p class="mini-title">Interest</p>
             <span class="mini-line"></span>
@@ -444,7 +456,7 @@
 @endif
 
 @if ($volunteerActive && $t($volunteerBody) !== '')
-    <div class="mini-section">
+    <div class="mini-section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
         <div class="mini-head">
             <p class="mini-title">Volunteer</p>
             <span class="mini-line"></span>
@@ -457,7 +469,8 @@
 <table class="layout" style="margin-top: 14px;">
     <tr>
         {{-- SIDEBAR --}}
-        <td class="sidebar" style="width: 34%;">
+        <td class="sidebar" style="width: 34%; display: flex; flex-direction: column;">
+            <div style="{{ $sectionOrderStyle('skills') }}">
             <p class="section-title-sidebar">Skills</p>
 
             @if(!empty($skills))
@@ -469,7 +482,9 @@
             @endif
 
             <div class="divider"></div>
+            </div>
 
+            <div style="{{ $sectionOrderStyle('education') }}">
             <p class="section-title-sidebar">Education</p>
 
             @foreach($education as $e)
@@ -498,9 +513,11 @@
                     </p>
                 </div>
             @endforeach
+            </div>
 
             {{-- Languages (enhanced card list) --}}
             @if (!empty($languages) && $languagesActive)
+                <div style="{{ $sectionOrderStyle('additional_information') }}">
                 <div class="divider"></div>
                 <p class="section-title-sidebar">Languages</p>
 
@@ -512,10 +529,12 @@
                         @endif
                     @endforeach
                 </div>
+                </div>
             @endif
 
             {{-- Websites/Portfolio (enhanced card list) --}}
             @if (!empty($websites) && $websitesActive)
+                <div style="{{ $sectionOrderStyle('for_us_candidates') }}">
                 <div class="divider"></div>
                 <p class="section-title-sidebar">Websites</p>
 
@@ -530,12 +549,14 @@
                         @endif
                     @endforeach
                 </div>
+                </div>
             @endif
 
         </td>
 
         {{-- MAIN CONTENT --}}
-        <td class="main" style="width: 66%;">
+        <td class="main" style="width: 66%; display: flex; flex-direction: column;">
+            <div style="{{ $sectionOrderStyle('work') }}">
             <p class="section-title-main">Work history</p>
 
             @foreach($work as $w)
@@ -575,10 +596,11 @@
                     </tr>
                 </table>
             @endforeach
+            </div>
 
             {{-- Projects (keep original placement, but make it stand out) --}}
             @if ($projectActive && $t($projectBody) !== '')
-                <div class="mini-section" style="margin-top: 6px;">
+                <div class="mini-section" style="margin-top: 6px; {{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="mini-head">
                         <p class="mini-title">Projects</p>
                         <span class="mini-line"></span>
@@ -587,6 +609,7 @@
                 </div>
             @endif
 
+            <div style="{{ $sectionOrderStyle('references') }}">
             <p class="section-title-main" style="margin-top: 14px;">References</p>
 
             @foreach($references as $r)
@@ -600,6 +623,7 @@
                     <p class="ref-text">{!! $rText !!}</p>
                 </div>
             @endforeach
+            </div>
         </td>
     </tr>
 </table>

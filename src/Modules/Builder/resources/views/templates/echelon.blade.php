@@ -686,24 +686,24 @@
     <div class="layout">
 
         {{-- ===================== SIDEBAR ===================== --}}
-        <aside class="side">
-			@if($photo !== '')
-				<div class="avatar">
-					<img src="{{ $photo }}" alt="Photo">
-				</div>
-			@endif
+        <aside class="side" style="display: flex; flex-direction: column;">
+				{{-- Contact --}}
+				<div class="block" style="{{ $sectionOrderStyle('basics') }}">
+					@if($photo !== '')
+					<div class="avatar">
+						<img src="{{ $photo }}" alt="Photo">
+					</div>
+				@endif
 
-            <h1 class="side-name">{{ $basics['name'] ?? 'Your Name' }}</h1>
-            <div class="side-role">{{ $label !== '' ? $label : 'Your Title' }}</div>
+				<h1 class="side-name">{{ $basics['name'] ?? 'Your Name' }}</h1>
+				<div class="side-role">{{ $label !== '' ? $label : 'Your Title' }}</div>
 
-            @if(!empty($basics['summary']))
-                <div class="side-summary rich">{!! $basics['summary'] !!}</div>
-            @else
-                <div class="side-summary">Passionate professional crafting user-centered experiences and solutions.</div>
-            @endif
+				@if(!empty($basics['summary']))
+					<div class="side-summary rich">{!! $basics['summary'] !!}</div>
+				@else
+					<div class="side-summary">Passionate professional crafting user-centered experiences and solutions.</div>
+				@endif
 
-            {{-- Contact --}}
-            <div class="block">
                 <div class="block-title"><span class="barline"></span>Contact</div>
                 <div class="divider"></div>
 
@@ -784,7 +784,7 @@
 
             {{-- Skills --}}
             @if(!empty($resume['skills']))
-                <div class="block">
+                <div class="block" style="{{ $sectionOrderStyle('skills') }}">
                     <div class="block-title"><span class="barline"></span>Skills</div>
                     <div class="divider"></div>
 
@@ -800,7 +800,7 @@
 
             {{-- Languages --}}
             @if($hasLanguages)
-                <div class="block">
+                <div class="block" style="{{ $sectionOrderStyle('additional_information') }}">
                     <div class="block-title"><span class="barline"></span>Languages</div>
                     <div class="divider"></div>
 
@@ -820,7 +820,7 @@
 
             {{-- Websites --}}
             @if($hasWebsites)
-                <div class="block">
+                <div class="block" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="block-title"><span class="barline"></span>Websites</div>
                     <div class="divider"></div>
 
@@ -849,11 +849,11 @@
         </aside>
 
         {{-- ===================== MAIN ===================== --}}
-        <main class="main">
+        <main class="main" style="display: flex; flex-direction: column;">
 
             {{-- EXPERIENCE --}}
             @if(!empty($workItems))
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('work') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -926,7 +926,7 @@
 
             {{-- EDUCATION --}}
             @if(!empty($eduItems) || !empty($certItems) || $hasCertificate)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('education') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1009,7 +1009,7 @@
 
             {{-- OPTIONAL RICH SECTIONS --}}
             @if($hasProject)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1023,7 +1023,7 @@
             @endif
 
             @if($hasAccomplishment)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('additional_information') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1037,7 +1037,7 @@
             @endif
 
             @if($hasVolunteer)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1051,7 +1051,7 @@
             @endif
 
             @if($hasAffiliation)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1066,7 +1066,7 @@
             @endif
 
             @if($hasInterest)
-                <section class="section">
+                <section class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">
@@ -1083,7 +1083,7 @@
 
             {{-- REFERENCES --}}
             @if(!empty($refItems))
-                <section class="section" style="margin-bottom: 0;">
+                <section class="section" style="margin-bottom: 0; {{ $sectionOrderStyle('references') }}">
                     <div class="section-header">
                         <div class="icon">
                             <svg class="svg" viewBox="0 0 24 24" fill="none" style="color: var(--primary);">

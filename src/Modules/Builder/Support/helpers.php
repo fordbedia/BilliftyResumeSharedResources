@@ -36,7 +36,7 @@ function contrastTextFromHsl(
     string $darkText  = '#0F172A',
     float $threshold  = 0.50 // relative luminance threshold; tweak 0.45-0.60 if you want
 ): string {
-    $rgb = hslToRgbFromString($hsl);
+    $rgb = colorStringToRgb($hsl);
     if ($rgb === null) {
         // Fallback if parsing fails
         return $darkText;
@@ -47,6 +47,96 @@ function contrastTextFromHsl(
 
     // If background is dark, use light text
     return ($lum < $threshold) ? $lightText : $darkText;
+}
+
+/**
+ * Supports: hsl()/hsla(), rgb()/rgba(), and #RGB/#RRGGBB.
+ * Returns [R,G,B] (0..255) or null.
+ */
+function colorStringToRgb(string $value): ?array {
+    $color = trim(strtolower($value));
+    if ($color === '') {
+        return null;
+    }
+
+    if (str_starts_with($color, '#')) {
+        return hexToRgb($color);
+    }
+
+    if (str_starts_with($color, 'rgb(') || str_starts_with($color, 'rgba(')) {
+        return rgbToRgbFromString($color);
+    }
+
+    if (str_starts_with($color, 'hsl(') || str_starts_with($color, 'hsla(')) {
+        return hslToRgbFromString($color);
+    }
+
+    return null;
+}
+
+/**
+ * Parses #RGB or #RRGGBB.
+ */
+function hexToRgb(string $hex): ?array {
+    $raw = ltrim(trim($hex), '#');
+    if ($raw === '') {
+        return null;
+    }
+
+    if (strlen($raw) === 3) {
+        $raw = $raw[0] . $raw[0] . $raw[1] . $raw[1] . $raw[2] . $raw[2];
+    }
+
+    if (strlen($raw) !== 6 || !ctype_xdigit($raw)) {
+        return null;
+    }
+
+    return [
+        hexdec(substr($raw, 0, 2)),
+        hexdec(substr($raw, 2, 2)),
+        hexdec(substr($raw, 4, 2)),
+    ];
+}
+
+/**
+ * Parses rgb(255, 255, 255) and rgba(255, 255, 255, 0.5).
+ */
+function rgbToRgbFromString(string $rgb): ?array {
+    $s = trim(strtolower($rgb));
+    if (!preg_match('/rgba?\((.*?)\)/', $s, $m)) {
+        return null;
+    }
+
+    $inside = trim($m[1]);
+    $inside = preg_replace('/\s+/', '', $inside);
+    $parts = explode(',', $inside);
+    if (count($parts) < 3) {
+        return null;
+    }
+
+    $toChannel = function (string $part): ?int {
+        if ($part === '') {
+            return null;
+        }
+        if (str_ends_with($part, '%')) {
+            $pct = (float) rtrim($part, '%');
+            return (int) round(max(0, min(100, $pct)) * 2.55);
+        }
+        if (!is_numeric($part)) {
+            return null;
+        }
+        return (int) round(max(0, min(255, (float) $part)));
+    };
+
+    $r = $toChannel($parts[0]);
+    $g = $toChannel($parts[1]);
+    $b = $toChannel($parts[2]);
+
+    if ($r === null || $g === null || $b === null) {
+        return null;
+    }
+
+    return [$r, $g, $b];
 }
 
 /**

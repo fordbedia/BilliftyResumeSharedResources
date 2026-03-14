@@ -60,20 +60,24 @@ class Resume implements ResumeBuilder
 	public function create(int $userId, array $payload, int $resumeId = null)
 	{
 		['create' => $create,] = $payload;
-		return $this->transaction->run(function () use ($create, $resumeId, $userId) {
+		$sectionOrder = $this->normalizeSectionOrder($create['section_order'] ?? null);
+
+		return $this->transaction->run(function () use ($create, $resumeId, $userId, $sectionOrder) {
 			if ($resumeId){
 				$resume = $this->resume->find($resumeId);
 				$resume->forceFill([
 					'name' => $create['name'],
 					'template_id' => $create['template'],
-					'color_scheme_id' => $create['color_scheme_id']
+					'color_scheme_id' => $create['color_scheme_id'],
+					'section_order' => $sectionOrder,
 				])->save();
 			} else {
 				$resume = $this->resume->create([
 					'user_id' => $userId,
 					'name' => $create['name'],
 					'template_id' => $create['template'],
-					'color_scheme_id' => $create['color_scheme_id']
+					'color_scheme_id' => $create['color_scheme_id'],
+					'section_order' => $sectionOrder,
 				]);
 			}
 			return $resume->load(ResumeModel::relationships())->refresh();
@@ -368,13 +372,42 @@ class Resume implements ResumeBuilder
 	protected function finalize(int $userId, array $payload, int $resumeId = null)
 	{
 		['finalize' => $finalizePayload] = $payload;
+		$sectionOrder = $this->normalizeSectionOrder($finalizePayload['section_order'] ?? null);
 		// Resume name
 		$this->resume->save($resumeId, [
 			'name' => $finalizePayload['name'],
 			'template_id' => $finalizePayload['template'],
-			'color_scheme_id' => $finalizePayload['color_scheme_id']
+			'color_scheme_id' => $finalizePayload['color_scheme_id'],
+			'section_order' => $sectionOrder,
 		]);
 
 		return $this->resume->find($resumeId);
+	}
+
+	protected function normalizeSectionOrder(mixed $sectionOrder): array
+	{
+		$allowed = ResumeModel::DEFAULT_SECTION_ORDER;
+		if (!is_array($sectionOrder)) {
+			return $allowed;
+		}
+
+		$normalized = [];
+		foreach ($sectionOrder as $value) {
+			if (!is_string($value)) {
+				continue;
+			}
+			if (!in_array($value, $allowed, true) || in_array($value, $normalized, true)) {
+				continue;
+			}
+			$normalized[] = $value;
+		}
+
+		foreach ($allowed as $section) {
+			if (!in_array($section, $normalized, true)) {
+				$normalized[] = $section;
+			}
+		}
+
+		return $normalized;
 	}
 }

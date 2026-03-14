@@ -210,6 +210,8 @@
         width: 210mm;
         margin: 0 auto;
         padding: 12mm;
+        display: flex;
+        flex-direction: column;
     }
 
     .row {
@@ -337,7 +339,7 @@
 </style>
 
 <div class="sheet">
-    <section class="row">
+    <section class="row" style="{{ $sectionOrderStyle('basics') }}">
         <h1 class="name">{{ $safeText(data_get($basics, 'name')) !== '' ? $safeText(data_get($basics, 'name')) : 'Your Name' }}</h1>
 
         @if($label !== '')
@@ -362,7 +364,7 @@
     </section>
 
     @if($hasWebsites)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <h2 class="section-title">Websites</h2>
             <ul class="list">
                 @foreach($websites as $site)
@@ -379,7 +381,7 @@
     @endif
 
     @if(!empty($resume['skills']))
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('skills') }}">
             <h2 class="section-title">Skills</h2>
 
             @if(!empty(data_get($resume, 'skills.body')))
@@ -411,7 +413,7 @@
     @endif
 
     @if(!empty($workItems))
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('work') }}">
             <h2 class="section-title">Work Experience</h2>
             @foreach($workItems as $work)
                 @if(is_array($work))
@@ -447,7 +449,7 @@
     @endif
 
     @if(!empty($eduItems))
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('education') }}">
             <h2 class="section-title">Education</h2>
             @foreach($eduItems as $edu)
                 @if(is_array($edu))
@@ -473,7 +475,7 @@
     @endif
 
     @if(!empty($certItems) || $hasCertificate)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
             <h2 class="section-title">Certificates</h2>
 
             @if(!empty($certItems))
@@ -502,42 +504,42 @@
     @endif
 
     @if($hasProject)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <h2 class="section-title">Projects</h2>
             <div class="rich">{!! $projectBody !!}</div>
         </section>
     @endif
 
     @if($hasAccomplishment)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
             <h2 class="section-title">Accomplishments</h2>
             <div class="rich">{!! $accomplishmentBody !!}</div>
         </section>
     @endif
 
     @if($hasVolunteer)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <h2 class="section-title">Volunteer</h2>
             <div class="rich">{!! $volunteerBody !!}</div>
         </section>
     @endif
 
     @if($hasAffiliation)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <h2 class="section-title">Affiliations</h2>
             <div class="rich">{!! $affiliationBody !!}</div>
         </section>
     @endif
 
     @if($hasInterest)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('additional_information') }}">
             <h2 class="section-title">Interests</h2>
             <div class="rich">{!! $interestBody !!}</div>
         </section>
     @endif
 
     @if($hasLanguages)
-        <section class="row">
+        <section class="row" style="{{ $sectionOrderStyle('references') }}">
             <h2 class="section-title">Languages</h2>
             <ul class="list">
                 @foreach($sidebarLanguages as $lang)

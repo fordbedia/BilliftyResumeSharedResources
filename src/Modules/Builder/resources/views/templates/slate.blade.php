@@ -387,7 +387,7 @@
   <table class="layout">
     <tr>
       {{-- LEFT MAIN --}}
-      <td class="left">
+	      <td class="left" style="display: flex; flex-direction: column;">
         {{-- Header --}}
         <h1 class="name">{{ $basics['name'] ?? 'Your Name' }}</h1>
         <div class="title">{{ $basics['label'] ?? ($resume['headline'] ?? 'Professional Title') }}</div>
@@ -427,15 +427,15 @@
         </div>
 
         {{-- About --}}
-        @if(!empty($basics['summary']))
-          <div class="section">
+	        @if(!empty($basics['summary']))
+	          <div class="section" style="{{ $sectionOrderStyle('basics') }}">
             <div class="about">{!! $basics['summary'] !!}</div>
           </div>
         @endif
 
         {{-- Experience --}}
-        @if(!empty($work))
-          <div class="section">
+	        @if(!empty($work))
+	          <div class="section" style="{{ $sectionOrderStyle('work') }}">
             <div class="section-title">Work Experience</div>
 
             @foreach($work as $job)
@@ -480,8 +480,8 @@
         @endif
 
         {{-- Education --}}
-        @if(!empty($education))
-          <div class="section">
+	        @if(!empty($education))
+	          <div class="section" style="{{ $sectionOrderStyle('education') }}">
             <div class="section-title">Education</div>
 
             @foreach($education as $edu)
@@ -511,51 +511,51 @@
         @endif
 
         {{-- New rich-text sections (keep the same Slate concept: big colored label + clean body) --}}
-        @if($accomplishmentActive && $isFilled(strip_tags($accomplishmentBody)))
-          <div class="section">
+	        @if($accomplishmentActive && $isFilled(strip_tags($accomplishmentBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('additional_information') }}">
             <div class="section-title">Accomplishments</div>
             <div class="rt">{!! $accomplishmentBody !!}</div>
           </div>
         @endif
 
-        @if($projectActive && $isFilled(strip_tags($projectBody)))
-          <div class="section">
+	        @if($projectActive && $isFilled(strip_tags($projectBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <div class="section-title">Projects</div>
             <div class="rt">{!! $projectBody !!}</div>
           </div>
         @endif
 
-        @if($volunteerActive && $isFilled(strip_tags($volunteerBody)))
-          <div class="section">
+	        @if($volunteerActive && $isFilled(strip_tags($volunteerBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <div class="section-title">Volunteer</div>
             <div class="rt">{!! $volunteerBody !!}</div>
           </div>
         @endif
 
-        @if($certificateActive && $isFilled(strip_tags($certificateBody)))
-          <div class="section">
+	        @if($certificateActive && $isFilled(strip_tags($certificateBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('additional_information') }}">
             <div class="section-title">Certificates</div>
             <div class="rt">{!! $certificateBody !!}</div>
           </div>
         @endif
 
-        @if($affiliationActive && $isFilled(strip_tags($affiliationBody)))
-          <div class="section">
+	        @if($affiliationActive && $isFilled(strip_tags($affiliationBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <div class="section-title">Affiliations</div>
             <div class="rt">{!! $affiliationBody !!}</div>
           </div>
         @endif
 
-        @if($interestActive && $isFilled(strip_tags($interestBody)))
-          <div class="section">
+	        @if($interestActive && $isFilled(strip_tags($interestBody)))
+	          <div class="section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <div class="section-title">Interests</div>
             <div class="rt">{!! $interestBody !!}</div>
           </div>
         @endif
 
         {{-- References --}}
-        @if(!empty($references))
-          <div class="section">
+	        @if(!empty($references))
+	          <div class="section" style="{{ $sectionOrderStyle('references') }}">
             <div class="section-title">References</div>
 
             <table class="ref-grid">
@@ -590,7 +590,7 @@
       </td>
 
       {{-- RIGHT SIDEBAR --}}
-      <td class="right">
+	      <td class="right" style="display: flex; flex-direction: column;">
         {{-- Avatar --}}
         @if($photo)
           <div class="avatar-wrap">
@@ -599,8 +599,8 @@
         @endif
 
         {{-- Skills --}}
-        @if(!empty($skills))
-          <div class="side-section">
+	        @if(!empty($skills))
+	          <div class="side-section" style="{{ $sectionOrderStyle('skills') }}">
             <div class="side-title">Skills</div>
 
               <div style="margin-bottom: 10px;">
@@ -613,8 +613,8 @@
         @endif
 
         {{-- Languages (new sidebar section) — after Skills --}}
-        @if($languagesActive && !empty($effectiveLanguages))
-          <div class="side-section">
+	        @if($languagesActive && !empty($effectiveLanguages))
+	          <div class="side-section" style="{{ $sectionOrderStyle('additional_information') }}">
             <div class="side-title">Languages</div>
 
             @foreach($effectiveLanguages as $lang)
@@ -641,8 +641,8 @@
         @endif
 
         {{-- ✅ Websites (new sidebar section) — after Languages --}}
-        @if($websitesActive && !empty($websites))
-          <div class="side-section">
+	        @if($websitesActive && !empty($websites))
+	          <div class="side-section" style="{{ $sectionOrderStyle('for_us_candidates') }}">
             <div class="side-title">Websites</div>
 
             @foreach($websites as $w)

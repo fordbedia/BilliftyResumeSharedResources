@@ -21,8 +21,21 @@ class Resume extends Model
 {
 	use SoftDeletes;
 
+	public const DEFAULT_SECTION_ORDER = [
+		'basics',
+		'work',
+		'education',
+		'skills',
+		'references',
+		'additional_information',
+		'for_us_candidates',
+	];
+
     protected $table = 'resume';
 	protected $guarded = [];
+	protected $casts = [
+		'section_order' => 'array',
+	];
 
 	public function basic()
 	{

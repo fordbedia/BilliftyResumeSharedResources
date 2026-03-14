@@ -1,6 +1,82 @@
 {{-- builder::resume --}}
 @php
-    $template = $resume['template']['path'] ?? 'templates.moderno-one';
+    $template = $templatePath ?? data_get($resume, 'template.path') ?? 'templates.moderno-one';
+
+	$sectionOrderDefaults = [
+		'basics',
+		'work',
+		'education',
+		'skills',
+		'references',
+		'additional_information',
+		'for_us_candidates',
+	];
+
+	$incomingSectionOrder = (array) data_get($resume, 'sectionOrder', data_get($resume, 'section_order', []));
+	$sectionOrder = [];
+	foreach ($incomingSectionOrder as $sectionKey) {
+		if (!is_string($sectionKey)) {
+			continue;
+		}
+		if (!in_array($sectionKey, $sectionOrderDefaults, true) || in_array($sectionKey, $sectionOrder, true)) {
+			continue;
+		}
+		$sectionOrder[] = $sectionKey;
+	}
+	foreach ($sectionOrderDefaults as $defaultKey) {
+		if (!in_array($defaultKey, $sectionOrder, true)) {
+			$sectionOrder[] = $defaultKey;
+		}
+	}
+	$sectionOrderPriority = array_flip($sectionOrder);
+	$sectionOrderFor = function (string $key) use ($sectionOrderPriority): int {
+		return ((int) ($sectionOrderPriority[$key] ?? 999)) + 1;
+	};
+	$sectionOrderStyle = function (string $key) use ($sectionOrderFor): string {
+		return 'order: ' . $sectionOrderFor($key) . ';';
+	};
+
+	$sectionLabels = [
+		'basics' => 'Basics',
+		'work' => 'Experience',
+		'education' => 'Education',
+		'skills' => 'Skills',
+		'references' => 'References',
+		'additional_information' => 'Additional Information',
+		'for_us_candidates' => 'For US Candidates',
+	];
+
+	$accomplishmentActive = (bool) data_get($resume, 'accomplishment.is_active');
+	$affiliationActive    = (bool) data_get($resume, 'affiliation.is_active');
+	$certificateActive    = (bool) data_get($resume, 'certificate.is_active');
+	$interestActive       = (bool) data_get($resume, 'interest.is_active');
+	$volunteerActive      = (bool) data_get($resume, 'volunteer.is_active');
+	$projectActive        = (bool) data_get($resume, 'project.is_active');
+
+	$accomplishmentBody = (string) data_get($resume, 'accomplishment.body', '');
+	$affiliationBody    = (string) data_get($resume, 'affiliation.body', '');
+	$certificateBody    = (string) data_get($resume, 'certificate.body', '');
+	$interestBody       = (string) data_get($resume, 'interest.body', '');
+	$volunteerBody      = (string) data_get($resume, 'volunteer.body', '');
+	$projectBody        = (string) data_get($resume, 'project.body', '');
+
+	$hasAccomplishment = $accomplishmentActive && trim(strip_tags($accomplishmentBody)) !== '';
+	$hasAffiliation    = $affiliationActive && trim(strip_tags($affiliationBody)) !== '';
+	$hasCertificate    = $certificateActive && trim(strip_tags($certificateBody)) !== '';
+	$hasInterest       = $interestActive && trim(strip_tags($interestBody)) !== '';
+	$hasVolunteer      = $volunteerActive && trim(strip_tags($volunteerBody)) !== '';
+	$hasProject        = $projectActive && trim(strip_tags($projectBody)) !== '';
+
+	$languagesActive   = (bool) data_get($resume, 'languages.is_active');
+	$sidebarLanguages  = (array) data_get($resume, 'languages.languages', []);
+
+	$websitesActive    = (bool) data_get($resume, 'websites.is_active');
+	$websites          = (array) data_get($resume, 'websites.websites', []);
+
+	$hasLanguages = $languagesActive && !empty($sidebarLanguages);
+	$hasWebsites  = $websitesActive && !empty($websites);
+	$hasAdditionalInformation = $hasCertificate || $hasAccomplishment || $hasLanguages;
+	$hasForUsCandidates = $hasAffiliation || $hasInterest || $hasVolunteer || $hasWebsites || $hasProject;
 
 @endphp
 

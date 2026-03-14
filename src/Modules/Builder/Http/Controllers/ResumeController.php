@@ -68,19 +68,28 @@ class ResumeController extends Controller
 		abort_unless(in_array($format, ['pdf','docx']), 422, 'Invalid format');
 
 		$resume = $repo->find($id);
+		abort_if(!$resume, 404, 'Resume not found.');
+		$requestedAt = now();
 
 		// Reset export fields (so FE knows it's regenerating)
-		$resume->update([
+		$updates = [
 			'export_status' => 'queued',
 			'export_format' => $format,
 			'export_disk' => 'public',
 			'export_path' => null,
 			'export_error' => null,
-			'export_requested_at' => now(),
+			'export_requested_at' => $requestedAt,
 			'export_ready_at' => null,
-		]);
+		];
 
-		GenerateResumeExportJob::dispatch($resume->id);
+		$resume->update($updates);
+
+		// Run from the current web process after response to avoid stale long-lived worker state.
+		if (method_exists(GenerateResumeExportJob::class, 'dispatchAfterResponse')) {
+			GenerateResumeExportJob::dispatchAfterResponse($resume->id, $requestedAt->toIso8601String());
+		} else {
+			GenerateResumeExportJob::dispatchSync($resume->id, $requestedAt->toIso8601String());
+		}
 
 		return response()->json(['queued' => true], 202);
 	}

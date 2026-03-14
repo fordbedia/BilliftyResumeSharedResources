@@ -24,7 +24,9 @@ class CreateRequest extends FormRequest
         return [
             'create.name'				=> 'required|string',
 			'create.color_scheme_id' 	=> 'required|integer',
-			'create.template' 			=> 'required|integer'
+			'create.template' 			=> 'required|integer',
+			'create.section_order'		=> 'nullable|array',
+			'create.section_order.*'	=> 'string|distinct|in:basics,work,education,skills,references,additional_information,for_us_candidates',
         ];
     }
 

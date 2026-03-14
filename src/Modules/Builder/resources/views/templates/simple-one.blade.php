@@ -30,6 +30,8 @@
 		box-sizing: border-box;
 		position: relative;
 		z-index: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
 	/* -----------------------------
@@ -335,7 +337,7 @@
 <div class="page">
 
 	{{-- Header --}}
-	<div class="top">
+		<div class="top" style="{{ $sectionOrderStyle('basics') }}">
 		<div class="top-left">
 			@php
 				$name = (string)($basic['name'] ?? '');
@@ -400,9 +402,15 @@
 
 	<div class="hr"></div>
 
-	{{-- ===================== Labeled Rich Sections ===================== --}}
-	@if(!empty($richSections))
-		<div class="rich-block">
+		{{-- ===================== Labeled Rich Sections ===================== --}}
+		@if(!empty($richSections))
+			@php
+				$richSectionsOrder = min(
+					$sectionOrderFor('additional_information'),
+					$sectionOrderFor('for_us_candidates')
+				);
+			@endphp
+			<div class="rich-block" style="order: {{ $richSectionsOrder }};">
 			@foreach ($richSections as $i => $sec)
 				{{-- Divider only between blocks (prevents awkward top divider) --}}
 				@if($i > 0)
@@ -419,11 +427,12 @@
 	@endif
 
 	{{-- 2-column body --}}
-	<div class="body">
+		<div class="body">
 
 		{{-- LEFT: Work History + References --}}
-		<div class="left">
+		<div class="left" style="display: flex; flex-direction: column;">
 
+			<div style="{{ $sectionOrderStyle('work') }}">
 			<h2 class="section-title">WORK HISTORY</h2>
 
 			@foreach($work as $job)
@@ -478,13 +487,15 @@
 						</div>
 					@endforeach
 				</div>
-			@endif
+				@endif
+			</div>
 
 		</div>
 
 		{{-- RIGHT: Skills + Education + Languages + Websites --}}
-		<div class="right">
+		<div class="right" style="display: flex; flex-direction: column;">
 
+			<div style="{{ $sectionOrderStyle('skills') }}">
 			<h2 class="section-title">SKILLS</h2>
 
 			@if(!empty($skills))
@@ -494,7 +505,9 @@
 			@endif
 
 			<div class="hr" style="margin: 18px 0;"></div>
+			</div>
 
+			<div style="{{ $sectionOrderStyle('education') }}">
 			<h2 class="section-title">EDUCATION</h2>
 
 			@foreach($education as $edu)
@@ -524,9 +537,11 @@
 						@endif
 					</div>
 				</div>
-			@endforeach
+				@endforeach
+			</div>
 
 			@if ($languagesActive && !empty($languages))
+				<div style="{{ $sectionOrderStyle('additional_information') }}">
 				<div class="hr" style="margin: 18px 0;"></div>
 				<h2 class="section-title">LANGUAGES</h2>
 
@@ -537,10 +552,12 @@
 							<div class="side-item">{{ $lang }}</div>
 						@endif
 					@endforeach
+					</div>
 				</div>
 			@endif
 
 			@if ($websitesActive && !empty($websites))
+				<div style="{{ $sectionOrderStyle('for_us_candidates') }}">
 				<div class="hr" style="margin: 18px 0;"></div>
 				<h2 class="section-title">WEBSITES</h2>
 
@@ -554,8 +571,9 @@
 						@if($url !== '')
 							<div class="side-item">
 								<a href="{{ $href }}">{{ $url }}</a>
-							</div>
-						@endif
+					</div>
+				</div>
+			@endif
 					@endforeach
 				</div>
 			@endif

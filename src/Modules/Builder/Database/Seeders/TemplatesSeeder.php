@@ -10,6 +10,19 @@ class TemplatesSeeder extends MakeSeeder
 {
 	protected array $templates = [
 		[
+			'name' => 'Foundation',
+			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
+			'icon' => 'FileText',
+			'colors' => [
+			  'primary' => 'hsl(215 25% 27%)',
+			  'accent'  => 'hsl(215 20% 65%)',
+			  'bg'      => 'hsl(0 0% 100%)',
+			],
+			'slug' => 'foundation',
+			'path' => 'templates.foundation',
+			'plan' => 'free'
+		],
+		[
 			'name' => 'Basic One',
 			'slug' => 'basic',
 			'description' => 'Clean, minimalist design with a contemporary feel',
@@ -36,7 +49,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Moderno One',
 			'description' => 'Traditional layout perfect for corporate roles',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -49,7 +62,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Simple One',
 			'description' => 'Traditional layout perfect for corporate roles',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -61,7 +74,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Slate',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -73,7 +86,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Echelon',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -86,7 +99,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Minimal',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -99,7 +112,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Minimal Pro',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -112,7 +125,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Summit',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -125,7 +138,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Summit Pro',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
@@ -138,7 +151,7 @@ class TemplatesSeeder extends MakeSeeder
 		[
 			'name' => 'Apex',
 			'description' => 'Modern layout perfect for personal or freelance roles. Includes a sidebar for easy access to your contact information and social media links.',
-			'icon' => 'Layers',
+			'icon' => 'FileText',
 			'colors' => [
 			  'primary' => 'hsl(215 25% 27%)',
 			  'accent'  => 'hsl(215 20% 65%)',
